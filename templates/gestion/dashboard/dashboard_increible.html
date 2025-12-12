@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Increíble - LUMA Paraguay{% endblock %}
+
+{% block extra_css %}
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:linear-gradient(135deg,#1e3c72 0%,#2a5298 50%,#7e22ce 100%);min-height:100vh;font-family:'Segoe UI',sans-serif;overflow-x:hidden}
+.dashboard-container{padding:2rem;max-width:1600px;margin:0 auto}
+.hero-section{text-align:center;margin-bottom:3rem;animation:fadeInDown 1s}
+.hero-title{font-size:4rem;font-weight:900;color:#fff;text-shadow:0 10px 40px rgba(0,0,0,.5);margin-bottom:.5rem}
+.hero-subtitle{font-size:1.3rem;color:rgba(255,255,255,.9);font-weight:300}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-50px)}to{opacity:1;transform:translateY(0)}}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;margin-bottom:3rem}
+.stat-card{background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(255,255,255,.85));border-radius:25px;padding:2.5rem;text-align:center;box-shadow:0 25px 70px rgba(0,0,0,.4);transition:all .4s;animation:fadeInUp 1s;position:relative;overflow:hidden;border:2px solid rgba(255,255,255,.3)}
+.stat-card:hover{transform:translateY(-15px) scale(1.08);box-shadow:0 35px 90px rgba(0,0,0,.6)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:6px;background:linear-gradient(90deg,#667eea,#764ba2,#f093fb)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}
+.stat-icon{font-size:5rem;margin-bottom:1rem;animation:bounce 3s infinite;filter:drop-shadow(0 5px 15px rgba(0,0,0,.2))}
+@keyframes bounce{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-15px) rotate(-5deg)}75%{transform:translateY(-10px) rotate(5deg)}}
+.stat-value{font-size:3.5rem;font-weight:900;background:linear-gradient(135deg,#667eea,#764ba2,#f093fb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem;text-shadow:0 2px 10px rgba(0,0,0,.1)}
+.stat-label{font-size:1.3rem;color:#555;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.section-title{font-size:2.5rem;font-weight:900;color:#fff;margin-bottom:2rem;text-align:center;text-shadow:0 5px 20px rgba(0,0,0,.3);position:relative;padding-bottom:1rem}
+.section-title::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100px;height:4px;background:linear-gradient(90deg,#667eea,#f093fb);border-radius:2px}
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(450px,1fr));gap:2.5rem;margin-bottom:3rem}
+.chart-card{background:rgba(255,255,255,.95);border-radius:25px;padding:2.5rem;box-shadow:0 25px 70px rgba(0,0,0,.4);animation:fadeIn 1.5s;min-height:400px;border:2px solid rgba(255,255,255,.3)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.chart-title{font-size:1.8rem;font-weight:800;color:#333;margin-bottom:2rem;text-align:center;text-transform:uppercase;letter-spacing:1px}
+.data-section{background:rgba(255,255,255,.95);border-radius:25px;padding:2.5rem;box-shadow:0 25px 70px rgba(0,0,0,.4);animation:fadeIn 2s;margin-bottom:2.5rem;border:2px solid rgba(255,255,255,.3)}
+.data-table{width:100%;border-collapse:collapse;margin-top:1.5rem}
+.data-table th{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:1.2rem;text-align:left;font-weight:700;font-size:1.1rem;text-transform:uppercase;letter-spacing:1px}
+.data-table td{padding:1.2rem;border-bottom:1px solid #eee;font-size:1.05rem;color:#333}
+.data-table tr:hover{background:rgba(102,126,234,.05)}
+.badge{padding:.5rem 1rem;border-radius:20px;font-weight:700;font-size:.9rem;display:inline-block}
+.badge-success{background:#28a745;color:#fff}
+.badge-warning{background:#ffc107;color:#333}
+.badge-info{background:#17a2b8;color:#fff}
+.badge-danger{background:#dc3545;color:#fff}
+.progress-item{margin-bottom:2rem;padding:1.5rem;background:rgba(102,126,234,.05);border-radius:15px;transition:all .3s}
+.progress-item:hover{background:rgba(102,126,234,.1);transform:translateX(10px)}
+.progress-label{display:flex;justify-content:space-between;margin-bottom:1rem;font-weight:700;color:#333;font-size:1.2rem}
+.progress-bar-container{height:35px;background:#e0e0e0;border-radius:20px;overflow:hidden;position:relative;box-shadow:inset 0 2px 5px rgba(0,0,0,.1)}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#667eea,#764ba2,#f093fb);border-radius:20px;transition:width 2s;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem}
+.progress-bar-fill::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:shimmer 2s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.activity-item{padding:1.5rem;border-bottom:2px solid #eee;display:flex;align-items:center;gap:1.5rem;transition:all .3s}
+.activity-item:hover{background:rgba(102,126,234,.05);transform:translateX(10px)}
+.activity-icon{font-size:3rem;filter:drop-shadow(0 3px 10px rgba(0,0,0,.2))}
+.activity-content{flex:1}
+.activity-title{font-weight:700;font-size:1.2rem;color:#333;margin-bottom:.3rem}
+.activity-desc{color:#666;font-size:1rem;margin-bottom:.3rem}
+.activity-time{color:#999;font-size:.9rem}
+.empty-state{text-align:center;color:#999;padding:4rem;font-size:1.3rem;font-weight:600}
+.quick-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-top:2rem}
+.quick-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:1.5rem;border-radius:15px;text-align:center;text-decoration:none;font-weight:700;font-size:1.1rem;transition:all .3s;box-shadow:0 10px 30px rgba(0,0,0,.3);border:none;cursor:pointer}
+.quick-btn:hover{transform:translateY(-5px);box-shadow:0 15px 40px rgba(0,0,0,.4)}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+<div class="hero-section">
+<h1 class="hero-title">🚀 Dashboard Increíble</h1>
+<p class="hero-subtitle">Sistema de Gestión de Obras Civiles - Paraguay</p>
+</div>
+
+<div class="stats-grid">
+<div class="stat-card" style="animation-delay:.1s">
+<div class="stat-icon">💰</div>
+<div class="stat-value" id="ingresos">{{ stats.total_presupuestos_aceptados|default:0|floatformat:0 }}</div>
+<div class="stat-label">Ingresos (₲)</div>
+</div>
+<div class="stat-card" style="animation-delay:.2s">
+<div class="stat-icon">🏗️</div>
+<div class="stat-value">{{ stats.total_obras|default:0 }}</div>
+<div class="stat-label">Obras Totales</div>
+</div>
+<div class="stat-card" style="animation-delay:.3s">
+<div class="stat-icon">📋</div>
+<div class="stat-value">{{ stats.total_presupuestos|default:0 }}</div>
+<div class="stat-label">Presupuestos</div>
+</div>
+<div class="stat-card" style="animation-delay:.4s">
+<div class="stat-icon">🚧</div>
+<div class="stat-value">{{ stats.obras_en_proceso|default:0 }}</div>
+<div class="stat-label">En Proceso</div>
+</div>
+<div class="stat-card" style="animation-delay:.5s">
+<div class="stat-icon">📦</div>
+<div class="stat-value">{{ stats.total_materiales|default:0 }}</div>
+<div class="stat-label">Materiales</div>
+</div>
+<div class="stat-card" style="animation-delay:.6s">
+<div class="stat-icon">👥</div>
+<div class="stat-value">{{ stats.total_usuarios|default:0 }}</div>
+<div class="stat-label">Usuarios</div>
+</div>
+</div>
+
+<h2 class="section-title">📊 Análisis Visual</h2>
+<div class="charts-grid">
+<div class="chart-card">
+<h3 class="chart-title">📊 Estado de Obras</h3>
+<canvas id="obrasChart" height="300"></canvas>
+</div>
+<div class="chart-card">
+<h3 class="chart-title">💵 Presupuestos</h3>
+<canvas id="financieroChart" height="300"></canvas>
+</div>
+</div>
+
+<h2 class="section-title">🏗️ Obras Recientes</h2>
+<div class="data-section">
+{% if obras_recientes %}
+<table class="data-table">
+<thead>
+<tr>
+<th>Obra</th>
+<th>Ubicación</th>
+<th>Estado</th>
+<th>Presupuesto</th>
+<th>Progreso</th>
+</tr>
+</thead>
+<tbody>
+{% for obra in obras_recientes %}
+<tr>
+<td><strong>{{ obra.nombre }}</strong></td>
+<td>{{ obra.ubicacion|default:"Sin ubicación" }}</td>
+<td>
+{% if obra.estado == 'en_proceso' %}
+<span class="badge badge-warning">🚧 En Proceso</span>
+{% elif obra.estado == 'finalizada' %}
+<span class="badge badge-success">✅ Finalizada</span>
+{% elif obra.estado == 'planificada' %}
+<span class="badge badge-info">📋 Planificada</span>
+{% else %}
+<span class="badge badge-danger">{{ obra.get_estado_display }}</span>
+{% endif %}
+</td>
+<td><strong>₲ {{ obra.presupuesto_asignado|floatformat:0 }}</strong></td>
+<td>
+<div class="progress-bar-container" style="height:25px">
+<div class="progress-bar-fill" style="width:{{ obra.progreso_porcentaje }}%;font-size:.9rem">{{ obra.progreso_porcentaje }}%</div>
+</div>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<p class="empty-state">📭 No hay obras registradas</p>
+{% endif %}
+</div>
+
+<h2 class="section-title">💼 Presupuestos Recientes</h2>
+<div class="data-section">
+{% if presupuestos_recientes %}
+<table class="data-table">
+<thead>
+<tr>
+<th>Código</th>
+<th>Obra</th>
+<th>Cliente</th>
+<th>Total</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+{% for presupuesto in presupuestos_recientes %}
+<tr>
+<td><strong>{{ presupuesto.codigo_presupuesto }}</strong></td>
+<td>{{ presupuesto.obra.nombre }}</td>
+<td>{{ presupuesto.cliente.get_full_name|default:presupuesto.cliente.username }}</td>
+<td><strong>₲ {{ presupuesto.total|floatformat:0 }}</strong></td>
+<td>
+{% if presupuesto.estado == 'aceptado' %}
+<span class="badge badge-success">✅ Aceptado</span>
+{% elif presupuesto.estado == 'en_revision' %}
+<span class="badge badge-warning">🔍 En Revisión</span>
+{% elif presupuesto.estado == 'solicitado' %}
+<span class="badge badge-info">📨 Solicitado</span>
+{% else %}
+<span class="badge badge-danger">❌ Rechazado</span>
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<p class="empty-state">📭 No hay presupuestos registrados</p>
+{% endif %}
+</div>
+
+<h2 class="section-title">🔔 Actividad Reciente</h2>
+<div class="data-section">
+{% if actividades_recientes %}
+<div style="max-height:500px;overflow-y:auto">
+{% for actividad in actividades_recientes|slice:":8" %}
+<div class="activity-item">
+<div class="activity-icon">{{ actividad.icono }}</div>
+<div class="activity-content">
+<div class="activity-title">{{ actividad.objeto }}</div>
+<div class="activity-desc">{{ actividad.accion }} por {{ actividad.usuario }}</div>
+<div class="activity-time">{{ actividad.fecha|date:"d/m/Y H:i" }}</div>
+</div>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<p class="empty-state">📭 No hay actividad reciente</p>
+{% endif %}
+</div>
+
+<h2 class="section-title">⚡ Accesos Rápidos</h2>
+<div class="data-section">
+<div class="quick-actions">
+<a href="{% url 'nueva_obra' %}" class="quick-btn">🏗️ Nueva Obra</a>
+<a href="{% url 'nuevo_presupuesto' %}" class="quick-btn">📋 Nuevo Presupuesto</a>
+<a href="{% url 'nuevo_material' %}" class="quick-btn">📦 Nuevo Material</a>
+<a href="{% url 'lista_obras' %}" class="quick-btn">📊 Ver Todas las Obras</a>
+<a href="{% url 'lista_presupuestos' %}" class="quick-btn">💼 Ver Presupuestos</a>
+<a href="{% url 'lista_materiales' %}" class="quick-btn">🔍 Ver Materiales</a>
+<a href="{% url 'exportar_reporte_completo' %}" class="quick-btn" style="background:linear-gradient(135deg,#28a745,#20c997)">📥 Exportar Reporte Excel</a>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+window.addEventListener('load',function(){
+const obrasData=[{{ stats.obras_planificadas|default:0 }},{{ stats.obras_en_proceso|default:0 }},{{ stats.obras_finalizadas|default:0 }}];
+const obrasTotal=obrasData.reduce((a,b)=>a+b,0);
+const obrasCanvas=document.getElementById('obrasChart');
+if(obrasCanvas&&obrasTotal>0){
+new Chart(obrasCanvas,{
+type:'doughnut',
+data:{
+labels:['Planificadas','En Proceso','Finalizadas'],
+datasets:[{
+data:obrasData,
+backgroundColor:['#667eea','#ffc107','#28a745'],
+borderWidth:3,
+borderColor:'#fff'
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{
+legend:{position:'bottom',labels:{font:{size:16,weight:'bold'},padding:20}}
+}
+}
+});
+}else if(obrasCanvas){
+obrasCanvas.parentElement.innerHTML='<h3 class="chart-title">📊 Estado de Obras</h3><p class="empty-state">📭 No hay datos</p>';
+}
+
+const presupData=[{{ stats.presupuestos_solicitados|default:0 }},{{ stats.presupuestos_aceptados|default:0 }},{{ stats.presupuestos_rechazados|default:0 }}];
+const presupTotal=presupData.reduce((a,b)=>a+b,0);
+const presupCanvas=document.getElementById('financieroChart');
+if(presupCanvas&&presupTotal>0){
+new Chart(presupCanvas,{
+type:'bar',
+data:{
+labels:['Solicitados','Aceptados','Rechazados'],
+datasets:[{
+label:'Presupuestos',
+data:presupData,
+backgroundColor:['#667eea','#28a745','#dc3545'],
+borderWidth:2,
+borderColor:'#fff'
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{
+legend:{position:'top',labels:{font:{size:16,weight:'bold'},padding:20}}
+},
+scales:{
+y:{beginAtZero:true,ticks:{precision:0,font:{size:14}}}
+}
+}
+});
+}else if(presupCanvas){
+presupCanvas.parentElement.innerHTML='<h3 class="chart-title">💵 Presupuestos</h3><p class="empty-state">📭 No hay datos</p>';
+}
+});
+</script>
+{% endblock %}

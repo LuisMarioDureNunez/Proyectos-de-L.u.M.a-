@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load paraguay_filters %}
+{% load filters %}
+{% block title %}Presupuestos - Sistema de Gestión{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">💰 Presupuestos</h1>
+                    <p class="text-muted mb-0">Gestión de presupuestos de obras</p>
+                </div>
+                <a href="{% url 'solicitar_presupuesto' %}" class="btn btn-premium">
+                    <i class="fas fa-plus me-2"></i>Solicitar Presupuesto
+                </a>
+            </div>
+
+            <!-- Tarjetas de Estadísticas -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card-premium success fade-in-up">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-0">{{ presupuestos.count }}</h4>
+                                    <p class="text-muted mb-0">Total Presupuestos</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-file-invoice-dollar fa-2x text-success"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card-premium fade-in-up" style="animation-delay: 0.1s;">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-0">{{ presupuestos_aceptados.count }}</h4>
+                                    <p class="text-muted mb-0">Aceptados</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check-circle fa-2x text-primary"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card-premium warning fade-in-up" style="animation-delay: 0.2s;">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-0">{{ presupuestos_pendientes.count }}</h4>
+                                    <p class="text-muted mb-0">En Revisión</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-clock fa-2x text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card-premium danger fade-in-up" style="animation-delay: 0.3s;">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-0">{{ presupuestos_rechazados.count }}</h4>
+                                    <p class="text-muted mb-0">Rechazados</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-times-circle fa-2x text-danger"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Presupuestos -->
+            <div class="card-premium fade-in-up">
+                <div class="card-body">
+                    {% if presupuestos %}
+                    <div class="table-responsive">
+                        <table class="table table-premium">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Obra</th>
+                                    <th>Cliente</th>
+                                    <th>Constructor</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for presupuesto in presupuestos %}
+                                <tr>
+                                    <td><strong>#{{ presupuesto.id }}</strong></td>
+                                    <td>{{ presupuesto.obra.nombre }}</td>
+                                    <td>{{ presupuesto.cliente.get_full_name|default:presupuesto.cliente.username }}</td>
+                                    <td>
+                                        {% if presupuesto.constructor %}
+                                            {{ presupuesto.constructor.get_full_name|default:presupuesto.constructor.username }}
+                                        {% else %}
+                                            <span class="text-muted">No asignado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="fw-bold">{{ presupuesto.total|guaranies }}</td>
+                                    <td>
+                                        {% if presupuesto.estado == 'aceptado' %}
+                                        <span class="badge badge-success-premium">✅ Aceptado</span>
+                                        {% elif presupuesto.estado == 'rechazado' %}
+                                        <span class="badge badge-danger-premium">❌ Rechazado</span>
+                                        {% elif presupuesto.estado == 'en_revision' %}
+                                        <span class="badge badge-warning-premium">🔍 En Revisión</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">📨 Solicitado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ presupuesto.fecha_creacion|date:"d/m/Y" }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'detalle_presupuesto' presupuesto.id %}" 
+                                               class="btn btn-outline-primary" title="Ver Detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if user.es_administrador or user == presupuesto.cliente %}
+                                            <a href="{% url 'editar_presupuesto' presupuesto.id %}" 
+                                               class="btn btn-outline-warning" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-file-invoice-dollar fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No hay presupuestos registrados</h4>
+                        <p class="text-muted">Comience solicitando su primer presupuesto.</p>
+                        <a href="{% url 'solicitar_presupuesto' %}" class="btn btn-premium mt-2">
+                            <i class="fas fa-plus me-2"></i>Solicitar Primer Presupuesto
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚨 Login de Emergencia - Sistema LUMA</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .emergency-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .emergency-header {
+            color: #e74c3c;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .form-control {
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .form-control:focus {
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+        }
+        
+        .btn-emergency {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-emergency:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+            color: white;
+        }
+        
+        .emergency-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .quick-login {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .quick-btn {
+            flex: 1;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 2px solid #e74c3c;
+            border-radius: 8px;
+            color: #e74c3c;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-btn:hover {
+            background: #e74c3c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="emergency-container">
+        <!-- HEADER DE EMERGENCIA -->
+        <div class="emergency-header">
+            🚨
+        </div>
+        <h2 class="text-danger mb-4">LOGIN DE EMERGENCIA</h2>
+        <p class="text-muted mb-4">
+            Esta es una página de login de respaldo que siempre funciona, 
+            sin middleware ni redirecciones complejas.
+        </p>
+        
+        <!-- ALERTAS -->
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Error:</strong> Usuario o contraseña incorrectos
+        </div>
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        
+        <!-- FORMULARIO SIMPLE -->
+        <form method="post" id="emergencyForm">
+            {% csrf_token %}
+            
+            <input type="text" 
+                   name="username" 
+                   class="form-control" 
+                   placeholder="👤 Usuario" 
+                   required 
+                   autofocus
+                   value="{{ form.username.value|default:'' }}">
+            
+            <input type="password" 
+                   name="password" 
+                   class="form-control" 
+                   placeholder="🔒 Contraseña" 
+                   required>
+            
+            {% if request.GET.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+            {% endif %}
+            
+            <button type="submit" class="btn-emergency">
+                <i class="fas fa-sign-in-alt me-2"></i>
+                INICIAR SESIÓN DE EMERGENCIA
+            </button>
+        </form>
+        
+        <!-- LOGIN RÁPIDO -->
+        <div class="quick-login">
+            <button class="quick-btn" onclick="loginRapido('admin', '123')">
+                👑 Admin
+            </button>
+            <button class="quick-btn" onclick="loginRapido('constructor1', '123')">
+                🔨 Constructor
+            </button>
+            <button class="quick-btn" onclick="loginRapido('cliente1', '123')">
+                👤 Cliente
+            </button>
+        </div>
+        
+        <!-- INFORMACIÓN -->
+        <div class="emergency-info">
+            <h6><i class="fas fa-info-circle me-2"></i>Información del Sistema</h6>
+            <small>
+                <strong>Ruta actual:</strong> {{ request.path }}<br>
+                <strong>Método:</strong> {{ request.method }}<br>
+                <strong>Usuario autenticado:</strong> {{ request.user.is_authenticated|yesno:"Sí,No" }}<br>
+                <strong>Timestamp:</strong> <span id="timestamp"></span>
+            </small>
+        </div>
+        
+        <!-- ENLACES -->
+        <div class="mt-4">
+            <a href="/" class="text-decoration-none me-3">
+                <i class="fas fa-home me-1"></i>Inicio
+            </a>
+            <a href="/registro/" class="text-decoration-none me-3">
+                <i class="fas fa-user-plus me-1"></i>Registro
+            </a>
+            <a href="/test-login/" class="text-decoration-none">
+                <i class="fas fa-flask me-1"></i>Test Login
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Actualizar timestamp
+        function updateTimestamp() {
+            document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        }
+        updateTimestamp();
+        setInterval(updateTimestamp, 1000);
+        
+        // Login rápido
+        function loginRapido(username, password) {
+            document.querySelector('input[name="username"]').value = username;
+            document.querySelector('input[name="password"]').value = password;
+            document.getElementById('emergencyForm').submit();
+        }
+        
+        // Prevenir envío múltiple
+        let submitted = false;
+        document.getElementById('emergencyForm').addEventListener('submit', function(e) {
+            if (submitted) {
+                e.preventDefault();
+                return false;
+            }
+            submitted = true;
+            
+            const btn = document.querySelector('.btn-emergency');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Iniciando sesión...';
+            btn.disabled = true;
+        });
+        
+        console.log('🚨 Login de emergencia cargado');
+    </script>
+</body>
+</html>

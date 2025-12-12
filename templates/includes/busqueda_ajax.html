@@ -1,0 +1,309 @@
+<!-- Componente de Búsqueda en Tiempo Real -->
+<div class="search-container position-relative">
+    <div class="input-group input-group-lg">
+        <span class="input-group-text bg-light border-end-0">
+            <i class="fas fa-search text-muted"></i>
+        </span>
+        <input type="text" 
+               id="searchInput" 
+               class="form-control border-start-0" 
+               placeholder="Buscar productos... (escribe para buscar en tiempo real)"
+               autocomplete="off">
+        <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <!-- Resultados de búsqueda -->
+    <div id="searchResults" class="search-results dropdown-menu w-100" style="display: none;">
+        <div class="dropdown-header">
+            <span id="resultsCount">0 resultados</span>
+            <span class="float-end">
+                <small class="text-muted">Búsqueda en tiempo real</small>
+            </span>
+        </div>
+        <div id="resultsList" class="dropdown-list">
+            <!-- Los resultados se cargan aquí via AJAX -->
+        </div>
+        <div class="dropdown-footer text-center p-2">
+            <small class="text-muted">Presiona Enter para búsqueda avanzada</small>
+        </div>
+    </div>
+</div>
+
+<style>
+.search-container {
+    max-width: 500px;
+}
+
+.search-results {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    margin-top: 0.5rem;
+}
+
+.search-result-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f8f9fa;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-result-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.product-image-sm {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 0.375rem;
+}
+
+.stock-badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 1rem;
+}
+
+.search-highlight {
+    background-color: #fff3cd;
+    padding: 0.1rem 0.2rem;
+    border-radius: 0.2rem;
+    font-weight: bold;
+}
+
+.dropdown-header {
+    padding: 0.75rem 1rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+.dropdown-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+</style>
+
+<script>
+// Búsqueda en tiempo real con AJAX
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const resultsList = document.getElementById('resultsList');
+    const resultsCount = document.getElementById('resultsCount');
+    const clearSearch = document.getElementById('clearSearch');
+    let searchTimeout;
+
+    // Función para realizar búsqueda
+    function performSearch(query) {
+        if (query.length < 2) {
+            hideResults();
+            return;
+        }
+
+        showLoading();
+        
+        fetch(`/buscar-productos/?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                displayResults(data);
+            })
+            .catch(error => {
+                console.error('Error en búsqueda:', error);
+                hideResults();
+            });
+    }
+
+    // Mostrar resultados
+    function displayResults(data) {
+        resultsList.innerHTML = '';
+        
+        if (data.resultados.length === 0) {
+            resultsList.innerHTML = `
+                <div class="search-result-item text-center text-muted">
+                    <i class="fas fa-search fa-2x mb-2"></i>
+                    <div>No se encontraron productos para "<strong>${data.query}</strong>"</div>
+                    <small>Intenta con otros términos</small>
+                </div>
+            `;
+        } else {
+            data.resultados.forEach(producto => {
+                const resultItem = createResultItem(producto, data.query);
+                resultsList.appendChild(resultItem);
+            });
+        }
+        
+        resultsCount.textContent = `${data.total} resultado${data.total !== 1 ? 's' : ''} para "${data.query}"`;
+        showResults();
+    }
+
+    // Crear elemento de resultado
+    function createResultItem(producto, query) {
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        item.innerHTML = `
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0 me-3">
+                    ${producto.imagen_url ? 
+                        `<img src="${producto.imagen_url}" alt="${producto.nombre}" class="product-image-sm">` :
+                        `<div class="product-image-sm bg-light d-flex align-items-center justify-content-center">
+                            <i class="fas fa-box text-muted"></i>
+                        </div>`
+                    }
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h6 class="mb-1">${highlightText(producto.nombre, query)}</h6>
+                        <span class="text-success fw-bold">$${producto.precio}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">${producto.categoria}</small>
+                        ${getStockBadge(producto.stock)}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Agregar evento click
+        item.addEventListener('click', function() {
+            window.location.href = producto.url_editar;
+        });
+        
+        return item;
+    }
+
+    // Resaltar texto de búsqueda
+    function highlightText(text, query) {
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<span class="search-highlight">$1</span>');
+    }
+
+    // Obtener badge de stock
+    function getStockBadge(stock) {
+        if (stock > 10) {
+            return `<span class="badge stock-badge bg-success">Stock: ${stock}</span>`;
+        } else if (stock > 0) {
+            return `<span class="badge stock-badge bg-warning">Stock: ${stock}</span>`;
+        } else {
+            return `<span class="badge stock-badge bg-danger">Agotado</span>`;
+        }
+    }
+
+    // Mostrar loading
+    function showLoading() {
+        resultsList.innerHTML = `
+            <div class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Buscando...</span>
+                </div>
+                <div class="mt-2 text-muted">Buscando productos...</div>
+            </div>
+        `;
+        showResults();
+    }
+
+    // Mostrar resultados
+    function showResults() {
+        searchResults.style.display = 'block';
+    }
+
+    // Ocultar resultados
+    function hideResults() {
+        searchResults.style.display = 'none';
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const query = this.value.trim();
+        
+        if (query.length >= 2) {
+            searchTimeout = setTimeout(() => performSearch(query), 300);
+        } else {
+            hideResults();
+        }
+    });
+
+    searchInput.addEventListener('focus', function() {
+        if (this.value.trim().length >= 2) {
+            performSearch(this.value.trim());
+        }
+    });
+
+    // Limpiar búsqueda
+    clearSearch.addEventListener('click', function() {
+        searchInput.value = '';
+        searchInput.focus();
+        hideResults();
+    });
+
+    // Ocultar resultados al hacer click fuera
+    document.addEventListener('click', function(event) {
+        if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+            hideResults();
+        }
+    });
+
+    // Navegación con teclado
+    searchInput.addEventListener('keydown', function(event) {
+        const results = searchResults.querySelectorAll('.search-result-item');
+        const activeResult = searchResults.querySelector('.search-result-item.active');
+        
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            if (activeResult) {
+                const next = activeResult.nextElementSibling;
+                if (next) {
+                    activeResult.classList.remove('active');
+                    next.classList.add('active');
+                }
+            } else if (results.length > 0) {
+                results[0].classList.add('active');
+            }
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            if (activeResult) {
+                const prev = activeResult.previousElementSibling;
+                if (prev) {
+                    activeResult.classList.remove('active');
+                    prev.classList.add('active');
+                }
+            }
+        } else if (event.key === 'Enter') {
+            if (activeResult) {
+                activeResult.click();
+            } else if (this.value.trim().length >= 2) {
+                // Búsqueda avanzada
+                window.location.href = `/productos/?q=${encodeURIComponent(this.value.trim())}`;
+            }
+        } else if (event.key === 'Escape') {
+            hideResults();
+            this.blur();
+        }
+    });
+
+    // Efectos visuales para resultados activos
+    searchResults.addEventListener('mouseover', function(event) {
+        const item = event.target.closest('.search-result-item');
+        if (item) {
+            searchResults.querySelectorAll('.search-result-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+        }
+    });
+});
+</script>

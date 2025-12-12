@@ -1,0 +1,384 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Galería de Obras - Sistema de Gestión{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+<style>
+    .gallery-container {
+        padding: 30px 0;
+    }
+    .obra-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+        margin-bottom: 30px;
+    }
+    .obra-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+    .obra-image-container {
+        position: relative;
+        height: 300px;
+        overflow: hidden;
+    }
+    .obra-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    .obra-card:hover .obra-image {
+        transform: scale(1.1);
+    }
+    .obra-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.85rem;
+        backdrop-filter: blur(10px);
+    }
+    .badge-planificada { background: rgba(59, 130, 246, 0.9); color: white; }
+    .badge-en-proceso { background: rgba(245, 158, 11, 0.9); color: white; }
+    .badge-finalizada { background: rgba(16, 185, 129, 0.9); color: white; }
+    .obra-info {
+        padding: 25px;
+    }
+    .obra-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #1f2937;
+    }
+    .obra-location {
+        color: #6b7280;
+        margin-bottom: 15px;
+    }
+    .obra-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+    }
+    .stat-item {
+        text-align: center;
+    }
+    .stat-value {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #3b82f6;
+    }
+    .stat-label {
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+    
+    /* Lightbox */
+    .lightbox {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+    .lightbox.active {
+        display: flex;
+    }
+    .lightbox-content {
+        max-width: 90%;
+        max-height: 90%;
+        position: relative;
+    }
+    .lightbox-image {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: 10px;
+    }
+    .lightbox-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+        background: rgba(0,0,0,0.5);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 3rem;
+        color: white;
+        cursor: pointer;
+        background: rgba(0,0,0,0.5);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .lightbox-prev { left: 20px; }
+    .lightbox-next { right: 20px; }
+    
+    /* Comparador Antes/Después */
+    .comparison-slider {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        overflow: hidden;
+        border-radius: 15px;
+    }
+    .comparison-image {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .comparison-after {
+        clip-path: inset(0 50% 0 0);
+    }
+    .comparison-slider-handle {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: white;
+        cursor: ew-resize;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .comparison-slider-button {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 50px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container gallery-container">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4">📸 Galería de Obras</h1>
+            <p class="lead text-muted">Explora nuestros proyectos completados y en progreso</p>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="btn-group" role="group">
+                <button class="btn btn-outline-primary active" onclick="filtrarObras('todas')">Todas</button>
+                <button class="btn btn-outline-primary" onclick="filtrarObras('planificada')">Planificadas</button>
+                <button class="btn btn-outline-primary" onclick="filtrarObras('en_proceso')">En Proceso</button>
+                <button class="btn btn-outline-primary" onclick="filtrarObras('finalizada')">Finalizadas</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid de Obras -->
+    <div class="row" id="obras-grid">
+        {% for obra in obras %}
+        <div class="col-lg-4 col-md-6 obra-item" data-estado="{{ obra.estado }}">
+            <div class="obra-card">
+                <div class="obra-image-container" onclick="openLightbox({{ forloop.counter0 }})">
+                    <img src="{% if obra.imagen %}{{ obra.imagen.url }}{% else %}{% static 'images/obra-default.jpg' %}{% endif %}" 
+                         alt="{{ obra.nombre }}" class="obra-image">
+                    <div class="obra-badge badge-{{ obra.estado }}">
+                        {{ obra.get_estado_display }}
+                    </div>
+                </div>
+                <div class="obra-info">
+                    <h3 class="obra-title">{{ obra.nombre }}</h3>
+                    <p class="obra-location">
+                        <i class="fas fa-map-marker-alt"></i> {{ obra.ubicacion }}
+                    </p>
+                    <p class="text-muted">{{ obra.descripcion|truncatewords:15 }}</p>
+                    
+                    <div class="obra-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">₲ {{ obra.presupuesto_asignado|floatformat:0 }}</div>
+                            <div class="stat-label">Presupuesto</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ obra.progreso_porcentaje }}%</div>
+                            <div class="stat-label">Progreso</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ obra.duracion_dias }}</div>
+                            <div class="stat-label">Días</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <a href="{% url 'detalle_obra' obra.id %}" class="btn btn-primary w-100">
+                            Ver Detalles <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-images fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">No hay obras para mostrar</h4>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Comparador Antes/Después -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">🔄 Antes y Después</h2>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="comparison-slider" id="comparison1">
+                <img src="{% static 'images/antes1.jpg' %}" class="comparison-image" alt="Antes">
+                <img src="{% static 'images/despues1.jpg' %}" class="comparison-image comparison-after" alt="Después">
+                <div class="comparison-slider-handle">
+                    <div class="comparison-slider-button">
+                        <i class="fas fa-arrows-alt-h"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="comparison-slider" id="comparison2">
+                <img src="{% static 'images/antes2.jpg' %}" class="comparison-image" alt="Antes">
+                <img src="{% static 'images/despues2.jpg' %}" class="comparison-image comparison-after" alt="Después">
+                <div class="comparison-slider-handle">
+                    <div class="comparison-slider-button">
+                        <i class="fas fa-arrows-alt-h"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <div class="lightbox-close" onclick="closeLightbox()">×</div>
+    <div class="lightbox-nav lightbox-prev" onclick="prevImage()">‹</div>
+    <div class="lightbox-content">
+        <img src="" alt="" class="lightbox-image" id="lightbox-image">
+    </div>
+    <div class="lightbox-nav lightbox-next" onclick="nextImage()">›</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Sistema de Filtros
+function filtrarObras(estado) {
+    const items = document.querySelectorAll('.obra-item');
+    const buttons = document.querySelectorAll('.btn-group button');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    items.forEach(item => {
+        if (estado === 'todas' || item.dataset.estado === estado) {
+            item.style.display = 'block';
+            item.style.animation = 'fadeIn 0.5s';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// Sistema de Lightbox
+let currentImageIndex = 0;
+const images = [
+    {% for obra in obras %}
+    '{% if obra.imagen %}{{ obra.imagen.url }}{% else %}{% static "images/obra-default.jpg" %}{% endif %}'{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+function openLightbox(index) {
+    currentImageIndex = index;
+    document.getElementById('lightbox').classList.add('active');
+    document.getElementById('lightbox-image').src = images[index];
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+}
+
+function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    document.getElementById('lightbox-image').src = images[currentImageIndex];
+}
+
+function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    document.getElementById('lightbox-image').src = images[currentImageIndex];
+}
+
+// Comparador Antes/Después
+document.querySelectorAll('.comparison-slider').forEach(slider => {
+    const handle = slider.querySelector('.comparison-slider-handle');
+    const afterImage = slider.querySelector('.comparison-after');
+    
+    let isDragging = false;
+    
+    handle.addEventListener('mousedown', () => isDragging = true);
+    document.addEventListener('mouseup', () => isDragging = false);
+    
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        
+        const rect = slider.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percentage = (x / rect.width) * 100;
+        
+        if (percentage >= 0 && percentage <= 100) {
+            handle.style.left = percentage + '%';
+            afterImage.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+        }
+    });
+});
+
+// Animación de entrada
+document.addEventListener('DOMContentLoaded', () => {
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    `;
+    document.head.appendChild(style);
+});
+</script>
+{% endblock %}

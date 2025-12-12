@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Tarjeta de Avatar -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <div class="avatar-container mb-3">
+                        {% if usuario.avatar %}
+                            <img src="{{ usuario.avatar.url }}" alt="Avatar" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                        {% else %}
+                            <div class="avatar-placeholder rounded-circle mx-auto" style="width: 150px; height: 150px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 60px; color: white;">{{ usuario.username|first|upper }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <h4>{{ usuario.username }}</h4>
+                    <p class="text-muted mb-2">{{ usuario.email }}</p>
+                    <span class="badge" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-size: 14px; padding: 8px 16px;">
+                        {{ usuario.get_rol_display }}
+                    </span>
+                    <p class="text-muted mt-3 small">
+                        <i class="fas fa-calendar"></i> Miembro desde {{ usuario.date_joined|date:"M Y" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <!-- Formulario de Perfil -->
+            <div class="card shadow-sm">
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="mb-0"><i class="fas fa-user-edit"></i> Editar Perfil</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-user"></i> Nombre de usuario</label>
+                                    <input type="text" class="form-control" value="{{ usuario.username }}" readonly style="background-color: #f8f9fa;">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                                    <input type="email" class="form-control" name="email" value="{{ usuario.email }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-id-card"></i> Nombre</label>
+                                    <input type="text" class="form-control" name="first_name" value="{{ usuario.first_name|default:'' }}" placeholder="Tu nombre">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-id-card"></i> Apellido</label>
+                                    <input type="text" class="form-control" name="last_name" value="{{ usuario.last_name|default:'' }}" placeholder="Tu apellido">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-phone"></i> Teléfono</label>
+                                    <input type="text" class="form-control" name="telefono" value="{{ usuario.telefono|default:'' }}" placeholder="+595 XXX XXX XXX">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label"><i class="fas fa-shield-alt"></i> Rol</label>
+                                    <input type="text" class="form-control" value="{{ usuario.get_rol_display }}" readonly style="background-color: #f8f9fa;">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-map-marker-alt"></i> Dirección</label>
+                            <textarea class="form-control" name="direccion" rows="2" placeholder="Tu dirección completa">{{ usuario.direccion|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-image"></i> Foto de Perfil</label>
+                            <input type="file" class="form-control" name="avatar" accept="image/*">
+                            <small class="text-muted">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</small>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Actualizar Perfil
+                            </button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+</style>
+{% endblock %}

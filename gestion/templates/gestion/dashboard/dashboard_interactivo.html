@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Interactivo - Sistema de Gestión{% endblock %}
+
+{% block extra_css %}
+<style>
+    .kpi-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 20px;
+        color: white;
+        transition: transform 0.3s;
+        cursor: pointer;
+    }
+    .kpi-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .kpi-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+    .kpi-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .stat-badge {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: bold;
+    }
+    .badge-success { background: #10b981; color: white; }
+    .badge-warning { background: #f59e0b; color: white; }
+    .badge-danger { background: #ef4444; color: white; }
+    .badge-info { background: #3b82f6; color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4">📊 Dashboard Interactivo</h1>
+            <p class="text-muted">Análisis en tiempo real de tu negocio</p>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="kpi-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="kpi-label">💰 Ingresos Totales</div>
+                <div class="kpi-value" id="ingresos-total">₲ 0</div>
+                <div class="stat-badge badge-success">+15% este mes</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="kpi-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="kpi-label">🏗️ Obras Activas</div>
+                <div class="kpi-value" id="obras-activas">0</div>
+                <div class="stat-badge badge-info">{{ stats.obras_en_proceso }} en proceso</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="kpi-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="kpi-label">📦 Materiales</div>
+                <div class="kpi-value" id="materiales-total">0</div>
+                <div class="stat-badge badge-warning">Stock bajo: {{ stats.stock_bajo }}</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="kpi-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="kpi-label">✅ Tasa de Éxito</div>
+                <div class="kpi-value" id="tasa-exito">0%</div>
+                <div class="stat-badge badge-success">Excelente</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-4">
+            <div class="chart-container">
+                <h5>📈 Ingresos vs Gastos (Últimos 6 meses)</h5>
+                <canvas id="ingresosGastosChart"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="chart-container">
+                <h5>🎯 Obras por Estado</h5>
+                <canvas id="obrasEstadoChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="chart-container">
+                <h5>📊 Materiales Más Usados</h5>
+                <canvas id="materialesChart"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="chart-container">
+                <h5>🗺️ Obras por Departamento</h5>
+                <canvas id="departamentosChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actividad Reciente -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5>🔔 Actividad Reciente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline" id="timeline-actividad">
+                        <!-- Se llenará con JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/countup.js@2.0.7/dist/countUp.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animación de números
+    const animateValue = (id, start, end, duration, prefix = '') => {
+        const obj = document.getElementById(id);
+        const range = end - start;
+        const increment = end > start ? 1 : -1;
+        const stepTime = Math.abs(Math.floor(duration / range));
+        let current = start;
+        
+        const timer = setInterval(() => {
+            current += increment;
+            obj.textContent = prefix + current.toLocaleString('es-PY');
+            if (current === end) clearInterval(timer);
+        }, stepTime);
+    };
+
+    // Animar KPIs
+    animateValue('ingresos-total', 0, {{ stats.total_presupuestos_aceptados|default:0 }}, 2000, '₲ ');
+    animateValue('obras-activas', 0, {{ stats.total_obras|default:0 }}, 1500);
+    animateValue('materiales-total', 0, {{ stats.total_materiales|default:0 }}, 1500);
+    animateValue('tasa-exito', 0, 85, 2000, '', '%');
+
+    // Gráfico Ingresos vs Gastos
+    const ctxIngresos = document.getElementById('ingresosGastosChart').getContext('2d');
+    new Chart(ctxIngresos, {
+        type: 'line',
+        data: {
+            labels: ['Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            datasets: [{
+                label: 'Ingresos',
+                data: [12000000, 19000000, 15000000, 25000000, 22000000, 30000000],
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Gastos',
+                data: [8000000, 12000000, 10000000, 15000000, 14000000, 18000000],
+                borderColor: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '₲ ' + value.toLocaleString('es-PY');
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Gráfico Obras por Estado
+    const ctxObras = document.getElementById('obrasEstadoChart').getContext('2d');
+    new Chart(ctxObras, {
+        type: 'doughnut',
+        data: {
+            labels: ['Planificadas', 'En Proceso', 'Finalizadas', 'Suspendidas'],
+            datasets: [{
+                data: [
+                    {{ stats.obras_planificadas|default:0 }},
+                    {{ stats.obras_en_proceso|default:0 }},
+                    {{ stats.obras_finalizadas|default:0 }},
+                    {{ stats.obras_suspendidas|default:0 }}
+                ],
+                backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#6b7280']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    // Gráfico Materiales
+    const ctxMateriales = document.getElementById('materialesChart').getContext('2d');
+    new Chart(ctxMateriales, {
+        type: 'bar',
+        data: {
+            labels: ['Cemento', 'Hierro', 'Ladrillos', 'Arena', 'Pintura'],
+            datasets: [{
+                label: 'Cantidad Usada',
+                data: [450, 320, 890, 560, 230],
+                backgroundColor: [
+                    '#667eea',
+                    '#764ba2',
+                    '#f093fb',
+                    '#4facfe',
+                    '#43e97b'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    // Gráfico Departamentos
+    const ctxDepartamentos = document.getElementById('departamentosChart').getContext('2d');
+    new Chart(ctxDepartamentos, {
+        type: 'polarArea',
+        data: {
+            labels: ['Asunción', 'Central', 'Alto Paraná', 'Itapúa', 'Otros'],
+            datasets: [{
+                data: [15, 25, 10, 8, 12],
+                backgroundColor: [
+                    'rgba(102, 126, 234, 0.7)',
+                    'rgba(118, 75, 162, 0.7)',
+                    'rgba(240, 147, 251, 0.7)',
+                    'rgba(79, 172, 254, 0.7)',
+                    'rgba(67, 233, 123, 0.7)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Actualización en tiempo real cada 30 segundos
+    setInterval(() => {
+        console.log('Actualizando datos...');
+        // Aquí puedes hacer una petición AJAX para actualizar los datos
+    }, 30000);
+});
+</script>
+{% endblock %}

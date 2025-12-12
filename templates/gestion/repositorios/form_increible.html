@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card-premium">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fab fa-github me-2"></i>
+                        {{ titulo }}
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ form.nombre.label }}</label>
+                                {{ form.nombre }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ form.url_repositorio.label }}</label>
+                                {{ form.url_repositorio }}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">{{ form.descripcion.label }}</label>
+                            {{ form.descripcion }}
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">{{ form.tipo_proyecto.label }}</label>
+                                {{ form.tipo_proyecto }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">{{ form.tecnologia_principal.label }}</label>
+                                {{ form.tecnologia_principal }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">{{ form.estado.label }}</label>
+                                {{ form.estado }}
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ form.url_demo.label }}</label>
+                                {{ form.url_demo }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ form.url_documentacion.label }}</label>
+                                {{ form.url_documentacion }}
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">{{ form.progreso_porcentaje.label }}</label>
+                                {{ form.progreso_porcentaje }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">{{ form.dificultad.label }}</label>
+                                {{ form.dificultad }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">{{ form.calidad_codigo.label }}</label>
+                                {{ form.calidad_codigo }}
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    {{ form.es_destacado }}
+                                    <label class="form-check-label" for="{{ form.es_destacado.id_for_label }}">
+                                        {{ form.es_destacado.label }}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    {{ form.es_comercial }}
+                                    <label class="form-check-label" for="{{ form.es_comercial.id_for_label }}">
+                                        {{ form.es_comercial.label }}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    {{ form.es_open_source }}
+                                    <label class="form-check-label" for="{{ form.es_open_source.id_for_label }}">
+                                        {{ form.es_open_source.label }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'lista_repositorios' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>{{ accion }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

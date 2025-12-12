@@ -1,0 +1,28 @@
+{
+  "name": "L.u.M.a Sistema de Gestión",
+  "short_name": "L.u.M.a",
+  "description": "Sistema de Gestión de Obras Civiles Paraguay",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#002395",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/static/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "es",
+  "scope": "/",
+  "prefer_related_applications": false
+}

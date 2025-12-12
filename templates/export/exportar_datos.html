@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}📊 Exportar Datos - Mi Tienda Premium{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- HEADER -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="hero-section bg-gradient-info text-white rounded-3 p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-5 fw-bold">
+                            <i class="fas fa-file-export me-3"></i>Exportar Datos
+                        </h1>
+                        <p class="lead mb-0">Genera reportes profesionales en múltiples formatos</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="bg-white bg-opacity-25 rounded-3 p-3 d-inline-block">
+                            <h4 class="mb-0">{{ total_productos }}</h4>
+                            <small>Productos disponibles</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- OPCIONES DE EXPORTACIÓN -->
+    <div class="row">
+        <!-- Exportar Productos -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-boxes me-2"></i>Exportar Productos
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-info-circle text-primary me-2"></i>
+                        <strong>Incluye:</strong> Lista completa de productos con precios, stock, categorías y estados.
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="export-option-card text-center p-4 rounded-3 border hover-lift">
+                                <i class="fas fa-file-excel fa-3x text-success mb-3"></i>
+                                <h5>Excel (.xlsx)</h5>
+                                <p class="text-muted small mb-3">Formato editable con fórmulas y formato profesional</p>
+                                <div class="btn-group w-100">
+                                    <a href="{% url 'vista_previa_reporte' 'productos' %}" 
+                                       class="btn btn-outline-success btn-sm">
+                                        <i class="fas fa-eye me-1"></i>Vista Previa
+                                    </a>
+                                    <a href="{% url 'descargar_reporte' 'productos' 'excel' %}" 
+                                       class="btn btn-success btn-sm">
+                                        <i class="fas fa-download me-1"></i>Descargar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="export-option-card text-center p-4 rounded-3 border hover-lift">
+                                <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                                <h5>PDF</h5>
+                                <p class="text-muted small mb-3">Documento listo para imprimir con diseño profesional</p>
+                                <div class="btn-group w-100">
+                                    <a href="{% url 'vista_previa_reporte' 'productos' %}" 
+                                       class="btn btn-outline-danger btn-sm">
+                                        <i class="fas fa-eye me-1"></i>Vista Previa
+                                    </a>
+                                    <a href="{% url 'descargar_reporte' 'productos' 'pdf' %}" 
+                                       class="btn btn-danger btn-sm">
+                                        <i class="fas fa-download me-1"></i>Descargar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exportar Categorías -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-gradient-success text-white py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-tags me-2"></i>Exportar Categorías
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-info-circle text-success me-2"></i>
+                        <strong>Incluye:</strong> Estadísticas por categoría con inventario y análisis de stock.
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="export-option-card text-center p-4 rounded-3 border hover-lift">
+                                <i class="fas fa-file-excel fa-3x text-success mb-3"></i>
+                                <h5>Excel (.xlsx)</h5>
+                                <p class="text-muted small mb-3">Datos tabulados con estadísticas y métricas</p>
+                                <div class="btn-group w-100">
+                                    <a href="{% url 'vista_previa_reporte' 'categorias' %}" 
+                                       class="btn btn-outline-success btn-sm">
+                                        <i class="fas fa-eye me-1"></i>Vista Previa
+                                    </a>
+                                    <a href="{% url 'descargar_reporte' 'categorias' 'excel' %}" 
+                                       class="btn btn-success btn-sm">
+                                        <i class="fas fa-download me-1"></i>Descargar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="export-option-card text-center p-4 rounded-3 border hover-lift">
+                                <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                                <h5>PDF</h5>
+                                <p class="text-muted small mb-3">Reporte ejecutivo con análisis visual</p>
+                                <div class="btn-group w-100">
+                                    <a href="{% url 'vista_previa_reporte' 'categorias' %}" 
+                                       class="btn btn-outline-danger btn-sm">
+                                        <i class="fas fa-eye me-1"></i>Vista Previa
+                                    </a>
+                                    <a href="{% url 'descargar_reporte' 'categorias' 'pdf' %}" 
+                                       class="btn btn-danger btn-sm">
+                                        <i class="fas fa-download me-1"></i>Descargar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESTADÍSTICAS RÁPIDAS -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-dark text-white py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Resumen de Datos Disponibles
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-light">
+                                <h3 class="text-primary mb-1">{{ total_productos }}</h3>
+                                <small class="text-muted">Total Productos</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-light">
+                                <h3 class="text-success mb-1">{{ total_categorias }}</h3>
+                                <small class="text-muted">Categorías</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-light">
+                                <h3 class="text-info mb-1">{{ stock_alto }}</h3>
+                                <small class="text-muted">Stock Alto</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-light">
+                                <h3 class="text-warning mb-1">{{ stock_bajo }}</h3>
+                                <small class="text-muted">Stock Bajo</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%) !important;
+}
+
+.export-option-card {
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.export-option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.hover-lift:hover {
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+
+.stat-card {
+    border-left: 4px solid;
+}
+
+.stat-card:nth-child(1) { border-left-color: #4e73df; }
+.stat-card:nth-child(2) { border-left-color: #1cc88a; }
+.stat-card:nth-child(3) { border-left-color: #36b9cc; }
+.stat-card:nth-child(4) { border-left-color: #f6c23e; }
+
+.bg-gradient-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
+.bg-gradient-success { background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important; }
+.bg-gradient-info { background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%) !important; }
+.bg-gradient-dark { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important; }
+</style>
+{% endblock %}

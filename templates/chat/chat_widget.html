@@ -1,0 +1,348 @@
+<!-- 💬 CHAT LUMA FLOTANTE SUPER FUNCIONAL 3D -->
+<style>
+.chat-widget-container{position:fixed;bottom:30px;right:30px;z-index:9999}
+.chat-toggle-btn{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border:none;box-shadow:0 10px 40px rgba(102,126,234,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .4s ease;position:relative;animation:chatPulse 2s infinite}
+@keyframes chatPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.chat-toggle-btn:hover{transform:scale(1.15) rotate(15deg)}
+.chat-toggle-btn i{font-size:30px;color:white}
+.chat-badge{position:absolute;top:-5px;right:-5px;background:#dc3545;color:white;border-radius:50%;width:25px;height:25px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold}
+.chat-window{position:absolute;bottom:90px;right:0;width:400px;height:600px;background:white;border-radius:25px;box-shadow:0 20px 80px rgba(0,0,0,.3);display:none;flex-direction:column;overflow:hidden}
+.chat-window.active{display:flex;animation:chatSlideUp .5s ease-out}
+@keyframes chatSlideUp{from{opacity:0;transform:translateY(50px) scale(.8)}to{opacity:1;transform:translateY(0) scale(1)}}
+.chat-header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:20px;display:flex;justify-content:space-between;align-items:center}
+.chat-close{background:rgba(255,255,255,.2);border:none;color:white;width:35px;height:35px;border-radius:50%;cursor:pointer;transition:all .3s ease}
+.chat-close:hover{background:rgba(255,255,255,.4);transform:rotate(90deg)}
+.chat-users-list{flex:1;overflow-y:auto;padding:15px;background:#f8f9fa}
+.chat-user-item{background:white;padding:15px;margin-bottom:10px;border-radius:15px;cursor:pointer;display:flex;align-items:center;gap:15px;box-shadow:0 2px 10px rgba(0,0,0,.05);transition:all .3s ease}
+.chat-user-item:hover{transform:translateX(5px);box-shadow:0 5px 20px rgba(102,126,234,.3)}
+.chat-user-avatar{width:50px;height:50px;border-radius:50%;border:3px solid #667eea;object-fit:cover}
+.chat-messages{flex:1;overflow-y:auto;padding:20px;background:#f8f9fa;display:none}
+.chat-messages.active{display:block}
+.chat-message{margin-bottom:15px;animation:messageSlide .3s ease-out}
+@keyframes messageSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.chat-message.sent{text-align:right}
+.chat-message-bubble{display:inline-block;padding:12px 18px;border-radius:20px;max-width:70%;word-wrap:break-word}
+.chat-message.received .chat-message-bubble{background:white;color:#333;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.chat-message.sent .chat-message-bubble{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;box-shadow:0 2px 10px rgba(102,126,234,.3)}
+.chat-input-container{padding:15px;background:white;border-top:1px solid #e0e0e0;display:none;gap:10px}
+.chat-input-container.active{display:flex}
+.chat-input{flex:1;border:2px solid #e0e0e0;border-radius:25px;padding:12px 20px;outline:none;transition:border-color .3s ease}
+.chat-input:focus{border-color:#667eea}
+.chat-send-btn{width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border:none;color:white;cursor:pointer;transition:all .3s ease}
+.chat-send-btn:hover{transform:scale(1.1);box-shadow:0 5px 15px rgba(102,126,234,.4)}
+.chat-status{font-size:11px;color:#28a745;font-weight:bold}
+.chat-offline{color:#dc3545}
+.chat-typing{font-style:italic;color:#666;font-size:12px;padding:10px 20px}
+</style>
+
+<div class="chat-widget-container">
+    <button class="chat-toggle-btn" id="chatToggle">
+        <i class="fas fa-comments"></i>
+        <span class="chat-badge" id="chatBadge" style="display:none">0</span>
+    </button>
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <h4 id="chatTitle">💬 Chat LUMA</h4>
+            <div class="chat-status" id="chatStatus">🔴 Desconectado</div>
+            <button class="chat-close" id="chatClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-users-list" id="chatUsersList">
+            <div style="text-align:center;padding:20px;color:#666">
+                <i class="fas fa-users" style="font-size:30px;margin-bottom:10px"></i>
+                <div>Cargando usuarios...</div>
+            </div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-typing" id="chatTyping" style="display:none">Alguien está escribiendo...</div>
+        </div>
+        <div class="chat-input-container" id="chatInputContainer">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu mensaje...">
+            <button class="chat-send-btn" id="chatSend"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+
+<script>
+class LumaChat {
+    constructor() {
+        this.socket = null;
+        this.currentUser = '{{ user.username|default:"Anónimo" }}';
+        this.currentUserName = '{{ user.get_full_name|default:user.username|default:"Anónimo" }}';
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 5;
+        this.isTyping = false;
+        this.init();
+    }
+
+    init() {
+        document.getElementById('chatToggle').onclick = () => this.toggleChat();
+        document.getElementById('chatClose').onclick = () => this.closeChat();
+        document.getElementById('chatSend').onclick = () => this.sendMessage();
+        
+        const input = document.getElementById('chatInput');
+        input.onkeypress = (e) => {
+            if (e.key === 'Enter') {
+                this.sendMessage();
+            } else {
+                this.handleTyping();
+            }
+        };
+        
+        // Auto-reconectar si se pierde la conexión
+        setInterval(() => this.checkConnection(), 30000);
+    }
+
+    toggleChat() {
+        const chatWindow = document.getElementById('chatWindow');
+        if (chatWindow.classList.contains('active')) {
+            this.closeChat();
+        } else {
+            this.openChat();
+        }
+    }
+
+    openChat() {
+        document.getElementById('chatWindow').classList.add('active');
+        this.connectWebSocket();
+        setTimeout(() => this.loadUsers(), 500);
+    }
+
+    closeChat() {
+        document.getElementById('chatWindow').classList.remove('active');
+        this.updateStatus('🔴 Desconectado');
+        if (this.socket) {
+            this.socket.close();
+            this.socket = null;
+        }
+    }
+
+    connectWebSocket() {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) return;
+        
+        try {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            this.socket = new WebSocket(`${protocol}//${window.location.host}/ws/chat/`);
+            
+            this.socket.onopen = () => {
+                console.log('💬 Chat LUMA conectado');
+                this.updateStatus('🟢 Conectado');
+                this.reconnectAttempts = 0;
+                this.loadUsers();
+            };
+            
+            this.socket.onclose = () => {
+                console.log('💬 Chat LUMA desconectado');
+                this.updateStatus('🔴 Desconectado');
+                this.socket = null;
+                this.attemptReconnect();
+            };
+            
+            this.socket.onerror = (error) => {
+                console.error('Error en WebSocket:', error);
+                this.updateStatus('⚠️ Error de conexión');
+            };
+            
+            this.socket.onmessage = (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    this.handleMessage(data);
+                } catch (error) {
+                    console.error('Error procesando mensaje:', error);
+                }
+            };
+        } catch (error) {
+            console.error('Error conectando WebSocket:', error);
+            this.updateStatus('❌ Error de conexión');
+        }
+    }
+
+    attemptReconnect() {
+        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+            this.reconnectAttempts++;
+            this.updateStatus(`🔄 Reconectando... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+            setTimeout(() => this.connectWebSocket(), 3000 * this.reconnectAttempts);
+        } else {
+            this.updateStatus('❌ Sin conexión');
+        }
+    }
+
+    checkConnection() {
+        if (this.socket && this.socket.readyState === WebSocket.CLOSED) {
+            this.connectWebSocket();
+        }
+    }
+
+    updateStatus(status) {
+        document.getElementById('chatStatus').textContent = status;
+    }
+
+    handleMessage(data) {
+        if (data.type === 'users_list') {
+            this.displayUsers(data.users);
+        } else if (data.type === 'chat_message') {
+            this.displayMessage(data);
+            this.updateBadge();
+        } else if (data.type === 'user_typing') {
+            this.showTyping(data.username);
+        }
+    }
+
+    displayUsers(users) {
+        const usersList = document.getElementById('chatUsersList');
+        if (!users || users.length === 0) {
+            usersList.innerHTML = `
+                <div style="text-align:center;padding:20px;color:#666">
+                    <i class="fas fa-user-slash" style="font-size:30px;margin-bottom:10px"></i>
+                    <div>No hay usuarios conectados</div>
+                </div>
+            `;
+            return;
+        }
+        
+        usersList.innerHTML = `
+            <div style="padding:10px;border-bottom:1px solid #eee;font-weight:bold;color:#667eea">
+                👥 Usuarios Conectados (${users.length})
+            </div>
+            ${users.map(user => `
+                <div class="chat-user-item" onclick="lumaChat.startChat('${user.username}', '${user.first_name || user.username}')">
+                    <img src="/static/images/py1.jpeg" class="chat-user-avatar" alt="${user.username}" onerror="this.src='/static/images/logo.png'">
+                    <div style="flex:1">
+                        <strong>${user.first_name || user.username}</strong>
+                        <div class="chat-status">🟢 En línea</div>
+                    </div>
+                    <i class="fas fa-comment" style="color:#667eea"></i>
+                </div>
+            `).join('')}
+        `;
+    }
+
+    startChat(username, displayName) {
+        document.getElementById('chatTitle').innerHTML = `💬 Chat con ${displayName || username}`;
+        document.getElementById('chatUsersList').style.display = 'none';
+        document.getElementById('chatMessages').classList.add('active');
+        document.getElementById('chatInputContainer').classList.add('active');
+        
+        // Mensaje de bienvenida
+        this.addSystemMessage(`Iniciaste una conversación con ${displayName || username}`);
+    }
+
+    sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        if (!message) return;
+        
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+            this.addSystemMessage('❌ No hay conexión. Intentando reconectar...');
+            this.connectWebSocket();
+            return;
+        }
+
+        try {
+            this.socket.send(JSON.stringify({
+                type: 'chat_message',
+                message: message,
+                username: this.currentUser,
+                display_name: this.currentUserName,
+                timestamp: new Date().toISOString()
+            }));
+            input.value = '';
+        } catch (error) {
+            console.error('Error enviando mensaje:', error);
+            this.addSystemMessage('❌ Error enviando mensaje');
+        }
+    }
+
+    displayMessage(data) {
+        const messagesDiv = document.getElementById('chatMessages');
+        const isOwn = data.username === this.currentUser;
+        const time = new Date(data.timestamp).toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
+        
+        const messageHtml = `
+            <div class="chat-message ${isOwn ? 'sent' : 'received'}">
+                <div class="chat-message-bubble">
+                    ${!isOwn ? `<strong style="color:#667eea">${data.display_name || data.username}:</strong><br>` : ''}
+                    ${this.formatMessage(data.message)}
+                    <div style="font-size:10px;opacity:0.7;margin-top:5px">
+                        ${time} ${isOwn ? '✓' : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        messagesDiv.innerHTML += messageHtml;
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    addSystemMessage(message) {
+        const messagesDiv = document.getElementById('chatMessages');
+        const messageHtml = `
+            <div style="text-align:center;margin:10px 0;padding:8px;background:#f0f0f0;border-radius:15px;font-size:12px;color:#666">
+                ${message}
+            </div>
+        `;
+        messagesDiv.innerHTML += messageHtml;
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    formatMessage(message) {
+        // Convertir URLs en links
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return message.replace(urlRegex, '<a href="$1" target="_blank" style="color:#667eea">$1</a>');
+    }
+
+    handleTyping() {
+        if (!this.isTyping && this.socket && this.socket.readyState === WebSocket.OPEN) {
+            this.isTyping = true;
+            this.socket.send(JSON.stringify({
+                type: 'user_typing',
+                username: this.currentUser
+            }));
+            
+            setTimeout(() => {
+                this.isTyping = false;
+            }, 3000);
+        }
+    }
+
+    showTyping(username) {
+        if (username !== this.currentUser) {
+            const typingDiv = document.getElementById('chatTyping');
+            typingDiv.textContent = `${username} está escribiendo...`;
+            typingDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                typingDiv.style.display = 'none';
+            }, 3000);
+        }
+    }
+
+    updateBadge() {
+        const badge = document.getElementById('chatBadge');
+        const chatWindow = document.getElementById('chatWindow');
+        
+        if (!chatWindow.classList.contains('active')) {
+            let count = parseInt(badge.textContent) || 0;
+            count++;
+            badge.textContent = count;
+            badge.style.display = 'flex';
+        }
+    }
+
+    loadUsers() {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify({type: 'get_users'}));
+        } else {
+            setTimeout(() => this.loadUsers(), 1000);
+        }
+    }
+}
+
+// Inicializar chat cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.lumaChat = new LumaChat();
+    });
+} else {
+    window.lumaChat = new LumaChat();
+}
+</script>

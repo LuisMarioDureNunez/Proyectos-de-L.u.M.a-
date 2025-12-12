@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Gestión de Presupuestos para Obras Civiles - Paraguay{% endblock %}</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mi Tienda Premium">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Mi Tienda Premium">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-TileImage" content="{% static 'icons/icon-144x144.png' %}">
+    
+    <!-- PWA Icons -->
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'icons/icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="96x96" href="{% static 'icons/icon-96x96.png' %}">
+    <link rel="apple-touch-icon" sizes="128x128" href="{% static 'icons/icon-128x128.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'icons/icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'icons/icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="192x192" href="{% static 'icons/icon-192x192.png' %}">
+    <link rel="apple-touch-icon" sizes="384x384" href="{% static 'icons/icon-384x384.png' %}">
+    <link rel="apple-touch-icon" sizes="512x512" href="{% static 'icons/icon-512x512.png' %}">
+    
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'icons/icon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'icons/icon-16x16.png' %}">
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% url 'manifest' %}">
+    
+    <!-- PWA Install Button Styles -->
+    <style>
+        .pwa-install-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #1a365d 0%, #FF6600 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            z-index: 9999;
+            display: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .pwa-install-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+        }
+        
+        .pwa-install-button.show {
+            display: block;
+            animation: slideInUp 0.5s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+    
+    <!-- Custom CSS PROFESIONAL INCREÍBLE v2.0 -->
+    <style>
+        :root {
+            /* COLORES PROFESIONALES PARAGUAY */
+            --primary-color: #002395;
+            --secondary-color: #000000;
+            --accent-color: #40E0D0;
+            --warning-color: #FF6600;
+            --danger-color: #e17055;
+            --paraguay-red: #d52b1e;
+            --paraguay-blue: #0038a8;
+            --paraguay-white: #ffffff;
+            --gold-color: #ffd700;
+            --silver-color: #c0c0c0;
+            --bronze-color: #cd7f32;
+            
+            /* GRADIENTES PROFESIONALES */
+            --gradient-primary: linear-gradient(135deg, #002395 0%, #000000 100%);
+            --gradient-paraguay: linear-gradient(135deg, #d52b1e 0%, #0038a8 50%, #ffffff 100%);
+            --gradient-gold: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            --gradient-silver: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+            --gradient-bronze: linear-gradient(135deg, #cd7f32 0%, #e39d5c 100%);
+            --gradient-success: linear-gradient(135deg, #40E0D0 0%, #00cec9 100%);
+            --gradient-warning: linear-gradient(135deg, #FF6600 0%, #e17055 100%);
+            --gradient-premium: linear-gradient(135deg, #002395 0%, #FF6600 100%);
+            
+            /* SOMBRAS PROFESIONALES */
+            --shadow-soft: 0 4px 25px rgba(0,0,0,0.1);
+            --shadow-medium: 0 8px 40px rgba(0,0,0,0.15);
+            --shadow-large: 0 15px 60px rgba(0,0,0,0.2);
+            --shadow-glow: 0 0 30px rgba(45, 116, 218, 0.4);
+            --shadow-gold: 0 0 25px rgba(255, 215, 0, 0.4);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #002395 0%, #000000 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* FONDO ANIMADO PROFESIONAL */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+
+        .shape-1 {
+            width: 200px;
+            height: 200px;
+            background: var(--paraguay-red);
+            border-radius: 50%;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 150px;
+            height: 150px;
+            background: var(--paraguay-blue);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            top: 60%;
+            left: 80%;
+            animation-delay: -5s;
+        }
+
+        .shape-3 {
+            width: 100px;
+            height: 100px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            top: 20%;
+            left: 80%;
+            animation-delay: -10s;
+        }
+
+        .shape-4 {
+            width: 120px;
+            height: 120px;
+            background: var(--gold-color);
+            border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
+            top: 70%;
+            left: 10%;
+            animation-delay: -15s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-20px) rotate(90deg);
+            }
+            50% {
+                transform: translateY(0px) rotate(180deg);
+            }
+            75% {
+                transform: translateY(20px) rotate(270deg);
+            }
+        }
+
+        /* NAVBAR PROFESIONAL INCREÍBLE */
+        .navbar-premium {
+            background: linear-gradient(135deg, #002395 0%, #000000 100%) !important;
+            backdrop-filter: blur(25px);
+            border-bottom: 3px solid rgba(255,255,255,0.15);
+            padding: 15px 0;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            overflow: visible;
+            z-index: 99998;
+        }
+
+        .navbar-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            animation: shimmer 4s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .navbar-brand-premium {
+            font-weight: 800;
+            font-size: 2rem;
+            background: linear-gradient(45deg, #ffffff, #a8e6cf, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.4s ease;
+            position: relative;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .navbar-brand-premium::after {
+            content: '🇵🇾';
+            position: absolute;
+            right: -35px;
+            top: -5px;
+            font-size: 1.5rem;
+            animation: bounce 3s infinite ease-in-out;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+        }
+
+        @keyframes bounce {
+            0%, 100% { 
+                transform: translateY(0) scale(1);
+            }
+            50% { 
+                transform: translateY(-8px) scale(1.1);
+            }
+        }
+        
+        .navbar-brand-premium:hover {
+            transform: translateY(-3px) scale(1.05);
+            text-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        
+        .logo-grande {
+            height: 100px;
+            width: auto;
+            border-radius: 15px;
+            box-shadow: 
+                0 8px 25px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+            transition: all 0.3s ease;
+            border: 3px solid rgba(255,255,255,0.3);
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        }
+        
+        .logo-grande:hover {
+            transform: scale(1.1);
+            box-shadow: 
+                0 12px 35px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+        
+        .nav-link-premium {
+            color: rgba(255,255,255,0.95) !important;
+            font-weight: 600;
+            padding: 12px 25px !important;
+            border-radius: 30px;
+            margin: 0 8px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .nav-link-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .nav-link-premium:hover::before {
+            left: 100%;
+        }
+        
+        .nav-link-premium:hover {
+            color: #ffffff !important;
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-3px) scale(1.08);
+            box-shadow: var(--shadow-glow);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        /* SIDEBAR PROFESIONAL INCREÍBLE */
+        .sidebar-lujo {
+            background: linear-gradient(135deg, #002395 0%, #FF6600 100%);
+            color: white;
+            min-height: calc(100vh - 80px);
+            box-shadow: 
+                var(--shadow-large),
+                inset 0 0 50px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+        
+        .sidebar-lujo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 50%);
+            animation: backgroundShift 15s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% {
+                background-position: 0% 0%, 100% 100%;
+            }
+            50% {
+                background-position: 100% 100%, 0% 0%;
+            }
+        }
+        
+        .user-profile-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 30px;
+            margin: 25px 20px;
+            border: 1px solid rgba(255,255,255,0.25);
+            box-shadow: 
+                var(--shadow-soft),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .user-profile-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+        }
+        
+        .user-profile-card:hover::before {
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+        
+        .user-profile-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 
+                var(--shadow-large),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 100%);
+        }
+        
+        .user-avatar-grande {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255,255,255,0.4);
+            box-shadow: 
+                0 8px 25px rgba(0,0,0,0.3),
+                inset 0 0 20px rgba(255,255,255,0.2);
+            transition: all 0.5s ease;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+            animation: avatarFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes avatarFloat {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                box-shadow: 
+                    0 8px 25px rgba(0,0,0,0.3),
+                    inset 0 0 20px rgba(255,255,255,0.2);
+            }
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+                box-shadow: 
+                    0 15px 35px rgba(0,0,0,0.4),
+                    inset 0 0 30px rgba(255,255,255,0.3);
+            }
+        }
+        
+        .user-avatar-grande:hover {
+            transform: scale(1.2) rotate(15deg);
+            animation: none;
+            border-color: rgba(255,255,255,0.8);
+            box-shadow: 
+                0 15px 40px rgba(0,0,0,0.4),
+                inset 0 0 40px rgba(255,255,255,0.4),
+                0 0 30px rgba(255,255,255,0.3);
+        }
+        
+        .user-name {
+            font-weight: 800;
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, #ffffff, #a8e6cf, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShine 3s ease-in-out infinite alternate;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes textShine {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+        
+        .user-role {
+            background: var(--gradient-gold);
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 15px;
+            box-shadow: 
+                var(--shadow-soft),
+                0 4px 15px rgba(255, 215, 0, 0.3);
+            animation: rolePulse 2s ease-in-out infinite;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes rolePulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 
+                    var(--shadow-soft),
+                    0 4px 15px rgba(255, 215, 0, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 
+                    var(--shadow-soft),
+                    0 6px 20px rgba(255, 215, 0, 0.5);
+            }
+        }
+        
+        .sidebar-nav .nav-link {
+            color: rgba(255,255,255,0.9);
+            padding: 18px 30px;
+            margin: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-nav .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 6px;
+            background: var(--gradient-gold);
+            transform: scaleY(0);
+            transition: transform 0.4s ease;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .sidebar-nav .nav-link:hover {
+            color: #ffffff;
+            background: rgba(255,255,255,0.15);
+            transform: translateX(15px) scale(1.05);
+            padding-left: 40px;
+            box-shadow: var(--shadow-glow);
+            border-color: rgba(255,255,255,0.2);
+        }
+        
+        .sidebar-nav .nav-link:hover::before {
+            transform: scaleY(1);
+        }
+        
+        .sidebar-nav .nav-link.active {
+            color: #ffffff;
+            background: rgba(255,255,255,0.2);
+            transform: translateX(15px) scale(1.05);
+            padding-left: 40px;
+            box-shadow: 
+                var(--shadow-soft),
+                0 0 20px rgba(255, 215, 0, 0.3);
+            border-color: rgba(255,255,255,0.3);
+            animation: activeGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes activeGlow {
+            0% {
+                box-shadow: 
+                    var(--shadow-soft),
+                    0 0 20px rgba(255, 215, 0, 0.3);
+            }
+            100% {
+                box-shadow: 
+                    var(--shadow-soft),
+                    0 0 30px rgba(255, 215, 0, 0.6);
+            }
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 
+                    var(--shadow-soft),
+                    0 0 15px rgba(102, 126, 234, 0.4);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 
+                    var(--shadow-soft),
+                    0 0 25px rgba(102, 126, 234, 0.8),
+                    0 0 35px rgba(118, 75, 162, 0.6);
+                transform: scale(1.02);
+            }
+        }
+        
+        .sidebar-nav .nav-link.active::before {
+            transform: scaleY(1);
+            background: var(--gradient-gold);
+        }
+        
+        .sidebar-nav .nav-link i {
+            width: 28px;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            transition: all 0.4s ease;
+        }
+        
+        .sidebar-nav .nav-link:hover i {
+            transform: scale(1.3) rotate(15deg);
+            color: var(--gold-color);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .sidebar-section-title {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 30px 20px 15px;
+            padding-left: 20px;
+            border-left: 4px solid var(--gold-color);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            animation: fadeInLeft 1s ease-out;
+            position: relative;
+        }
+
+        .sidebar-section-title::before {
+            content: '';
+            position: absolute;
+            left: -4px;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            background: var(--gold-color);
+            border-radius: 50%;
+            transform: translateY(-50%);
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% {
+                transform: translateY(-50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-50%) scale(1.3);
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes titleGlow {
+            0% {
+                text-shadow: 0 0 20px rgba(255,215,0,0.8);
+                background-position: 0% 50%;
+            }
+            100% {
+                text-shadow: 0 0 30px rgba(255,215,0,1);
+                background-position: 100% 50%;
+            }
+        }
+
+        /* CONTENIDO PRINCIPAL PROFESIONAL */
+        .main-content {
+            background: transparent;
+            min-height: calc(100vh - 80px);
+            padding: 40px;
+            position: relative;
+        }
+        
+        .content-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            box-shadow: 
+                var(--shadow-medium),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+            border: 1px solid rgba(255,255,255,0.3);
+            overflow: hidden;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-premium);
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+        }
+
+        .content-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .content-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                var(--shadow-large),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+        
+        /* TARJETAS PROFESIONALES INCREÍBLES */
+        .card-premium {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+            border: none;
+            border-radius: 25px;
+            box-shadow: 
+                var(--shadow-soft),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+            transition: all 0.5s ease;
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .card-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--gradient-premium);
+            animation: progressBar 4s ease-in-out infinite;
+            transform-origin: left;
+        }
+
+        @keyframes progressBar {
+            0%, 100% { 
+                transform: scaleX(0);
+                opacity: 0.7;
+            }
+            50% { 
+                transform: scaleX(1);
+                opacity: 1;
+            }
+        }
+        
+        .card-premium:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 
+                var(--shadow-large),
+                0 10px 40px rgba(102, 126, 234, 0.2),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+        
+        .card-premium.success::before {
+            background: var(--gradient-success);
+        }
+        
+        .card-premium.warning::before {
+            background: var(--gradient-warning);
+        }
+        
+        .card-premium.danger::before {
+            background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+        }
+
+        .card-premium.gold::before {
+            background: var(--gradient-gold);
+        }
+
+        /* BOTONES PROFESIONALES INCREÍBLES */
+        .btn-premium {
+            background: linear-gradient(135deg, #002395 0%, #FF6600 100%);
+            border: none;
+            border-radius: 20px;
+            padding: 14px 35px;
+            font-weight: 700;
+            color: white;
+            transition: all 0.5s ease;
+            box-shadow: 
+                var(--shadow-soft),
+                0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .btn-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .btn-premium:hover::before {
+            left: 100%;
+        }
+        
+        .btn-premium:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 
+                var(--shadow-glow),
+                0 8px 25px rgba(102, 126, 234, 0.5);
+            color: white;
+        }
+        
+        .btn-success-premium {
+            background: linear-gradient(135deg, #40E0D0 0%, #00cec9 100%);
+            box-shadow: 
+                var(--shadow-soft),
+                0 4px 15px rgba(64, 224, 208, 0.3);
+        }
+        
+        .btn-warning-premium {
+            background: var(--gradient-warning);
+            box-shadow: 
+                var(--shadow-soft),
+                0 4px 15px rgba(253, 203, 110, 0.3);
+        }
+
+        .btn-gold-premium {
+            background: var(--gradient-gold);
+            box-shadow: 
+                var(--shadow-soft),
+                0 4px 15px rgba(255, 215, 0, 0.3);
+            color: #000;
+        }
+
+        /* MONEDA GUARANÍES ESTILO PROFESIONAL */
+        .moneda-guaranies {
+            font-weight: 800;
+            color: var(--paraguay-red);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            background: linear-gradient(45deg, var(--paraguay-red), var(--paraguay-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .moneda-guaranies::before {
+            content: '🇵🇾';
+            margin-right: 8px;
+            font-size: 1em;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+        }
+
+        /* ANIMACIONES PROFESIONALES AVANZADAS */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(60px) scale(0.9) rotateX(10deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotateX(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-60px) rotate(-8deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotate(0);
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.7) rotate(-10deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        @keyframes flipIn {
+            from {
+                opacity: 0;
+                transform: perspective(400px) rotateY(90deg);
+            }
+            to {
+                opacity: 1;
+                transform: perspective(400px) rotateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.9s ease-out;
+        }
+        
+        .slide-in-left {
+            animation: slideInLeft 0.9s ease-out;
+        }
+
+        .zoom-in {
+            animation: zoomIn 0.7s ease-out;
+        }
+
+        .flip-in {
+            animation: flipIn 1s ease-out;
+        }
+
+        .stagger-animation > * {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .stagger-animation > *:nth-child(1) { animation-delay: 0.1s; }
+        .stagger-animation > *:nth-child(2) { animation-delay: 0.2s; }
+        .stagger-animation > *:nth-child(3) { animation-delay: 0.3s; }
+        .stagger-animation > *:nth-child(4) { animation-delay: 0.4s; }
+        .stagger-animation > *:nth-child(5) { animation-delay: 0.5s; }
+        .stagger-animation > *:nth-child(6) { animation-delay: 0.6s; }
+
+        /* EFECTO NEÓN PARA TEXTO */
+        .neon-text {
+            color: #fff;
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 15px var(--secondary-color),
+                0 0 20px var(--secondary-color),
+                0 0 25px var(--secondary-color);
+            animation: neonPulse 2s infinite alternate;
+        }
+
+        @keyframes neonPulse {
+            from {
+                text-shadow: 
+                    0 0 5px #fff,
+                    0 0 10px #fff,
+                    0 0 15px var(--secondary-color),
+                    0 0 20px var(--secondary-color),
+                    0 0 25px var(--secondary-color);
+            }
+            to {
+                text-shadow: 
+                    0 0 10px #fff,
+                    0 0 20px #fff,
+                    0 0 30px var(--secondary-color),
+                    0 0 40px var(--secondary-color),
+                    0 0 50px var(--secondary-color);
+            }
+        }
+
+        /* RESPONSIVE PROFESIONAL */
+        @media (max-width: 768px) {
+            .logo-grande {
+                height: 50px;
+            }
+            
+            .navbar-brand-premium {
+                font-size: 1rem;
+            }
+            
+            .navbar-brand-premium span {
+                font-size: 0.9rem !important;
+            }
+            
+            .navbar-brand-premium small {
+                font-size: 0.8rem !important;
+            }
+            
+            .logo-grande {
+                height: 70px;
+            }
+            
+            .user-avatar-grande {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+
+            .sidebar-lujo {
+                position: fixed;
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.4s ease;
+                width: 280px;
+            }
+
+            .sidebar-lujo.mobile-open {
+                transform: translateX(0);
+            }
+
+            .navbar-brand-premium::after {
+                right: -25px;
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* SCROLLBAR PROFESIONAL */
+        ::-webkit-scrollbar {
+            width: 14px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: linear-gradient(180deg, #f1f1f1 0%, #e8e8e8 100%);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-premium);
+            border-radius: 10px;
+            border: 3px solid #f1f1f1;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gradient-primary);
+        }
+
+        /* LOADING SPINNER PROFESIONAL */
+        .loading-spinner {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1.2s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* EFECTO GLASSMORPHISM */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        /* EFECTO PARTICULAS MEJORADO */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--gold-color);
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: particleFloat 8s infinite ease-in-out;
+        }
+
+        .particle:nth-child(2n) {
+            background: var(--paraguay-blue);
+            animation-delay: -2s;
+        }
+
+        .particle:nth-child(3n) {
+            background: var(--paraguay-red);
+            animation-delay: -4s;
+        }
+
+        .particle:nth-child(4n) {
+            background: var(--accent-color);
+            animation-delay: -6s;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { 
+                transform: translateY(0px) translateX(0px) rotate(0deg);
+            }
+            25% { 
+                transform: translateY(-30px) translateX(20px) rotate(90deg);
+            }
+            50% { 
+                transform: translateY(0px) translateX(40px) rotate(180deg);
+            }
+            75% { 
+                transform: translateY(30px) translateX(20px) rotate(270deg);
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- FONDO ANIMADO PROFESIONAL -->
+    <div class="background-animation">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <!-- EFECTO DE PARTÍCULAS -->
+    <div class="particles-container" id="particles-container"></div>
+
+    <!-- NAVBAR PROFESIONAL INCREÍBLE -->
+    <nav class="navbar navbar-expand-lg navbar-premium">
+        <div class="container-fluid">
+            <!-- LOGO PROFESIONAL CON EFECTOS -->
+       <a class="navbar-brand-premium" href="{% url 'home' %}" style="display:flex;align-items:center;gap:15px;text-decoration:none">
+    <img src="{% static 'images/logo.jpeg' %}" 
+         alt="L.u.M.a" 
+         class="logo-grande"
+         onclick="showLogoModal(); event.preventDefault(); event.stopPropagation();"
+         style="cursor: pointer;"
+         title="Haz clic para ver el logo en grande"
+         onerror="this.src='{% static 'images/logo1.png' %}'">
+    <div style="display:flex;flex-direction:column">
+        <div style="display:flex;flex-direction:column;line-height:1.2">
+            <span style="font-family:'Orbitron',sans-serif;font-size:1.8rem;letter-spacing:3px;background:linear-gradient(45deg,#ffd700,#fff,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;text-shadow:0 0 25px rgba(255,215,0,1);animation:titleGlow 3s infinite alternate;white-space:nowrap" data-translate="sistema_gestion_titulo">
+                SISTEMA DE GESTIÓN EN PRESUPUESTOS
+            </span>
+            <span style="font-family:'Orbitron',sans-serif;font-size:1.8rem;letter-spacing:3px;background:linear-gradient(45deg,#ffd700,#fff,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;text-shadow:0 0 25px rgba(255,215,0,1);animation:titleGlow 3s infinite alternate;white-space:nowrap" data-translate="para_obras_civiles">
+                PARA OBRAS CIVILES
+            </span>
+            <small style="font-size:1.1rem;color:#40E0D0;font-weight:800;letter-spacing:2px;text-shadow:0 3px 8px rgba(0,0,0,0.7);margin-top:5px" data-translate="luma_gestion">
+                L.u.M.a - Gestión de Obras Civiles
+            </small>
+        </div>
+    </div>
+</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto">
+                    <!-- SELECTOR DE IDIOMAS -->
+                    <li class="nav-item">
+                        {% include 'language_selector.html' %}
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                      <li class="nav-item dropdown">
+    <a class="nav-link-premium dropdown-toggle d-flex align-items-center" 
+       href="#" 
+       role="button" 
+       data-bs-toggle="dropdown"
+       id="userDropdown"
+       style="gap: 10px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); z-index: 10000;">
+        {% if user.avatar %}
+        <img src="{{ user.avatar.url }}" 
+             alt="{{ user.username }}" 
+             style="height: 40px; width: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); object-fit: cover; cursor: pointer;"
+             onclick="showProfileModal()"
+             onerror="this.src='{% static 'images/logo.png' %}'">
+        {% else %}
+        <img src="{% static 'images/logo.png' %}" 
+             alt="{{ user.username }}" 
+             style="height: 40px; width: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); cursor: pointer;"
+             onclick="showProfileModal()"
+             onerror="this.src='{% static 'images/logo1.png' %}'">
+        {% endif %}
+        <strong style="color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+            {{ user.username|upper }}
+        </strong>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" 
+        style="background: white !important; 
+               border: 2px solid #667eea !important;
+               border-radius: 20px !important;
+               box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+               z-index: 10001 !important;
+               min-width: 250px !important;
+               margin-top: 10px !important;">
+        <li>
+            <a class="dropdown-item d-flex align-items-center py-3" href="{% url 'gestionar_perfil' %}" 
+               style="border-radius: 15px; transition: all 0.3s;" 
+               onmouseover="this.style.background='rgba(102,126,234,0.1)'" 
+               onmouseout="this.style.background='transparent'">
+                <i class="fas fa-user-circle me-3 text-primary fa-lg"></i>
+                <div>
+                    <strong style="color: #1a365d;">MI PERFIL</strong>
+                    <small class="d-block text-muted">Gestionar cuenta</small>
+                </div>
+            </a>
+        </li>
+        <li><hr class="dropdown-divider mx-3"></li>
+        <li>
+            <a class="dropdown-item d-flex align-items-center py-3 text-danger" href="{% url 'logout' %}" 
+               style="border-radius: 15px; transition: all 0.3s;" 
+               onmouseover="this.style.background='rgba(220,53,69,0.1)'" 
+               onmouseout="this.style.background='transparent'">
+                <i class="fas fa-sign-out-alt me-3 fa-lg"></i>
+                <strong>CERRAR SESIÓN</strong>
+            </a>
+        </li>
+    </ul>
+</li>
+
+<!-- Modal para mostrar imagen de perfil desde navbar -->
+<div class="modal fade" id="navbarProfileModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="background: rgba(0,0,0,0.95); border: none; border-radius: 20px;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-white d-flex align-items-center">
+                    <i class="fas fa-user-circle me-2 text-primary"></i>
+                    Avatar de {{ user.username|upper }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div class="position-relative d-inline-block">
+                    <img id="navbarModalImage" src="" alt="Foto de Perfil" 
+                         class="img-fluid" 
+                         style="max-height: 70vh; border-radius: 20px; box-shadow: 0 20px 60px rgba(255,255,255,0.2); border: 3px solid rgba(255,255,255,0.3);">
+                    <div class="position-absolute bottom-0 start-0 end-0 p-3" 
+                         style="background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 20px 20px;">
+                        <h6 class="text-white mb-1">{{ user.get_full_name|default:user.username }}</h6>
+                        <small class="text-muted">
+                            {% if user.es_administrador %}
+                            👑 Administrador
+                            {% elif user.rol == 'constructor' %}
+                            👷 Constructor  
+                            {% elif user.rol == 'vendedor' %}
+                            💰 Vendedor
+                            {% else %}
+                            👤 Cliente
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-calendar me-1"></i>
+                        Miembro desde {{ user.date_joined|date:"d/m/Y" }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para mostrar logo de empresa desde navbar -->
+<div class="modal fade" id="navbarLogoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="background: rgba(0,0,0,0.95); border: none; border-radius: 20px;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-white d-flex align-items-center">
+                    <i class="fas fa-building me-2 text-warning"></i>
+                    Logo L.u.M.a
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div class="position-relative d-inline-block">
+                    <img id="navbarLogoModalImage" src="" alt="Logo L.u.M.a" 
+                         class="img-fluid" 
+                         style="max-height: 70vh; border-radius: 20px; box-shadow: 0 20px 60px rgba(255,255,255,0.2); border: 3px solid rgba(255,255,255,0.3);">
+                    <div class="position-absolute bottom-0 start-0 end-0 p-3" 
+                         style="background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 20px 20px;">
+                        <h6 class="text-white mb-1">L.u.M.a</h6>
+                        <small class="text-muted">Sistema de Gestión de Obras Civiles</small>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-flag me-1"></i>
+                        Hecho en Paraguay 🇵🇾
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link-premium" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-2"></i><span data-translate="iniciar_sesion">Iniciar Sesión</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link-premium" href="{% url 'registro' %}">
+                                <i class="fas fa-user-plus me-2"></i><span data-translate="registrarse">Registrarse</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- SIDEBAR PROFESIONAL INCREÍBLE -->
+            {% if user.is_authenticated %}
+            <div class="col-lg-2 col-md-3 sidebar-lujo d-none d-md-block slide-in-left">
+                <div class="pt-4">
+                    <!-- TARJETA DE PERFIL PROFESIONAL -->
+                    <div class="user-profile-card zoom-in">
+                        <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'images/logo.png' %}{% endif %}" 
+                             alt="{{ user.username }}" 
+                             class="user-avatar-grande"
+                             onerror="this.src='{% static 'images/logo1.png' %}'">
+                        <div class="user-name">
+                            {{ user.get_full_name|default:user.username }}
+                        </div>
+                        <div class="user-role">
+                            {% if user.es_administrador %}
+                            👑 Administrador
+                            {% elif user.rol == 'constructor' %}
+                            👷 Constructor
+                            {% elif user.rol == 'vendedor' %}
+                            💰 Vendedor
+                            {% else %}
+                            👤 Cliente
+                            {% endif %}
+                        </div>
+                        <small class="text-light opacity-75">
+                            <i class="fas fa-calendar me-1"></i>
+                            Miembro desde {{ user.date_joined|date:"M Y" }}
+                        </small>
+                    </div>
+                    
+                    <!-- MENÚ DE NAVEGACIÓN PROFESIONAL -->
+                    <nav class="sidebar-nav stagger-animation">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-home"></i><span data-translate="inicio">INICIO</span>
+                        </a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-chart-line"></i><span data-translate="dashboard">DASHBOARD</span>
+                        </a>
+                        <a class="nav-link {% if 'obra' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'lista_obras' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-building"></i><span data-translate="obras">OBRAS</span>
+                        </a>
+                        <div class="sidebar-section-title" style="margin-top:30px;color:rgba(255,255,255,0.9);font-weight:800;text-shadow:0 0 15px rgba(255,215,0,0.8)">
+                            ⏱️ <span data-translate="tiempo_real">TIEMPO REAL</span>
+                        </div>
+                        <a class="nav-link {% if 'dashboard_tiempo_real' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'dashboard_tiempo_real' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px;background:linear-gradient(135deg,#FF6B35,#F7931E);border:2px solid rgba(255,255,255,.3);animation:pulseGlow 2s infinite">
+                            <i class="fas fa-tachometer-alt"></i><span data-translate="dashboard_general">DASHBOARD GENERAL</span>
+                        </a>
+                        <a class="nav-link {% if 'panel_obras' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_obras_tiempo_real' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-building"></i><span data-translate="panel_obras">PANEL OBRAS</span>
+                        </a>
+                        <a class="nav-link {% if 'panel_empleados' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_empleados_tiempo_real' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-users"></i><span data-translate="panel_empleados">PANEL EMPLEADOS</span>
+                        </a>
+                        <a class="nav-link {% if 'panel_contratistas' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_contratistas_tiempo_real' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-hard-hat"></i><span data-translate="panel_contratistas">PANEL CONTRATISTAS</span>
+                        </a>
+                        <a class="nav-link {% if 'presupuesto' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'lista_presupuestos' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-file-invoice-dollar"></i><span data-translate="presupuestos">PRESUPUESTOS</span>
+                        </a>
+                        <a class="nav-link {% if 'material' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'lista_materiales' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-bricks"></i><span data-translate="materiales">MATERIALES</span>
+                        </a>
+                        <a class="nav-link {% if 'maquinaria' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'lista_maquinarias' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-tractor"></i><span data-translate="maquinarias">MAQUINARIAS</span>
+                        </a>
+                        <a class="nav-link {% if 'herramienta' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'lista_herramientas' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-tools"></i><span data-translate="herramientas">HERRAMIENTAS</span>
+                        </a>
+                        <a class="nav-link {% if 'repositorio' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'lista_repositorios' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px;background:linear-gradient(135deg,#667eea,#764ba2);border:2px solid rgba(255,255,255,.3);animation:pulseGlow 2s infinite">
+                            <i class="fab fa-github"></i><span data-translate="repositorios">REPOSITORIOS GITHUB</span>
+                        </a>
+                        <a class="nav-link" href="{% url 'gestionar_perfil' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-user-circle"></i><span data-translate="mi_perfil">MI PERFIL</span>
+                        </a>
+                        
+                        <!-- NUEVAS FUNCIONALIDADES SUPER AVANZADAS -->
+                        <div class="sidebar-section-title" style="margin-top:30px;color:rgba(255,255,255,0.9);font-weight:800;text-shadow:0 0 15px rgba(255,215,0,0.8)">
+                            💻 <span data-translate="desarrollo">DESARROLLO</span>
+                        </div>
+                        <a class="nav-link {% if 'repositorio' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'dashboard_repositorios' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-chart-line"></i><span data-translate="dashboard_repos">DASHBOARD REPOS</span>
+                        </a>
+                        <a class="nav-link" href="{% url 'importar_desde_github' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-download"></i><span data-translate="importar_github">IMPORTAR GITHUB</span>
+                        </a>
+                        
+                        <div class="sidebar-section-title" style="margin-top:30px;color:rgba(255,255,255,0.9);font-weight:800;text-shadow:0 0 15px rgba(255,215,0,0.8)">
+                            🚀 <span data-translate="gestion_avanzada">GESTIÓN AVANZADA</span>
+                        </div>
+                        
+                        <a class="nav-link {% if 'contratista' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'lista_contratistas' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-hard-hat"></i><span data-translate="contratistas">CONTRATISTAS</span>
+                        </a>
+                        <a class="nav-link {% if 'propietario' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'lista_propietarios' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-home"></i><span data-translate="propietarios">PROPIETARIOS</span>
+                        </a>
+                        <a class="nav-link {% if 'empleado' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'lista_empleados' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-users"></i><span data-translate="empleados">EMPLEADOS</span>
+                        </a>
+                        <a class="nav-link {% if 'proveedor' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'lista_proveedores' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-truck"></i><span data-translate="proveedores">PROVEEDORES</span>
+                        </a>
+                        <a class="nav-link {% if 'contrato' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'lista_contratos' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-file-contract"></i><span data-translate="contratos">CONTRATOS</span>
+                        </a>
+                        <a class="nav-link {% if 'propiedad' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'lista_propiedades' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-building"></i><span data-translate="propiedades">PROPIEDADES</span>
+                        </a>
+                        
+                        {% if user.es_administrador %}
+                        <div class="sidebar-section-title" style="margin-top:30px;color:rgba(255,255,255,0.9);font-weight:800;text-shadow:0 0 15px rgba(255,215,0,0.8)">
+                            👑 <span data-translate="administracion">ADMINISTRACIÓN</span>
+                        </div>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'admin_usuarios' %}active{% endif %}" href="{% url 'admin_usuarios' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-users-cog"></i><span data-translate="usuarios">USUARIOS</span>
+                        </a>
+                        <a class="nav-link" href="{% url 'admin_usuarios' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-user-friends"></i><span data-translate="clientes">CLIENTES</span>
+                        </a>
+                        {% endif %}
+                        
+                        <div class="sidebar-section-title" style="margin-top:30px;color:rgba(255,255,255,0.9);font-weight:800;text-shadow:0 0 15px rgba(255,215,0,0.8)">
+                            📊 <span data-translate="reportes_estadisticas">REPORTES Y ESTADÍSTICAS</span>
+                        </div>
+                        <a class="nav-link" href="{% url 'reportes_estadisticas_avanzadas' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-chart-bar"></i><span data-translate="estadisticas">ESTADÍSTICAS</span>
+                        </a>
+                        <a class="nav-link" href="{% url 'exportar_reporte_completo' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px">
+                            <i class="fas fa-file-excel"></i><span data-translate="exportar_excel">EXPORTAR EXCEL</span>
+                        </a>
+                        <a class="nav-link" href="{% url 'dashboard_super_completo' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px;background:linear-gradient(135deg,#667eea,#764ba2);border:2px solid rgba(255,255,255,.3);animation:pulseGlow 2s infinite">
+                            <i class="fas fa-rocket"></i><span data-translate="dashboard_super">DASHBOARD SÚPER</span>
+                        </a>
+                        
+                        {% if user.es_administrador %}
+                        <div class="sidebar-section-title" style="margin-top:30px;color:rgba(255,255,255,0.9);font-weight:800;text-shadow:0 0 15px rgba(255,215,0,0.8)">
+                            🛡️ <span data-translate="panel_administrativo">PANEL ADMINISTRATIVO</span>
+                        </div>
+                        <a class="nav-link" href="/admin/" target="_blank" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px;background:linear-gradient(135deg,#dc3545,#c82333);border:2px solid rgba(255,255,255,.3)">
+                            <i class="fas fa-user-shield"></i><span data-translate="panel_admin">PANEL ADMIN</span>
+                        </a>
+                        <a class="nav-link" href="{% url 'admin_usuarios' %}" style="font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:2px;background:linear-gradient(135deg,#28a745,#20c997);border:2px solid rgba(255,255,255,.3)">
+                            <i class="fas fa-users-cog"></i><span data-translate="usuarios">USUARIOS</span>
+                        </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- CONTENIDO PRINCIPAL PROFESIONAL -->
+            <div class="{% if user.is_authenticated %}col-lg-10 col-md-9{% else %}col-12{% endif %}">
+                <main class="main-content fade-in-up">
+                    <!-- MENSAJES PROFESIONALES -->
+                    {% if messages %}
+                    <div class="messages-container mb-4 stagger-animation">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show content-card" role="alert" 
+                             style="border-left: 5px solid {% if message.tags == 'success' %}var(--accent-color){% elif message.tags == 'warning' %}var(--warning-color){% elif message.tags == 'danger' %}var(--danger-color){% else %}var(--secondary-color){% endif %}">
+                            <div class="d-flex align-items-center">
+                                <i class="fas 
+                                    {% if message.tags == 'success' %}fa-check-circle
+                                    {% elif message.tags == 'warning' %}fa-exclamation-triangle
+                                    {% elif message.tags == 'danger' %}fa-times-circle
+                                    {% else %}fa-info-circle{% endif %} 
+                                    me-3 fa-lg" style="font-size: 1.3rem;"></i>
+                                <div class="flex-grow-1 fw-semibold">{{ message }}</div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- CONTENIDO PRINCIPAL -->
+                    {% block content %}
+                    {% endblock %}
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- GSAP (Animaciones avanzadas) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Sistema de Idiomas Multilenguaje -->
+    <script src="{% static 'js/language_system.js' %}"></script>
+    <!-- Auto-traductor Universal -->
+    <script src="{% static 'js/auto_translate.js' %}"></script>
+    <!-- Traductor específico para Admin -->
+    <script src="{% static 'js/admin_translate.js' %}"></script>
+    <!-- Traductor específico para Página de Inicio -->
+    <script src="{% static 'js/home_translate.js' %}"></script>
+    <!-- Sistema de Modales de Imágenes -->
+    <script src="{% static 'js/image_modals.js' %}"></script>
+    <!-- Estilos de Gestión Avanzada -->
+    <link rel="stylesheet" href="{% static 'css/gestion_avanzada.css' %}">
+    <!-- JavaScript de Gestión Avanzada -->
+    <script src="{% static 'js/gestion_avanzada.js' %}"></script>
+    
+    <!-- Custom JS PROFESIONAL INCREÍBLE -->
+    <script>
+        $(document).ready(function(){
+            // ===== CREAR PARTÍCULAS DINÁMICAS =====
+            function createParticles() {
+                const container = $('#particles-container');
+                for (let i = 0; i < 20; i++) {
+                    const particle = $('<div class="particle"></div>');
+                    const size = Math.random() * 15 + 5;
+                    particle.css({
+                        width: size + 'px',
+                        height: size + 'px',
+                        left: Math.random() * 100 + '%',
+                        top: Math.random() * 100 + '%',
+                        animationDelay: Math.random() * 8 + 's'
+                    });
+                    container.append(particle);
+                }
+            }
+
+            // ===== ANIMACIONES GSAP AVANZADAS =====
+            function initProfessionalAnimations() {
+                // Animación de entrada espectacular
+                gsap.from('.navbar-premium', {
+                    duration: 1,
+                    y: -100,
+                    opacity: 0,
+                    ease: "power4.out"
+                });
+
+                // Animación escalonada para las tarjetas
+                gsap.from('.card-premium', {
+                    duration: 1,
+                    y: 80,
+                    opacity: 0,
+                    stagger: 0.15,
+                    ease: "back.out(1.7)",
+                    delay: 0.3
+                });
+
+                // Animación para elementos de contenido
+                gsap.from('.content-card', {
+                    duration: 1.2,
+                    scale: 0.8,
+                    opacity: 0,
+                    rotationY: 10,
+                    transformOrigin: "center center",
+                    ease: "power3.out",
+                    delay: 0.5
+                });
+            }
+
+            // ===== EFECTO TYPING PROFESIONAL =====
+            function initTypingEffect() {
+                $('.user-name').each(function() {
+                    const text = $(this).text();
+                    $(this).html('');
+                    
+                    let i = 0;
+                    const typing = setInterval(() => {
+                        if (i < text.length) {
+                            $(this).text($(this).text() + text.charAt(i));
+                            i++;
+                        } else {
+                            clearInterval(typing);
+                            // Añadir efecto de cursor parpadeante
+                            $(this).append('<span class="blinking-cursor">|</span>');
+                        }
+                    }, 80);
+                });
+            }
+
+            // ===== SMOOTH SCROLLING PROFESIONAL =====
+            $('a[href*="#"]').on('click', function(e) {
+                e.preventDefault();
+                const target = $($(this).attr('href'));
+                if (target.length) {
+                    gsap.to(window, {
+                        duration: 1.5,
+                        scrollTo: { y: target.offset().top - 80, autoKill: false },
+                        ease: "power2.inOut"
+                    });
+                }
+            });
+
+            // ===== ROTACIÓN DE LOGOS PROFESIONAL =====
+            let logoIndex = 0;
+            const logos = [
+                "{% static 'images/logo.png' %}",
+                "{% static 'images/logo1.png' %}",
+                "{% static 'images/logo2.png' %}"
+            ];
+
+            $('.logo-grande').hover(function() {
+                logoIndex = (logoIndex + 1) % logos.length;
+                gsap.to($(this), {
+                    duration: 0.4,
+                    opacity: 0,
+                    rotationY: -180,
+                    scale: 0.8,
+                    onComplete: function() {
+                        $(this).attr('src', logos[logoIndex]);
+                        gsap.to($(this), {
+                            duration: 0.4,
+                            opacity: 1,
+                            rotationY: 0,
+                            scale: 1
+                        });
+                    }
+                });
+            });
+
+            // ===== AUTO-CLOSE ALERTS CON ANIMACIÓN PROFESIONAL =====
+            setTimeout(function(){
+                $('.alert').each(function() {
+                    gsap.to($(this), {
+                        duration: 0.6,
+                        opacity: 0,
+                        y: -30,
+                        scale: 0.9,
+                        onComplete: function() {
+                            $(this).alert('close');
+                        }
+                    });
+                });
+            }, 6000);
+
+            // ===== HIGHLIGHT ACTIVE SIDEBAR PROFESIONAL =====
+            $('.sidebar-nav .nav-link').each(function(){
+                if($(this).attr('href') === window.location.pathname){
+                    $(this).addClass('active');
+                }
+            });
+
+            // ===== EFECTO PARALLAX PROFESIONAL =====
+            $(window).on('scroll', function() {
+                const scrolled = $(window).scrollTop();
+                $('.parallax').each(function() {
+                    const speed = $(this).data('speed');
+                    const yPos = -(scrolled * speed);
+                    $(this).css('transform', `translateY(${yPos}px)`);
+                });
+            });
+
+            // ===== EFECTO HOVER 3D PARA TARJETAS PROFESIONAL =====
+            $('.card-premium').on('mousemove', function(e) {
+                const card = $(this);
+                const cardWidth = card.width();
+                const cardHeight = card.height();
+                const centerX = card.offset().left + cardWidth / 2;
+                const centerY = card.offset().top + cardHeight / 2;
+                const mouseX = e.pageX - centerX;
+                const mouseY = e.pageY - centerY;
+                const rotateY = (mouseX / cardWidth) * 15;
+                const rotateX = -(mouseY / cardHeight) * 15;
+                
+                gsap.to(card, {
+                    duration: 0.3,
+                    rotationY: rotateY,
+                    rotationX: rotateX,
+                    transformPerspective: 800,
+                    ease: "power2.out"
+                });
+            });
+
+            $('.card-premium').on('mouseleave', function() {
+                gsap.to($(this), {
+                    duration: 0.5,
+                    rotationY: 0,
+                    rotationX: 0,
+                    ease: "elastic.out(1, 0.5)"
+                });
+            });
+
+            // ===== INICIALIZAR TODO =====
+            createParticles();
+            initProfessionalAnimations();
+            initTypingEffect();
+
+            // ===== LOADING STATES PARA BOTONES PROFESIONAL =====
+            $('.btn-premium').on('click', function() {
+                const btn = $(this);
+                const originalText = btn.html();
+                btn.html('<span class="loading-spinner"></span> Procesando...').prop('disabled', true);
+                
+                setTimeout(() => {
+                    btn.html(originalText).prop('disabled', false);
+                }, 2500);
+            });
+
+            console.log('🎯 Sistema PROFESIONAL INCREÍBLE cargado correctamente!');
+            
+            // Integrar con el sistema de idiomas
+            document.addEventListener('languageChanged', function(e) {
+                console.log('🌐 Idioma cambiado a:', e.detail.language);
+                
+                // Actualizar L.u.N.a AI con el nuevo idioma
+                if (window.askLunaAI) {
+                    const translations = e.detail.translations;
+                    // Actualizar placeholders y textos de L.u.N.a AI
+                    const lunaInput = document.getElementById('lunaInput');
+                    if (lunaInput && translations.escribe_pregunta) {
+                        lunaInput.placeholder = translations.escribe_pregunta;
+                    }
+                }
+            });
+        });
+        
+        // Función para mostrar modal de imagen de perfil desde navbar
+        function showProfileModal() {
+            const userImage = document.querySelector('#userDropdown img');
+            const modalImage = document.getElementById('navbarModalImage');
+            
+            if (userImage && modalImage) {
+                modalImage.src = userImage.src;
+                const modal = new bootstrap.Modal(document.getElementById('navbarProfileModal'));
+                modal.show();
+            }
+        }
+        
+        // Función para mostrar modal del logo desde navbar
+        function showLogoModal() {
+            const logoImage = document.querySelector('.logo-grande');
+            const modalImage = document.getElementById('navbarLogoModalImage');
+            
+            if (logoImage && modalImage) {
+                modalImage.src = logoImage.src;
+                const modal = new bootstrap.Modal(document.getElementById('navbarLogoModal'));
+                modal.show();
+            }
+        }
+        });
+
+        // ===== EFECTO DE CONFETI AL CARGAR =====
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            const container = $('body');
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = $('<div class="confetti"></div>');
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const size = Math.random() * 10 + 5;
+                
+                confetti.css({
+                    position: 'fixed',
+                    width: size + 'px',
+                    height: size + 'px',
+                    background: color,
+                    top: '-50px',
+                    left: Math.random() * 100 + '%',
+                    borderRadius: '50%',
+                    zIndex: 9999,
+                    pointerEvents: 'none'
+                });
+                
+                container.append(confetti);
+                
+                // Animación GSAP para el confeti
+                gsap.to(confetti, {
+                    duration: Math.random() * 3 + 2,
+                    y: window.innerHeight + 100,
+                    x: Math.random() * 200 - 100,
+                    rotation: Math.random() * 360,
+                    opacity: 0,
+                    ease: "power2.out",
+                    onComplete: function() {
+                        confetti.remove();
+                    }
+                });
+            }
+        }
+
+        // Ejecutar confeti al cargar (opcional)
+        // setTimeout(createConfetti, 1000);
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <!-- CHAT Y NOTIFICACIONES -->
+    {% if user.is_authenticated %}
+    {% include 'chat/chat_widget.html' %}
+    {% include 'notificaciones_push.html' %}
+    {% endif %}
+    
+    <!-- WHATSAPP WIDGET -->
+    {% include 'whatsapp_widget.html' %}
+    
+    <!-- L.u.N.a AI WIDGET SUPER AVANZADA -->
+    {% include 'luna_ai_super_avanzada.html' %}
+    
+    <!-- PWA INSTALL BUTTON -->
+    <button id="pwaInstallButton" class="pwa-install-button">
+        📱 Instalar App
+    </button>
+    
+    <!-- PWA SERVICE WORKER -->
+    <script>
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('✅ Service Worker registrado:', registration.scope);
+                        
+                        // Verificar actualizaciones
+                        registration.addEventListener('updatefound', function() {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', function() {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // Nueva versión disponible
+                                    if (confirm('Nueva versión disponible. ¿Actualizar ahora?')) {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch(function(error) {
+                        console.log('❌ Error registrando Service Worker:', error);
+                    });
+            });
+        }
+        
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installButton = document.getElementById('pwaInstallButton');
+        
+        window.addEventListener('beforeinstallprompt', function(e) {
+            console.log('💡 PWA instalable detectada');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Mostrar botón de instalación después de 3 segundos
+            setTimeout(() => {
+                installButton.classList.add('show');
+            }, 3000);
+        });
+        
+        installButton.addEventListener('click', function() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                
+                deferredPrompt.userChoice.then(function(choiceResult) {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('🎉 Usuario instaló la PWA');
+                        
+                        // Mostrar mensaje de éxito
+                        const successMsg = document.createElement('div');
+                        successMsg.innerHTML = `
+                            <div style="position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #00b894, #00cec9); color: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; animation: slideInRight 0.5s ease-out;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-check-circle fa-lg"></i>
+                                    <div>
+                                        <strong>¡L.u.M.a instalada!</strong><br>
+                                        <small>Busca el icono en tu pantalla principal</small>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        document.body.appendChild(successMsg);
+                        
+                        setTimeout(() => {
+                            successMsg.remove();
+                        }, 5000);
+                        
+                    } else {
+                        console.log('❌ Usuario canceló la instalación');
+                    }
+                    
+                    deferredPrompt = null;
+                    installButton.classList.remove('show');
+                });
+            }
+        });
+        
+        // Detectar si ya está instalada
+        window.addEventListener('appinstalled', function() {
+            console.log('🎉 PWA instalada exitosamente');
+            installButton.classList.remove('show');
+            
+            // Enviar evento de instalación
+            if ('gtag' in window) {
+                gtag('event', 'pwa_install', {
+                    event_category: 'PWA',
+                    event_label: 'L.u.M.a PWA Installed'
+                });
+            }
+        });
+        
+        // Detectar modo standalone (PWA instalada)
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            console.log('📱 Ejecutándose como PWA');
+            document.body.classList.add('pwa-mode');
+            
+            // Ocultar botón de instalación
+            installButton.style.display = 'none';
+            
+            // Agregar estilos específicos para PWA
+            const pwaStyles = document.createElement('style');
+            pwaStyles.textContent = `
+                .pwa-mode .navbar-premium {
+                    padding-top: 20px; /* Espacio para status bar */
+                }
+                
+                .pwa-mode .main-content {
+                    padding-bottom: 30px; /* Espacio para navegación */
+                }
+            `;
+            document.head.appendChild(pwaStyles);
+        }
+        
+        // Notificaciones Push (si están soportadas)
+        if ('Notification' in window && 'serviceWorker' in navigator) {
+            // Solicitar permisos después de 10 segundos
+            setTimeout(() => {
+                if (Notification.permission === 'default') {
+                    Notification.requestPermission().then(function(permission) {
+                        if (permission === 'granted') {
+                            console.log('✅ Notificaciones habilitadas');
+                            
+                            // Mostrar notificación de bienvenida
+                            new Notification('¡Bienvenido a L.u.M.a!', {
+                                body: 'Ahora recibirás notificaciones de tus obras y presupuestos.',
+                                icon: '/static/icons/icon-192x192.png',
+                                badge: '/static/icons/icon-72x72.png'
+                            });
+                        }
+                    });
+                }
+            }, 10000);
+        }
+        
+        // Detectar conexión offline/online
+        window.addEventListener('online', function() {
+            console.log('🌐 Conexión restaurada');
+            
+            // Mostrar notificación de conexión
+            const onlineMsg = document.createElement('div');
+            onlineMsg.innerHTML = `
+                <div style="position: fixed; top: 20px; left: 20px; background: linear-gradient(135deg, #00b894, #00cec9); color: white; padding: 15px 20px; border-radius: 10px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); z-index: 10000; animation: slideInLeft 0.5s ease-out;">
+                    <i class="fas fa-wifi me-2"></i>
+                    <strong>Conexión restaurada</strong>
+                </div>
+            `;
+            document.body.appendChild(onlineMsg);
+            
+            setTimeout(() => {
+                onlineMsg.remove();
+            }, 3000);
+        });
+        
+        window.addEventListener('offline', function() {
+            console.log('📡 Sin conexión - Modo offline');
+            
+            // Mostrar notificación offline
+            const offlineMsg = document.createElement('div');
+            offlineMsg.innerHTML = `
+                <div style="position: fixed; top: 20px; left: 20px; background: linear-gradient(135deg, #e17055, #d63031); color: white; padding: 15px 20px; border-radius: 10px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); z-index: 10000; animation: slideInLeft 0.5s ease-out;">
+                    <i class="fas fa-wifi-slash me-2"></i>
+                    <strong>Modo offline activado</strong>
+                </div>
+            `;
+            document.body.appendChild(offlineMsg);
+            
+            setTimeout(() => {
+                offlineMsg.remove();
+            }, 3000);
+        });
+        
+        // Agregar animaciones CSS
+        const animationStyles = document.createElement('style');
+        animationStyles.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideInLeft {
+                from { transform: translateX(-100px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(animationStyles);
+    </script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load paraguay_filters %}
+
+{% block title %}Solicitar Presupuesto - Sistema de Gestión{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">📋 Solicitar Nuevo Presupuesto</h1>
+                    <p class="text-muted mb-0">Complete los detalles para solicitar un presupuesto de obra</p>
+                </div>
+                <a href="{% url 'lista_presupuestos' %}" class="btn btn-premium">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a Presupuestos
+                </a>
+            </div>
+
+            <!-- Formulario de Solicitud -->
+            <div class="card-premium fade-in-up">
+                <div class="card-body p-4">
+                    <form method="post" id="presupuestoForm">
+                        {% csrf_token %}
+                        
+                        <!-- Información Básica -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5 class="mb-3 text-primary">
+                                    <i class="fas fa-info-circle me-2"></i>Información Básica
+                                </h5>
+                                
+                                <div class="mb-3">
+                                    <label for="id_obra" class="form-label fw-semibold">Obra *</label>
+                                    <select name="obra" id="id_obra" class="form-select form-select-lg" required>
+                                        <option value="">Seleccione una obra...</option>
+                                        {% for obra in obras %}
+                                        <option value="{{ obra.id }}">{{ obra.nombre }} - {{ obra.ubicacion }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="id_descripcion_servicios" class="form-label fw-semibold">Descripción de Servicios *</label>
+                                    <textarea name="descripcion_servicios" id="id_descripcion_servicios" 
+                                              class="form-control" rows="4" 
+                                              placeholder="Describa los servicios requeridos..." required></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h5 class="mb-3 text-primary">
+                                    <i class="fas fa-calculator me-2"></i>Detalles del Presupuesto
+                                </h5>
+                                
+                                <div class="mb-3">
+                                    <label for="id_total_estimado" class="form-label fw-semibold">Total Estimado (Gs.) *</label>
+                                    <input type="number" name="total_estimado" id="id_total_estimado" 
+                                           class="form-control form-control-lg" 
+                                           placeholder="0" step="1000" min="0" required>
+                                    <div class="form-text">Ingrese el monto estimado en Guaraníes</div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="materiales_incluidos" 
+                                                   id="id_materiales_incluidos" checked>
+                                            <label class="form-check-label fw-semibold" for="id_materiales_incluidos">
+                                                Materiales Incluidos
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="mano_obra_incluida" 
+                                                   id="id_mano_obra_incluida" checked>
+                                            <label class="form-check-label fw-semibold" for="id_mano_obra_incluida">
+                                                Mano de Obra Incluida
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="impuestos_incluidos" 
+                                               id="id_impuestos_incluidos" checked>
+                                        <label class="form-check-label fw-semibold" for="id_impuestos_incluidos">
+                                            Impuestos Incluidos
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Items del Presupuesto -->
+                        <div class="mb-4">
+                            <h5 class="mb-3 text-primary">
+                                <i class="fas fa-list-check me-2"></i>Items del Presupuesto
+                            </h5>
+                            
+                            <div id="items-container">
+                                <!-- Los items se agregarán dinámicamente aquí -->
+                                <div class="item-presupuesto card border mb-3">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label class="form-label fw-semibold">Tipo</label>
+                                                <select name="items-0-tipo" class="form-select tipo-item">
+                                                    <option value="material">Material</option>
+                                                    <option value="mano_obra">Mano de Obra</option>
+                                                    <option value="maquinaria">Maquinaria</option>
+                                                    <option value="herramienta">Herramienta</option>
+                                                    <option value="servicio">Servicio</option>
+                                                    <option value="otros">Otros</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label fw-semibold">Descripción</label>
+                                                <input type="text" name="items-0-descripcion" 
+                                                       class="form-control" placeholder="Descripción del item" required>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label fw-semibold">Cantidad</label>
+                                                <input type="number" name="items-0-cantidad" 
+                                                       class="form-control" value="1" step="0.01" min="0.01" required>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label fw-semibold">Precio Unit.</label>
+                                                <input type="number" name="items-0-precio_unitario" 
+                                                       class="form-control precio-unitario" 
+                                                       placeholder="0" step="1000" min="0" required>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <label class="form-label fw-semibold">Total</label>
+                                                <input type="text" class="form-control total-item" 
+                                                       value="Gs. 0" readonly style="background-color: #f8f9fa;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="button" id="agregar-item" class="btn btn-success-premium">
+                                <i class="fas fa-plus me-2"></i>Agregar Item
+                            </button>
+                        </div>
+
+                        <!-- Notas Adicionales -->
+                        <div class="mb-4">
+                            <h5 class="mb-3 text-primary">
+                                <i class="fas fa-sticky-note me-2"></i>Notas Adicionales
+                            </h5>
+                            <textarea name="notas_cliente" id="id_notas_cliente" 
+                                      class="form-control" rows="3" 
+                                      placeholder="Agregue cualquier nota o comentario adicional..."></textarea>
+                        </div>
+
+                        <!-- Resumen y Envío -->
+                        <div class="card border-success mb-4">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h5 class="text-success mb-3">
+                                            <i class="fas fa-file-invoice-dollar me-2"></i>Resumen del Presupuesto
+                                        </h5>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="fw-semibold">Subtotal:</span>
+                                            <span id="subtotal">Gs. 0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="fw-semibold">Impuestos (10%):</span>
+                                            <span id="impuestos">Gs. 0</span>
+                                        </div>
+                                        <hr>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="fw-bold fs-5">Total Estimado:</span>
+                                            <span id="total-final" class="fw-bold fs-5 text-success">Gs. 0</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 d-flex align-items-center justify-content-center">
+                                        <button type="submit" class="btn btn-premium btn-lg w-100">
+                                            <i class="fas fa-paper-plane me-2"></i>Solicitar Presupuesto
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        let itemCount = 1;
+        
+        // Agregar nuevo item
+        $('#agregar-item').click(function() {
+            const newItem = `
+                <div class="item-presupuesto card border mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Tipo</label>
+                                <select name="items-${itemCount}-tipo" class="form-select tipo-item">
+                                    <option value="material">Material</option>
+                                    <option value="mano_obra">Mano de Obra</option>
+                                    <option value="maquinaria">Maquinaria</option>
+                                    <option value="herramienta">Herramienta</option>
+                                    <option value="servicio">Servicio</option>
+                                    <option value="otros">Otros</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Descripción</label>
+                                <input type="text" name="items-${itemCount}-descripcion" 
+                                       class="form-control" placeholder="Descripción del item" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Cantidad</label>
+                                <input type="number" name="items-${itemCount}-cantidad" 
+                                       class="form-control cantidad" value="1" step="0.01" min="0.01" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Precio Unit.</label>
+                                <input type="number" name="items-${itemCount}-precio_unitario" 
+                                       class="form-control precio-unitario" 
+                                       placeholder="0" step="1000" min="0" required>
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label fw-semibold">Total</label>
+                                <input type="text" class="form-control total-item" 
+                                       value="Gs. 0" readonly style="background-color: #f8f9fa;">
+                                <button type="button" class="btn btn-sm btn-danger mt-1 w-100 eliminar-item">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            $('#items-container').append(newItem);
+            itemCount++;
+        });
+        
+        // Eliminar item
+        $(document).on('click', '.eliminar-item', function() {
+            if ($('.item-presupuesto').length > 1) {
+                $(this).closest('.item-presupuesto').remove();
+                calcularTotales();
+            }
+        });
+        
+        // Calcular totales
+        function calcularTotales() {
+            let subtotal = 0;
+            
+            $('.item-presupuesto').each(function() {
+                const cantidad = parseFloat($(this).find('.cantidad').val()) || 0;
+                const precio = parseFloat($(this).find('.precio-unitario').val()) || 0;
+                const total = cantidad * precio;
+                
+                subtotal += total;
+                
+                // Formatear como Guaraníes
+                $(this).find('.total-item').val('Gs. ' + total.toLocaleString('es-PY'));
+            });
+            
+            const impuestos = subtotal * 0.10; // 10% de impuestos
+            const totalFinal = subtotal + impuestos;
+            
+            $('#subtotal').text('Gs. ' + subtotal.toLocaleString('es-PY'));
+            $('#impuestos').text('Gs. ' + impuestos.toLocaleString('es-PY'));
+            $('#total-final').text('Gs. ' + totalFinal.toLocaleString('es-PY'));
+            
+            // Actualizar el campo de total estimado
+            $('#id_total_estimado').val(Math.round(totalFinal));
+        }
+        
+        // Event listeners para calcular en tiempo real
+        $(document).on('input', '.cantidad, .precio-unitario', calcularTotales);
+        
+        // Calcular inicialmente
+        calcularTotales();
+    });
+</script>
+{% endblock %}

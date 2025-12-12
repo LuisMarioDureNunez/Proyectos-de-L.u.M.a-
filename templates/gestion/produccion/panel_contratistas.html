@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load math_filters %}
+
+{% block title %}Panel Contratistas - Tiempo Real{% endblock %}
+
+{% block extra_css %}
+<style>
+    .panel-tiempo-real {
+        background: linear-gradient(135deg, #1a365d 0%, #FF6600 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+    
+    .contratista-card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .contratista-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+    }
+    
+    .status-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+    }
+    
+    .status-activo { background: #28a745; }
+    .status-ocupado { background: #ffc107; }
+    .status-disponible { background: #17a2b8; }
+    
+    .metric-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        margin: 0 auto 15px;
+    }
+    
+    .eficiencia-alta { background: linear-gradient(135deg, #28a745, #20c997); }
+    .eficiencia-media { background: linear-gradient(135deg, #ffc107, #fd7e14); }
+    .eficiencia-baja { background: linear-gradient(135deg, #dc3545, #e74c3c); }
+    
+    .tiempo-real-badge {
+        background: linear-gradient(45deg, #FF6600, #ff8533);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    
+    .update-timestamp {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        z-index: 1000;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="panel-tiempo-real">
+    <div class="update-timestamp">
+        <i class="fas fa-clock me-2"></i>
+        Actualizado: <span id="timestamp">{{ timestamp_actualizacion|date:"H:i:s" }}</span>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4 fw-bold text-white mb-3">
+                    <img src="{% static 'images/contractor-icon.png' %}" alt="Contratistas" style="width: 60px; height: 60px; margin-right: 15px;" onerror="this.style.display='none'">
+                    Panel de Contratistas
+                </h1>
+                <div class="tiempo-real-badge">
+                    <i class="fas fa-broadcast-tower me-2"></i>TIEMPO REAL
+                </div>
+            </div>
+        </div>
+
+        <!-- Métricas Generales -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="contratista-card text-center">
+                    <div class="metric-circle eficiencia-alta">
+                        <span id="total-contratistas">12</span>
+                    </div>
+                    <h6>Total Contratistas</h6>
+                    <small class="text-muted">Registrados en sistema</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="contratista-card text-center">
+                    <div class="metric-circle eficiencia-media">
+                        <span id="contratistas-activos">8</span>
+                    </div>
+                    <h6>Activos Hoy</h6>
+                    <small class="text-muted">Trabajando actualmente</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="contratista-card text-center">
+                    <div class="metric-circle eficiencia-alta">
+                        <span id="obras-asignadas">15</span>
+                    </div>
+                    <h6>Obras Asignadas</h6>
+                    <small class="text-muted">En progreso</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="contratista-card text-center">
+                    <div class="metric-circle eficiencia-alta">
+                        <span id="eficiencia-promedio">92%</span>
+                    </div>
+                    <h6>Eficiencia Promedio</h6>
+                    <small class="text-muted">Rendimiento general</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Contratistas Activos -->
+        <div class="row">
+            <div class="col-12">
+                <div class="contratista-card">
+                    <h4 class="mb-4">
+                        <img src="{% static 'images/active-contractors.png' %}" alt="Activos" style="width: 30px; height: 30px; margin-right: 10px;" onerror="this.style.display='none'">
+                        Contratistas Activos
+                    </h4>
+                    <div id="contratistas-lista">
+                        <!-- Los datos se cargarán vía AJAX -->
+                        <div class="row" id="contratistas-grid">
+                            <!-- Contratista 1 -->
+                            <div class="col-lg-6 mb-3">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="fw-bold">
+                                                    <span class="status-indicator status-activo"></span>
+                                                    Constructora ABC S.A.
+                                                </h6>
+                                                <p class="text-muted mb-2">Especialidad: Construcción Civil</p>
+                                                <div class="row text-center">
+                                                    <div class="col-4">
+                                                        <strong class="text-primary">2</strong>
+                                                        <br><small>Obras</small>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <strong class="text-success">15</strong>
+                                                        <br><small>Empleados</small>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <strong class="text-warning">95%</strong>
+                                                        <br><small>Eficiencia</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge bg-success">Activo</span>
+                                                <br><small class="text-muted">8:30 AM</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contratista 2 -->
+                            <div class="col-lg-6 mb-3">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="fw-bold">
+                                                    <span class="status-indicator status-ocupado"></span>
+                                                    Obras y Proyectos XYZ
+                                                </h6>
+                                                <p class="text-muted mb-2">Especialidad: Electricidad</p>
+                                                <div class="row text-center">
+                                                    <div class="col-4">
+                                                        <strong class="text-primary">1</strong>
+                                                        <br><small>Obras</small>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <strong class="text-success">8</strong>
+                                                        <br><small>Empleados</small>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <strong class="text-warning">88%</strong>
+                                                        <br><small>Eficiencia</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge bg-warning">Ocupado</span>
+                                                <br><small class="text-muted">7:45 AM</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contratista 3 -->
+                            <div class="col-lg-6 mb-3">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="fw-bold">
+                                                    <span class="status-indicator status-disponible"></span>
+                                                    Construcciones del Este
+                                                </h6>
+                                                <p class="text-muted mb-2">Especialidad: Plomería</p>
+                                                <div class="row text-center">
+                                                    <div class="col-4">
+                                                        <strong class="text-primary">1</strong>
+                                                        <br><small>Obras</small>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <strong class="text-success">12</strong>
+                                                        <br><small>Empleados</small>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <strong class="text-warning">92%</strong>
+                                                        <br><small>Eficiencia</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge bg-info">Disponible</span>
+                                                <br><small class="text-muted">9:15 AM</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Actualizar datos cada 5 segundos
+    setInterval(actualizarDatosContratistas, 5000);
+    
+    function actualizarDatosContratistas() {
+        // Simular datos en tiempo real
+        const totalContratistas = Math.floor(Math.random() * 3) + 10; // 10-12
+        const contratistasActivos = Math.floor(Math.random() * 3) + 6; // 6-8
+        const obrasAsignadas = Math.floor(Math.random() * 5) + 13; // 13-17
+        const eficienciaPromedio = Math.floor(Math.random() * 8) + 88; // 88-95%
+        
+        // Actualizar métricas
+        $('#total-contratistas').text(totalContratistas);
+        $('#contratistas-activos').text(contratistasActivos);
+        $('#obras-asignadas').text(obrasAsignadas);
+        $('#eficiencia-promedio').text(eficienciaPromedio + '%');
+        
+        // Actualizar timestamp
+        const now = new Date();
+        $('#timestamp').text(now.toLocaleTimeString());
+        
+        // Actualizar eficiencias individuales
+        $('.card-body').each(function() {
+            const eficienciaElement = $(this).find('.text-warning strong');
+            if (eficienciaElement.length > 0) {
+                const nuevaEficiencia = Math.floor(Math.random() * 10) + 85; // 85-94%
+                eficienciaElement.text(nuevaEficiencia + '%');
+            }
+        });
+        
+        console.log('Datos de contratistas actualizados:', now.toLocaleTimeString());
+    }
+    
+    // Efectos visuales
+    $('.contratista-card').hover(
+        function() {
+            $(this).find('.metric-circle').addClass('animate__animated animate__pulse');
+        },
+        function() {
+            $(this).find('.metric-circle').removeClass('animate__animated animate__pulse');
+        }
+    );
+});
+</script>
+{% endblock %}

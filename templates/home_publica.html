@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Poppins',sans-serif;background:#0a0e27;overflow-x:hidden}
+        
+        .hero-section{min-height:100vh;display:flex;align-items:center;position:relative;background:linear-gradient(135deg,#002395 0%,#000000 100%);overflow:hidden}
+        .hero-section::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at 20% 80%,rgba(255,255,255,.15) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.1) 0%,transparent 50%);animation:pulse 8s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+        
+        .hero-content{position:relative;z-index:2;text-align:center}
+        .hero-title{font-family:'Orbitron',sans-serif;font-size:3.5rem;font-weight:900;color:#fff;text-shadow:0 10px 40px rgba(0,0,0,.5);margin-bottom:2rem;animation:fadeInDown 1.5s ease-out;line-height:1.3}
+        .hero-title .main-text{display:block;font-size:2.2rem;background:linear-gradient(45deg,#ffd700,#fff,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s infinite;letter-spacing:3px}
+        .hero-title .brand{display:block;font-size:5rem;margin-top:1rem;color:#fff;text-shadow:0 0 30px rgba(255,215,0,.8),0 0 60px rgba(255,215,0,.5);animation:glow 2s infinite}
+        @keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+        @keyframes glow{0%,100%{text-shadow:0 0 30px rgba(255,215,0,.8),0 0 60px rgba(255,215,0,.5)}50%{text-shadow:0 0 40px rgba(255,215,0,1),0 0 80px rgba(255,215,0,.7)}}
+        @keyframes fadeInDown{from{opacity:0;transform:translateY(-80px)}to{opacity:1;transform:translateY(0)}}
+        
+        .logo-container{margin:2rem 0;animation:fadeInUp 1.5s ease-out}
+        .logo-container img{max-width:500px;width:100%;height:auto;border-radius:30px;box-shadow:0 30px 80px rgba(0,0,0,.5);border:5px solid rgba(255,255,255,.3);transition:all .5s}
+        .logo-container img:hover{transform:scale(1.1) rotate(5deg);box-shadow:0 40px 100px rgba(255,215,0,.6)}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(80px)}to{opacity:1;transform:translateY(0)}}
+        
+        .hero-subtitle{font-size:1.4rem;color:rgba(255,255,255,.95);margin-bottom:3rem;animation:fadeIn 2s ease-out;max-width:800px;margin-left:auto;margin-right:auto}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+        
+        .hero-buttons{animation:fadeInUp 2s ease-out;display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap}
+        .btn-hero{padding:18px 45px;font-size:1.3rem;font-weight:700;border-radius:50px;transition:all .4s;text-decoration:none;display:inline-block;position:relative;overflow:hidden;text-transform:uppercase;letter-spacing:2px}
+        .btn-hero-primary{background:linear-gradient(45deg,#ff6b6b,#ee5a24);color:#fff;border:none;box-shadow:0 10px 40px rgba(255,107,107,.5)}
+        .btn-hero-secondary{background:transparent;color:#fff;border:3px solid #fff}
+        .btn-hero::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transition:left .6s}
+        .btn-hero:hover::before{left:100%}
+        .btn-hero:hover{transform:translateY(-8px) scale(1.08);box-shadow:0 20px 50px rgba(0,0,0,.4)}
+        
+        .features-section{background:#fff;padding:100px 0;position:relative}
+        .section-title{font-family:'Orbitron',sans-serif;font-size:3rem;font-weight:900;text-align:center;margin-bottom:3rem;background:linear-gradient(135deg,#002395,#FF6600);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2.5rem;margin-top:3rem}
+        .feature-card{background:#fff;border-radius:25px;padding:2.5rem;text-align:center;box-shadow:0 15px 50px rgba(0,0,0,.1);transition:all .4s;border:2px solid transparent;position:relative;overflow:hidden}
+        .feature-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:5px;background:linear-gradient(90deg,#002395,#FF6600,#40E0D0)}
+        .feature-card:hover{transform:translateY(-15px);box-shadow:0 25px 70px rgba(0,35,149,.3);border-color:#002395}
+        .feature-icon{width:90px;height:90px;background:linear-gradient(135deg,#002395,#FF6600);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:2.5rem;color:#fff;box-shadow:0 10px 30px rgba(0,35,149,.4);animation:float 3s infinite}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+        .feature-title{font-size:1.5rem;font-weight:700;color:#2c3e50;margin-bottom:1rem}
+        .feature-desc{color:#7f8c8d;line-height:1.7;font-size:1.05rem}
+        
+        .footer-section{background:linear-gradient(135deg,#002395,#000000);color:#fff;padding:60px 0 30px}
+        .footer-logo{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:900;margin-bottom:1.5rem;color:#ffd700}
+        .footer-text{color:rgba(255,255,255,.8);margin-bottom:2rem;line-height:1.6}
+        .contact-item{margin-bottom:1rem;font-size:1.05rem}
+        .contact-item strong{color:#ffd700}
+        .footer-bottom{border-top:2px solid rgba(255,255,255,.2);padding-top:2rem;margin-top:3rem}
+        .footer-bottom p{color:rgba(255,255,255,.9);font-size:1.1rem;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;margin:0}
+        .footer-bottom img{height:35px;border-radius:8px;box-shadow:0 5px 15px rgba(0,0,0,.3)}
+        
+        @media (max-width:768px){
+            .hero-title{font-size:2rem}
+            .hero-title .main-text{font-size:1.5rem}
+            .hero-title .brand{font-size:3rem}
+            .logo-container img{max-width:350px}
+            .btn-hero{padding:15px 30px;font-size:1.1rem}
+            .features-grid{grid-template-columns:1fr}
+        }
+    </style>
+</head>
+<body>
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="main-text">SISTEMA DE GESTIÓN EN PRESUPUESTOS<br>PARA OBRAS CIVILES</span>
+                    <span class="brand">L.u.M.a</span>
+                </h1>
+                
+                <div class="logo-container">
+                    <img src="{% static 'images/logo.jpeg' %}" alt="Logo L.u.M.a" onerror="this.src='{% static 'images/logo1.png' %}'">
+                </div>
+                
+                <p class="hero-subtitle">
+                    {{ descripcion }}
+                </p>
+                
+                <div class="hero-buttons">
+                    {% if usuario_autenticado %}
+                        <a href="{% url 'dashboard' %}" class="btn-hero btn-hero-primary">
+                            <i class="fas fa-tachometer-alt me-2"></i>IR AL DASHBOARD
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn-hero btn-hero-secondary">
+                            <i class="fas fa-sign-out-alt me-2"></i>CERRAR SESIÓN
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn-hero btn-hero-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>INICIAR SESIÓN
+                        </a>
+                        <a href="{% url 'registro' %}" class="btn-hero btn-hero-secondary">
+                            <i class="fas fa-user-plus me-2"></i>REGISTRARSE
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MISIÓN Y VISIÓN -->
+    <section style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); padding: 80px 0;">
+        <div class="container">
+            <h2 class="section-title">🎯 MISIONES Y VISIONES DE L.u.M.a</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 50px;">
+                <!-- MISIONES -->
+                <div style="background: linear-gradient(135deg, rgba(255,102,0,0.1), rgba(0,35,149,0.1)); border-radius: 25px; padding: 35px; border: 3px solid #FF6600; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,102,0,0.1); border-radius: 50%; opacity: 0.5;"></div>
+                    <h3 style="color: #FF6600; font-weight: bold; margin-bottom: 25px; font-size: 1.8rem; display: flex; align-items: center; gap: 15px;">
+                        🚀 NUESTRAS MISIONES
+                    </h3>
+                    <div style="space-y: 20px;">
+                        <div style="background: rgba(255,255,255,0.8); border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 5px solid #FF6600;">
+                            <h4 style="color: #002395; font-weight: bold; margin-bottom: 10px; font-size: 1.2rem;">
+                                🎯 Transformación Digital Total
+                            </h4>
+                            <p style="color: #666; line-height: 1.6; margin: 0;">
+                                Digitalizar completamente la industria constructiva paraguaya, eliminando procesos manuales obsoletos y reemplazándolos con soluciones automatizadas de última generación.
+                            </p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.8); border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 5px solid #FF6600;">
+                            <h4 style="color: #002395; font-weight: bold; margin-bottom: 10px; font-size: 1.2rem;">
+                                📊 Optimización de Recursos
+                            </h4>
+                            <p style="color: #666; line-height: 1.6; margin: 0;">
+                                Maximizar la eficiencia en el uso de materiales, tiempo y capital humano, reduciendo desperdicios y aumentando la rentabilidad de cada proyecto constructivo.
+                            </p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.8); border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 5px solid #FF6600;">
+                            <h4 style="color: #002395; font-weight: bold; margin-bottom: 10px; font-size: 1.2rem;">
+                                🎓 Educación Tecnológica
+                            </h4>
+                            <p style="color: #666; line-height: 1.6; margin: 0;">
+                                Capacitar y empoderar a profesionales de la construcción con conocimientos tecnológicos avanzados, creando una nueva generación de constructores digitales.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- VISIONES -->
+                <div style="background: linear-gradient(135deg, rgba(0,35,149,0.1), rgba(255,102,0,0.1)); border-radius: 25px; padding: 35px; border: 3px solid #002395; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -20px; left: -20px; width: 80px; height: 80px; background: rgba(0,35,149,0.1); border-radius: 50%; opacity: 0.5;"></div>
+                    <h3 style="color: #002395; font-weight: bold; margin-bottom: 25px; font-size: 1.8rem; display: flex; align-items: center; gap: 15px;">
+                        🔮 NUESTRAS VISIONES
+                    </h3>
+                    <div style="space-y: 20px;">
+                        <div style="background: rgba(255,255,255,0.8); border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 5px solid #002395;">
+                            <h4 style="color: #FF6600; font-weight: bold; margin-bottom: 10px; font-size: 1.2rem;">
+                                🌍 Liderazgo Regional
+                            </h4>
+                            <p style="color: #666; line-height: 1.6; margin: 0;">
+                                Posicionar a Paraguay como el hub tecnológico de la construcción en Sudamérica, exportando nuestra innovación y conocimiento a toda la región.
+                            </p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.8); border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 5px solid #002395;">
+                            <h4 style="color: #FF6600; font-weight: bold; margin-bottom: 10px; font-size: 1.2rem;">
+                                🌱 Construcción Sostenible
+                            </h4>
+                            <p style="color: #666; line-height: 1.6; margin: 0;">
+                                Crear un ecosistema constructivo completamente sostenible, donde cada proyecto contribuya al desarrollo económico y social del país de manera responsable.
+                            </p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.8); border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 5px solid #002395;">
+                            <h4 style="color: #FF6600; font-weight: bold; margin-bottom: 10px; font-size: 1.2rem;">
+                                🚀 Innovación Continua
+                            </h4>
+                            <p style="color: #666; line-height: 1.6; margin: 0;">
+                                Mantenernos a la vanguardia tecnológica global, incorporando constantemente IA, IoT, realidad aumentada y blockchain en nuestras soluciones constructivas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- OBJETIVOS ESTRATÉGICOS -->
+            <div style="background: linear-gradient(135deg, rgba(40,167,69,0.1), rgba(32,201,151,0.1)); border-radius: 25px; padding: 35px; border: 2px solid #28a745; margin-top: 40px;">
+                <h3 style="color: #28a745; font-weight: bold; margin-bottom: 25px; text-align: center; font-size: 1.6rem;">
+                    🏆 OBJETIVOS ESTRATÉGICOS 2025-2030
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px;">
+                    <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.8); border-radius: 15px;">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">📈</div>
+                        <h4 style="color: #28a745; font-weight: bold; margin-bottom: 10px;">50,000+ Usuarios</h4>
+                        <p style="color: #666; font-size: 0.95rem; margin: 0;">Alcanzar 50,000 usuarios activos en toda Latinoamérica</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.8); border-radius: 15px;">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">🇵🇾</div>
+                        <h4 style="color: #28a745; font-weight: bold; margin-bottom: 10px;">100% Paraguay</h4>
+                        <p style="color: #666; font-size: 0.95rem; margin: 0;">Digitalizar el 80% de la construcción paraguaya</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.8); border-radius: 15px;">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">🌍</div>
+                        <h4 style="color: #28a745; font-weight: bold; margin-bottom: 10px;">15 Países</h4>
+                        <p style="color: #666; font-size: 0.95rem; margin: 0;">Expandir a 15 países de América Latina</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.8); border-radius: 15px;">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">🤖</div>
+                        <h4 style="color: #28a745; font-weight: bold; margin-bottom: 10px;">IA Avanzada</h4>
+                        <p style="color: #666; font-size: 0.95rem; margin: 0;">Implementar IA predictiva en todos los procesos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">🚀 CARACTERÍSTICAS PRINCIPALES</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-building"></i></div>
+                    <h4 class="feature-title">Gestión de Obras</h4>
+                    <p class="feature-desc">Administra todas tus obras civiles desde la planificación hasta la finalización con control total del progreso.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <h4 class="feature-title">Presupuestos Profesionales</h4>
+                    <p class="feature-desc">Genera presupuestos detallados con cálculos automáticos, IVA y formato paraguayo.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-warehouse"></i></div>
+                    <h4 class="feature-title">Control de Materiales</h4>
+                    <p class="feature-desc">Gestiona tu inventario de materiales con alertas de stock bajo y valorización automática.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-tractor"></i></div>
+                    <h4 class="feature-title">Gestión de Maquinarias</h4>
+                    <p class="feature-desc">Controla maquinarias pesadas con estados, mantenimiento y disponibilidad en tiempo real.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-tools"></i></div>
+                    <h4 class="feature-title">Control de Herramientas</h4>
+                    <p class="feature-desc">Administra herramientas con seguimiento de cantidad, estado y asignación a obras.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+                    <h4 class="feature-title">Reportes Avanzados</h4>
+                    <p class="feature-desc">Obtén estadísticas detalladas y exporta reportes en Excel con datos completos.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-users-cog"></i></div>
+                    <h4 class="feature-title">Sistema de Roles</h4>
+                    <p class="feature-desc">Permisos completos para administradores, constructores, vendedores y clientes.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <h4 class="feature-title">Diseño Responsive</h4>
+                    <p class="feature-desc">Accede desde cualquier dispositivo: PC, tablet o móvil con diseño adaptativo.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h4 class="feature-title">Seguridad Total</h4>
+                    <p class="feature-desc">Sistema seguro con autenticación, encriptación y respaldo de datos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="footer-logo">SISTEMA DE GESTIÓN EN PRESUPUESTOS PARA OBRAS CIVILES - L.u.M.a</div>
+                    <p class="footer-text">
+                        Plataforma profesional para la gestión integral de obras civiles y presupuestos en Paraguay. 
+                        Desarrollado con tecnología de vanguardia para optimizar tus procesos constructivos.
+                    </p>
+                </div>
+                <div class="col-lg-3">
+                    <h5 class="mb-4">Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'login' %}" class="text-light text-decoration-none">Iniciar Sesión</a></li>
+                        <li class="mb-2"><a href="{% url 'registro' %}" class="text-light text-decoration-none">Registrarse</a></li>
+                        <li class="mb-2"><a href="{% url 'dashboard' %}" class="text-light text-decoration-none">Dashboard</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h5 class="mb-4">Contacto</h5>
+                    <div class="contact-item"><i class="fas fa-envelope me-2"></i> info@L.u.M.a_py.com</div>
+                    <div class="contact-item"><strong>Directora María Benítez:</strong><br><i class="fas fa-phone me-2"></i> +595 0983 713729</div>
+                    <div class="contact-item"><strong>Luis Mario Núñez</strong><br><small>Fundador y Creador L.u.M.a</small><br><i class="fas fa-phone me-2"></i> +595 0995 382417</div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>
+                    <span>© 2025 SISTEMA DE GESTIÓN OBRAS PY. Todos los Derechos Reservados.</span>
+                    <span>|</span>
+                    <span style="display:flex;align-items:center;gap:.5rem">
+                        Hecho Con L.u.M.a en Paraguay
+                        <img src="{% static 'images/py1.jpeg' %}" alt="Paraguay" onerror="this.style.display='none'">
+                    </span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

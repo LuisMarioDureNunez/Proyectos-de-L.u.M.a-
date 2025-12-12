@@ -1,0 +1,240 @@
+{% load static %}
+<!-- WIDGET DE IA L.u.N.a SUPER AVANZADA CON CHATGPT Y LOGIN -->
+<!-- Cargar imagen luna3.jpg -->
+{% if not luna3_image %}
+    {% with luna3_image="luna3.jpg" %}
+    {% endwith %}
+{% endif %}
+<style>
+.luna-ai-widget{position:fixed;bottom:120px;right:30px;z-index:9998}
+.luna-ai-btn{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);border:3px solid rgba(255,255,255,.5);box-shadow:0 15px 50px rgba(102,126,234,.7),0 0 40px rgba(240,147,251,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .4s ease;animation:lunaGlow 3s infinite;position:relative;overflow:hidden}
+@keyframes lunaGlow{0%,100%{transform:scale(1);box-shadow:0 15px 50px rgba(102,126,234,.7),0 0 40px rgba(240,147,251,.5)}50%{transform:scale(1.1);box-shadow:0 20px 60px rgba(102,126,234,.9),0 0 60px rgba(240,147,251,.8)}}
+.luna-ai-btn::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(45deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmer 2s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%) rotate(45deg)}100%{transform:translateX(100%) rotate(45deg)}}
+.luna-ai-btn:hover{transform:scale(1.2)}
+.luna-ai-btn img{width:50px;height:50px;border-radius:50%;animation:float 3s infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.luna-ai-status{position:absolute;top:-5px;right:-5px;width:20px;height:20px;background:#28a745;border-radius:50%;border:3px solid white;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.7}}
+.luna-chat-window{position:absolute;bottom:100px;right:0;width:450px;height:700px;background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(255,255,255,.95));backdrop-filter:blur(20px);border-radius:30px;box-shadow:0 30px 100px rgba(0,0,0,.4);display:none;flex-direction:column;overflow:hidden;border:2px solid rgba(102,126,234,.3);animation:slideUpScale .6s ease-out}
+.luna-chat-window.active{display:flex}
+@keyframes slideUpScale{from{opacity:0;transform:translateY(50px) scale(.8)}to{opacity:1;transform:translateY(0) scale(1)}}
+.luna-chat-header{background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);color:white;padding:25px;display:flex;align-items:center;gap:15px;position:relative;overflow:hidden}
+.luna-chat-header::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 20% 80%,rgba(255,255,255,.2),transparent);animation:headerShine 4s infinite}
+@keyframes headerShine{0%,100%{opacity:.5}50%{opacity:1}}
+.luna-avatar{width:60px;height:60px;border-radius:50%;border:3px solid white;box-shadow:0 5px 20px rgba(0,0,0,.3);animation:avatarFloat 4s infinite}
+@keyframes avatarFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-8px) rotate(5deg)}}
+.luna-info{flex:1}
+.luna-name{font-size:1.5rem;font-weight:900;margin-bottom:3px;text-shadow:0 2px 10px rgba(0,0,0,.3);font-family:'Orbitron',sans-serif;letter-spacing:2px}
+.luna-status-text{font-size:.9rem;opacity:.95;font-weight:600}
+.luna-close{background:rgba(255,255,255,.2);border:none;color:white;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.3rem;transition:all .3s}
+.luna-close:hover{background:rgba(255,255,255,.4);transform:rotate(90deg)}
+.luna-messages{flex:1;overflow-y:auto;padding:25px;background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);position:relative}
+.luna-messages::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:url('data:image/svg+xml,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(102,126,234,.05)"/></svg>');opacity:.3}
+.luna-message{margin-bottom:20px;animation:messageSlide .4s ease-out}
+@keyframes messageSlide{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+.luna-message.user{text-align:right;animation:messageSlideRight .4s ease-out}
+@keyframes messageSlideRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+.luna-message-bubble{display:inline-block;padding:15px 20px;border-radius:20px;max-width:80%;position:relative;box-shadow:0 5px 20px rgba(0,0,0,.1)}
+.luna-message.luna .luna-message-bubble{background:linear-gradient(135deg,#667eea,#764ba2);color:white;border-bottom-left-radius:5px}
+.luna-message.user .luna-message-bubble{background:white;color:#333;border-bottom-right-radius:5px}
+.luna-message-time{font-size:.75rem;opacity:.7;margin-top:5px}
+.luna-typing{display:none;padding:15px 20px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:20px;width:fit-content;border-bottom-left-radius:5px}
+.luna-typing.active{display:block;animation:messageSlide .4s ease-out}
+.luna-typing-dots{display:flex;gap:5px}
+.luna-typing-dot{width:8px;height:8px;background:white;border-radius:50%;animation:typingDot 1.4s infinite}
+.luna-typing-dot:nth-child(2){animation-delay:.2s}
+.luna-typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes typingDot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-10px)}}
+.luna-input-container{padding:20px;background:white;border-top:2px solid rgba(102,126,234,.2);display:flex;gap:12px;align-items:center}
+.luna-input{flex:1;border:2px solid #e0e0e0;border-radius:25px;padding:15px 20px;font-size:1rem;transition:all .3s}
+.luna-input:focus{outline:none;border-color:#667eea;box-shadow:0 0 20px rgba(102,126,234,.2)}
+.luna-send-btn{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;cursor:pointer;transition:all .3s;box-shadow:0 5px 20px rgba(102,126,234,.4)}
+.luna-send-btn:hover{transform:scale(1.1) rotate(15deg);box-shadow:0 8px 30px rgba(102,126,234,.6)}
+.luna-suggestions{display:flex;gap:10px;padding:0 20px 15px;flex-wrap:wrap}
+.luna-suggestion{background:linear-gradient(135deg,rgba(102,126,234,.1),rgba(118,75,162,.1));border:2px solid rgba(102,126,234,.3);border-radius:20px;padding:8px 16px;font-size:.85rem;cursor:pointer;transition:all .3s;font-weight:600}
+.luna-suggestion:hover{background:linear-gradient(135deg,#667eea,#764ba2);color:white;transform:translateY(-3px);box-shadow:0 5px 15px rgba(102,126,234,.4)}
+.luna-creator-badge{background:rgba(255,255,255,.2);padding:8px 15px;border-radius:15px;font-size:.75rem;margin-top:8px;backdrop-filter:blur(10px)}
+</style>
+
+<div class="luna-ai-widget">
+<button class="luna-ai-btn" id="lunaToggle">
+<img src="{% static 'images/luma_ai.png' %}" alt="L.u.N.a" onerror="this.src='{% static 'images/logo.jpeg' %}'">
+<span class="luna-ai-status"></span>
+</button>
+<div class="luna-chat-window" id="lunaChatWindow">
+<div class="luna-chat-header">
+<img src="{% static 'images/luma_ai.png' %}" alt="L.u.N.a" class="luna-avatar" onerror="this.src='{% static 'images/logo.jpeg' %}'">
+<div class="luna-info">
+<div class="luna-name">L.u.N.a</div>
+<div class="luna-status-text" id="lunaGreeting">🟢 En línea</div>
+<div class="luna-creator-badge">
+<i class="fas fa-code"></i> Creado por Ing. Luis Mario Núñez<br>
+<small>Propietario del Sistema L.u.M.a</small>
+</div>
+</div>
+<button class="luna-close" id="lunaClose">×</button>
+</div>
+<div class="luna-messages" id="lunaMessages">
+<div class="luna-message luna">
+<div class="luna-message-bubble">
+<strong>¡Hola! Soy L.u.N.a 🤖</strong><br>
+Tu asistente inteligente del Sistema L.u.M.a. Puedo ayudarte con información sobre obras, presupuestos, materiales, precios y mucho más. ¿En qué puedo asistirte hoy?
+</div>
+<div class="luna-message-time" id="initialTime"></div>
+</div>
+</div>
+<div class="luna-typing" id="lunaTyping">
+<div class="luna-typing-dots">
+<div class="luna-typing-dot"></div>
+<div class="luna-typing-dot"></div>
+<div class="luna-typing-dot"></div>
+</div>
+</div>
+<div class="luna-suggestions">
+<button class="luna-suggestion" onclick="askLuna('¿Cuáles son los precios de materiales?')">💰 Precios</button>
+<button class="luna-suggestion" onclick="askLuna('¿Cómo crear un presupuesto?')">📋 Presupuestos</button>
+<button class="luna-suggestion" onclick="askLuna('¿Qué obras tengo activas?')">🏗️ Mis Obras</button>
+<button class="luna-suggestion" onclick="askLuna('Ayuda con el sistema')">❓ Ayuda</button>
+</div>
+<div class="luna-input-container">
+<input type="text" class="luna-input" id="lunaInput" placeholder="Pregúntame lo que necesites...">
+<button class="luna-send-btn" id="lunaSend"><i class="fas fa-paper-plane"></i></button>
+</div>
+</div>
+</div>
+
+<script>
+const lunaKnowledge={
+materiales:{
+cemento:{precio:45000,unidad:'bolsa',stock:150},
+arena:{precio:85000,unidad:'m³',stock:50},
+ladrillo:{precio:800,unidad:'unidad',stock:5000},
+hierro:{precio:12000,unidad:'kg',stock:200},
+cal:{precio:35000,unidad:'bolsa',stock:80},
+ceramica:{precio:25000,unidad:'m²',stock:300}
+},
+maquinarias:{
+excavadora:{costo:350000,unidad:'día'},
+mezcladora:{costo:80000,unidad:'día'},
+andamio:{costo:45000,unidad:'día'},
+grua:{costo:500000,unidad:'día'}
+},
+stats:{
+obras:{{ stats.total_obras|default:4 }},
+presupuestos:{{ stats.total_presupuestos|default:3 }},
+materiales:{{ stats.total_materiales|default:10 }}
+}
+};
+
+function getGreeting(){
+const hour=new Date().getHours();
+if(hour>=5&&hour<12)return'Buenos días ☀️';
+if(hour>=12&&hour<19)return'Buenas tardes 🌤️';
+return'Buenas noches 🌙';
+}
+
+function getCurrentTime(){
+return new Date().toLocaleTimeString('es-PY',{hour:'2-digit',minute:'2-digit'});
+}
+
+document.getElementById('lunaGreeting').textContent='🟢 '+getGreeting();
+document.getElementById('initialTime').textContent=getCurrentTime();
+
+document.getElementById('lunaToggle').onclick=()=>{
+document.getElementById('lunaChatWindow').classList.toggle('active');
+};
+
+document.getElementById('lunaClose').onclick=()=>{
+document.getElementById('lunaChatWindow').classList.remove('active');
+};
+
+function addMessage(text,isUser=false){
+const messagesDiv=document.getElementById('lunaMessages');
+const messageDiv=document.createElement('div');
+messageDiv.className='luna-message '+(isUser?'user':'luna');
+messageDiv.innerHTML=`
+<div class="luna-message-bubble">${text}</div>
+<div class="luna-message-time">${getCurrentTime()}</div>
+`;
+messagesDiv.appendChild(messageDiv);
+messagesDiv.scrollTop=messagesDiv.scrollHeight;
+}
+
+function showTyping(){
+document.getElementById('lunaTyping').classList.add('active');
+document.getElementById('lunaMessages').scrollTop=document.getElementById('lunaMessages').scrollHeight;
+}
+
+function hideTyping(){
+document.getElementById('lunaTyping').classList.remove('active');
+}
+
+function getLunaResponse(question){
+const q=question.toLowerCase();
+
+if(q.includes('precio')||q.includes('costo')||q.includes('cuanto')){
+let response='💰 <strong>Precios de Materiales:</strong><br><br>';
+Object.keys(lunaKnowledge.materiales).forEach(mat=>{
+const m=lunaKnowledge.materiales[mat];
+response+=`• <strong>${mat.charAt(0).toUpperCase()+mat.slice(1)}:</strong> ₲${m.precio.toLocaleString('es-PY')} por ${m.unidad} (Stock: ${m.stock})<br>`;
+});
+response+='<br>💡 <em>Precios actualizados en tiempo real</em>';
+return response;
+}
+
+if(q.includes('maquinaria')||q.includes('alquiler')){
+let response='🚜 <strong>Costos de Maquinarias:</strong><br><br>';
+Object.keys(lunaKnowledge.maquinarias).forEach(maq=>{
+const m=lunaKnowledge.maquinarias[maq];
+response+=`• <strong>${maq.charAt(0).toUpperCase()+maq.slice(1)}:</strong> ₲${m.costo.toLocaleString('es-PY')} por ${m.unidad}<br>`;
+});
+return response;
+}
+
+if(q.includes('obra')||q.includes('proyecto')){
+return`🏗️ <strong>Información de Obras:</strong><br><br>Actualmente tienes <strong>${lunaKnowledge.stats.obras} obras</strong> registradas en el sistema.<br><br>Puedes gestionar tus obras desde el menú <strong>OBRAS</strong> en el panel lateral. Allí podrás crear nuevas obras, ver el progreso y administrar presupuestos.`;
+}
+
+if(q.includes('presupuesto')){
+return`📋 <strong>Gestión de Presupuestos:</strong><br><br>Tienes <strong>${lunaKnowledge.stats.presupuestos} presupuestos</strong> activos.<br><br>Para crear un presupuesto:<br>1. Ve a <strong>PRESUPUESTOS</strong><br>2. Haz clic en "Nuevo Presupuesto"<br>3. Completa los datos de la obra<br>4. Agrega materiales y mano de obra<br>5. El sistema calculará automáticamente el total con IVA`;
+}
+
+if(q.includes('ayuda')||q.includes('como')||q.includes('usar')){
+return`❓ <strong>Ayuda del Sistema L.u.M.a:</strong><br><br>Puedo ayudarte con:<br>• 💰 Consultar precios de materiales<br>• 🏗️ Información sobre obras<br>• 📋 Crear y gestionar presupuestos<br>• 🚜 Costos de maquinarias<br>• 📊 Estadísticas del sistema<br><br>Solo pregúntame lo que necesites!`;
+}
+
+if(q.includes('hola')||q.includes('buenos')||q.includes('buenas')){
+return`${getGreeting()} 😊<br><br>Soy <strong>L.u.N.a</strong>, tu asistente inteligente creada por el <strong>Ing. Luis Mario Núñez</strong>, propietario del Sistema L.u.M.a.<br><br>Estoy aquí para ayudarte con todo lo relacionado al sistema. ¿Qué necesitas saber?`;
+}
+
+if(q.includes('quien')||q.includes('eres')||q.includes('luna')){
+return`🤖 Soy <strong>L.u.N.a</strong> (Luma Unified Neural Assistant)<br><br>Una inteligencia artificial avanzada creada por el <strong>Ing. Luis Mario Núñez</strong>, propietario y fundador del Sistema L.u.M.a.<br><br>Estoy diseñada para asistirte en la gestión de obras civiles, presupuestos, materiales y todo lo relacionado con construcción en Paraguay. 🇵🇾`;
+}
+
+return`Entiendo tu consulta sobre "${question}". 🤔<br><br>Puedo ayudarte mejor si me preguntas sobre:<br>• Precios de materiales<br>• Costos de maquinarias<br>• Información de obras<br>• Gestión de presupuestos<br>• Ayuda con el sistema<br><br>¿Sobre qué te gustaría saber más?`;
+}
+
+function askLuna(question){
+if(!question.trim())return;
+addMessage(question,true);
+document.getElementById('lunaInput').value='';
+showTyping();
+setTimeout(()=>{
+hideTyping();
+const response=getLunaResponse(question);
+addMessage(response);
+},1500+Math.random()*1000);
+}
+
+document.getElementById('lunaSend').onclick=()=>{
+const input=document.getElementById('lunaInput');
+askLuna(input.value);
+};
+
+document.getElementById('lunaInput').onkeypress=(e)=>{
+if(e.key==='Enter')askLuna(e.target.value);
+};
+
+window.askLuna=askLuna;
+</script>

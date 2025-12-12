@@ -1,0 +1,514 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}📊 Dashboard - Mi Tienda Premium{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- HEADER DEL DASHBOARD -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="hero-section bg-gradient-primary text-white rounded-3 p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-5 fw-bold">
+                            <i class="fas fa-chart-line me-3"></i>Dashboard Analytics
+                        </h1>
+                        <p class="lead mb-0">Estadísticas y análisis en tiempo real de tu tienda</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="bg-white bg-opacity-25 rounded-3 p-3 d-inline-block">
+                            <h4 class="mb-0">{{ total_productos }}</h4>
+                            <small>Productos Totales</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESTADÍSTICAS PRINCIPALES -->
+    <div class="row mb-4">
+        <!-- Total Productos -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Productos
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_productos }}</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-success me-2">
+                                    <i class="fas fa-box"></i>
+                                </span>
+                                En inventario
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Categorías -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Categorías
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_categorias }}</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-success me-2">
+                                    <i class="fas fa-tags"></i>
+                                </span>
+                                Diferentes categorías
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tags fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Total -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Stock Total
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_stock }}</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-success me-2">
+                                    <i class="fas fa-warehouse"></i>
+                                </span>
+                                Unidades disponibles
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-warehouse fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Precio Promedio -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Precio Promedio
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ precio_promedio|floatformat:0 }} Gs.</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-success me-2">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </span>
+                                Por producto
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRÁFICOS PRINCIPALES -->
+    <div class="row mb-4">
+        <!-- Gráfico de Productos por Categoría -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-chart-pie me-2"></i>Productos por Categoría
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="categoriaPieChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-primary"></i> Distribución
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico de Estado del Stock -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-chart-bar me-2"></i>Estado del Stock
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar pt-4 pb-2">
+                        <canvas id="stockBarChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEGUNDA FILA DE GRÁFICOS -->
+    <div class="row mb-4">
+        <!-- Stock por Categoría -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="fas fa-chart-bar me-2"></i>Stock por Categoría
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar pt-4 pb-2">
+                        <canvas id="stockCategoriaChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Precios Promedio -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-chart-line me-2"></i>Precios Promedio por Categoría
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-line pt-4 pb-2">
+                        <canvas id="precioLineChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LISTAS DE PRODUCTOS -->
+    <div class="row">
+        <!-- Productos Más Caros -->
+        <div class="col-xl-4 col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 bg-gradient-danger text-white">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-crown me-2"></i>Productos Más Caros
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for producto in productos_mas_caros %}
+                        <div class="list-group-item d-flex align-items-center px-0">
+                            <div class="mr-3">
+                                <div class="icon-circle bg-danger">
+                                    <i class="fas fa-dollar-sign text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="small text-gray-500">{{ producto.categoria.nombre }}</div>
+                                {{ producto.nombre|truncatewords:3 }}
+                            </div>
+                            <div class="text-danger font-weight-bold">{{ producto.precio|floatformat:0 }} Gs.</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Productos Más Baratos -->
+        <div class="col-xl-4 col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 bg-gradient-success text-white">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-coins me-2"></i>Productos Más Baratos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for producto in productos_mas_baratos %}
+                        <div class="list-group-item d-flex align-items-center px-0">
+                            <div class="mr-3">
+                                <div class="icon-circle bg-success">
+                                    <i class="fas fa-coins text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="small text-gray-500">{{ producto.categoria.nombre }}</div>
+                                {{ producto.nombre|truncatewords:3 }}
+                            </div>
+                            <div class="text-success font-weight-bold">{{ producto.precio|floatformat:0 }} Gs.</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Últimos Productos -->
+        <div class="col-xl-4 col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 bg-gradient-info text-white">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-clock me-2"></i>Últimos Productos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for producto in ultimos_productos %}
+                        <div class="list-group-item d-flex align-items-center px-0">
+                            <div class="mr-3">
+                                <div class="icon-circle bg-info">
+                                    <i class="fas fa-box text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="small text-gray-500">{{ producto.categoria.nombre }}</div>
+                                {{ producto.nombre|truncatewords:3 }}
+                            </div>
+                            <div>
+                                <small class="text-muted">{{ producto.fecha_creacion|date:"d/m" }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #002395 0%, #FF6600 100%);
+}
+
+.border-start-primary { border-left: 4px solid #4e73df !important; }
+.border-start-success { border-left: 4px solid #1cc88a !important; }
+.border-start-info { border-left: 4px solid #36b9cc !important; }
+.border-start-warning { border-left: 4px solid #f6c23e !important; }
+
+.bg-gradient-primary { background: linear-gradient(135deg, #002395 0%, #FF6600 100%) !important; }
+.bg-gradient-danger { background: linear-gradient(135deg, #e74a3b 0%, #fd7e14 100%) !important; }
+.bg-gradient-success { background: linear-gradient(135deg, #1cc88a 0%, #28a745 100%) !important; }
+.bg-gradient-info { background: linear-gradient(135deg, #36b9cc 0%, #17a2b8 100%) !important; }
+
+.icon-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 50%;
+}
+
+.chart-pie, .chart-bar, .chart-line {
+    position: relative;
+    height: 20rem;
+}
+
+.card {
+    border: none;
+    border-radius: 0.75rem;
+}
+
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #eaecf4;
+    padding: 1rem 0;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+</style>
+
+<script>
+// Esperar a que el DOM esté cargado
+document.addEventListener('DOMContentLoaded', function() {
+    // Obtener datos de Django
+    const categorias = {{ categorias_nombres_json|safe }};
+    const productosTotales = {{ productos_totales_json|safe }};
+    const stockTotales = {{ stock_totales_json|safe }};
+    const preciosPromedio = {{ precios_promedio_json|safe }};
+    const stockLabels = {{ stock_labels_json|safe }};
+    const stockData = {{ stock_data_json|safe }};
+    const stockColors = {{ stock_colors_json|safe }};
+
+    // Colores para los gráficos
+    const backgroundColors = [
+        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
+        '#858796', '#5a5c69', '#6f42c1', '#e83e8c', '#fd7e14'
+    ];
+
+    // 1. Gráfico de Torta - Productos por Categoría
+    const pieCtx = document.getElementById('categoriaPieChart').getContext('2d');
+    new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+            labels: categorias,
+            datasets: [{
+                data: productosTotales,
+                backgroundColor: backgroundColors.slice(0, categorias.length),
+                hoverBackgroundColor: backgroundColors.slice(0, categorias.length),
+                hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }],
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                },
+                tooltip: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyColor: "#858796",
+                    titleColor: '#6e707e',
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} productos (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        },
+    });
+
+    // 2. Gráfico de Barras - Estado del Stock
+    const barCtx = document.getElementById('stockBarChart').getContext('2d');
+    new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: stockLabels,
+            datasets: [{
+                label: 'Cantidad de Productos',
+                data: stockData,
+                backgroundColor: stockColors,
+                borderColor: stockColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    // 3. Gráfico de Barras - Stock por Categoría
+    const stockCategoriaCtx = document.getElementById('stockCategoriaChart').getContext('2d');
+    new Chart(stockCategoriaCtx, {
+        type: 'bar',
+        data: {
+            labels: categorias,
+            datasets: [{
+                label: 'Stock Total',
+                data: stockTotales,
+                backgroundColor: '#36b9cc',
+                borderColor: '#2c9faf',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+
+    // 4. Gráfico de Líneas - Precios Promedio
+    const lineCtx = document.getElementById('precioLineChart').getContext('2d');
+    new Chart(lineCtx, {
+        type: 'line',
+        data: {
+            labels: categorias,
+            datasets: [{
+                label: 'Precio Promedio (Gs.)',
+                data: preciosPromedio,
+                backgroundColor: 'rgba(246, 194, 62, 0.1)',
+                borderColor: '#f6c23e',
+                borderWidth: 3,
+                pointBackgroundColor: '#f6c23e',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                tension: 0.3
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('es-PY') + ' Gs.';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Efectos de animación para las tarjetas
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 200);
+    });
+});
+</script>
+{% endblock %}

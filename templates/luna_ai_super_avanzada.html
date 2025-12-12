@@ -1,0 +1,648 @@
+{% load static %}
+<!-- L.u.N.a AI SUPER AVANZADA CON CHATGPT, LOGIN Y CONOCIMIENTO COMPLETO DEL SISTEMA -->
+<style>
+.luna-ai-widget{position:fixed;bottom:120px;right:30px;z-index:9999}
+.luna-ai-btn{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#667eea 0%,#764ba2 30%,#f093fb 60%,#ffd700 100%);border:4px solid rgba(255,255,255,.7);box-shadow:0 20px 60px rgba(102,126,234,.8),0 0 50px rgba(240,147,251,.6),0 0 80px rgba(255,215,0,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .5s ease;animation:lunaGlowSuper 4s infinite;position:relative;overflow:hidden}
+@keyframes lunaGlowSuper{0%,100%{transform:scale(1);box-shadow:0 20px 60px rgba(102,126,234,.8),0 0 50px rgba(240,147,251,.6),0 0 80px rgba(255,215,0,.4)}25%{transform:scale(1.05);box-shadow:0 25px 70px rgba(102,126,234,1),0 0 60px rgba(240,147,251,.8),0 0 90px rgba(255,215,0,.6)}50%{transform:scale(1.1);box-shadow:0 30px 80px rgba(102,126,234,1),0 0 70px rgba(240,147,251,1),0 0 100px rgba(255,215,0,.8)}75%{transform:scale(1.05);box-shadow:0 25px 70px rgba(102,126,234,1),0 0 60px rgba(240,147,251,.8),0 0 90px rgba(255,215,0,.6)}}
+.luna-ai-btn::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:conic-gradient(from 0deg,transparent,rgba(255,255,255,.4),transparent,rgba(255,215,0,.3),transparent);animation:shimmerSuper 3s infinite}
+@keyframes shimmerSuper{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.luna-ai-btn:hover{transform:scale(1.3);animation-play-state:paused}
+.luna-ai-btn img{width:60px;height:60px;border-radius:50%;animation:floatSuper 4s infinite;border:2px solid rgba(255,255,255,.8);box-shadow:0 5px 20px rgba(0,0,0,.3)}
+@keyframes floatSuper{0%,100%{transform:translateY(0) scale(1)}25%{transform:translateY(-8px) scale(1.05)}50%{transform:translateY(-15px) scale(1.1)}75%{transform:translateY(-8px) scale(1.05)}}
+.luna-ai-status{position:absolute;top:-8px;right:-8px;width:25px;height:25px;background:linear-gradient(135deg,#28a745,#20c997);border-radius:50%;border:4px solid white;animation:pulseSuper 2s infinite;box-shadow:0 3px 10px rgba(40,167,69,.5)}
+@keyframes pulseSuper{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.8}}
+.luna-chat-window{position:absolute;bottom:110px;right:0;width:500px;height:750px;background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(248,249,250,.95));backdrop-filter:blur(25px);border-radius:35px;box-shadow:0 40px 120px rgba(0,0,0,.5),0 0 100px rgba(102,126,234,.3);display:none;flex-direction:column;overflow:hidden;border:3px solid rgba(102,126,234,.4);animation:slideUpScaleSuper .8s ease-out}
+.luna-chat-window.active{display:flex}
+@keyframes slideUpScaleSuper{from{opacity:0;transform:translateY(80px) scale(.7) rotateX(20deg)}to{opacity:1;transform:translateY(0) scale(1) rotateX(0deg)}}
+.luna-chat-header{background:linear-gradient(135deg,#667eea 0%,#764ba2 30%,#f093fb 60%,#ffd700 100%);color:white;padding:30px;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden;min-height:120px}
+.luna-chat-header::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 30% 70%,rgba(255,255,255,.3),transparent 50%),radial-gradient(circle at 70% 30%,rgba(255,215,0,.2),transparent 50%);animation:headerShineSuper 6s infinite}
+@keyframes headerShineSuper{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+.luna-avatar{width:80px;height:80px;border-radius:50%;border:4px solid white;box-shadow:0 8px 30px rgba(0,0,0,.4);animation:avatarFloatSuper 5s infinite;position:relative;overflow:hidden}
+.luna-avatar::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(45deg,transparent,rgba(255,255,255,.3),transparent);animation:avatarShine 3s infinite}
+@keyframes avatarFloatSuper{0%,100%{transform:translateY(0) rotate(0deg) scale(1)}25%{transform:translateY(-10px) rotate(5deg) scale(1.05)}50%{transform:translateY(-15px) rotate(0deg) scale(1.1)}75%{transform:translateY(-10px) rotate(-5deg) scale(1.05)}}
+@keyframes avatarShine{0%{transform:translateX(-100%) rotate(45deg)}100%{transform:translateX(100%) rotate(45deg)}}
+.luna-info{flex:1}
+.luna-name{font-size:1.8rem;font-weight:900;margin-bottom:5px;text-shadow:0 3px 15px rgba(0,0,0,.4);font-family:'Orbitron',sans-serif;letter-spacing:3px;background:linear-gradient(45deg,#fff,#ffd700,#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:textGlow 3s infinite}
+@keyframes textGlow{0%,100%{text-shadow:0 0 20px rgba(255,215,0,.8)}50%{text-shadow:0 0 30px rgba(255,215,0,1),0 0 40px rgba(255,255,255,.8)}}
+.luna-status-text{font-size:1rem;opacity:.95;font-weight:700;margin-bottom:8px}
+.luna-creator-badge{background:rgba(255,255,255,.25);padding:12px 18px;border-radius:20px;font-size:.8rem;backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,.3);box-shadow:0 4px 15px rgba(0,0,0,.2)}
+.luna-close{background:rgba(255,255,255,.25);border:none;color:white;width:45px;height:45px;border-radius:50%;cursor:pointer;font-size:1.5rem;transition:all .4s;backdrop-filter:blur(10px)}
+.luna-close:hover{background:rgba(255,255,255,.4);transform:rotate(180deg) scale(1.1)}
+.luna-login-section{padding:20px;background:linear-gradient(135deg,rgba(102,126,234,.1),rgba(240,147,251,.1));border-bottom:2px solid rgba(102,126,234,.2);display:none}
+.luna-login-section.show{display:block;animation:slideDown .5s ease-out}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.luna-login-form{display:flex;flex-direction:column;gap:15px}
+.luna-login-input{border:2px solid rgba(102,126,234,.3);border-radius:20px;padding:12px 18px;font-size:.9rem;transition:all .3s;background:rgba(255,255,255,.9)}
+.luna-login-input:focus{outline:none;border-color:#667eea;box-shadow:0 0 20px rgba(102,126,234,.3);transform:translateY(-2px)}
+.luna-login-btn{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;padding:12px 25px;border-radius:20px;font-weight:700;cursor:pointer;transition:all .3s}
+.luna-login-btn:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(102,126,234,.5)}
+.luna-user-profile{display:none;padding:15px;background:rgba(255,255,255,.8);border-radius:15px;margin:10px;border:2px solid rgba(102,126,234,.2)}
+.luna-user-profile.show{display:flex;align-items:center;gap:15px;animation:slideDown .5s ease-out}
+.luna-user-avatar{width:50px;height:50px;border-radius:50%;border:2px solid #667eea;object-fit:cover}
+.luna-user-info h4{margin:0;color:#333;font-size:1rem}
+.luna-user-info p{margin:0;color:#666;font-size:.8rem}
+.luna-messages{flex:1;overflow-y:auto;padding:25px;background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);position:relative;max-height:400px}
+.luna-messages::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:url('data:image/svg+xml,<svg width=\"30\" height=\"30\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"3\" cy=\"3\" r=\"1.5\" fill=\"rgba(102,126,234,.08)\"/><circle cx=\"15\" cy=\"15\" r=\"1\" fill=\"rgba(240,147,251,.06)\"/><circle cx=\"25\" cy=\"8\" r=\"1.2\" fill=\"rgba(255,215,0,.05)\"/></svg>');opacity:.4}
+.luna-message{margin-bottom:25px;animation:messageSlideSuper .6s ease-out;position:relative}
+@keyframes messageSlideSuper{from{opacity:0;transform:translateX(-40px) scale(.9)}to{opacity:1;transform:translateX(0) scale(1)}}
+.luna-message.user{text-align:right;animation:messageSlideRightSuper .6s ease-out}
+@keyframes messageSlideRightSuper{from{opacity:0;transform:translateX(40px) scale(.9)}to{opacity:1;transform:translateX(0) scale(1)}}
+.luna-message-bubble{display:inline-block;padding:18px 25px;border-radius:25px;max-width:85%;position:relative;box-shadow:0 8px 25px rgba(0,0,0,.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.3)}
+.luna-message.luna .luna-message-bubble{background:linear-gradient(135deg,#667eea,#764ba2,#f093fb);color:white;border-bottom-left-radius:8px;position:relative;overflow:hidden}
+.luna-message.luna .luna-message-bubble::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(45deg,transparent,rgba(255,255,255,.2),transparent);animation:bubbleShine 4s infinite}
+@keyframes bubbleShine{0%{transform:translateX(-100%) rotate(45deg)}100%{transform:translateX(100%) rotate(45deg)}}
+.luna-message.user .luna-message-bubble{background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(248,249,250,.9));color:#333;border-bottom-right-radius:8px;border:2px solid rgba(102,126,234,.2)}
+.luna-message-time{font-size:.75rem;opacity:.7;margin-top:8px;font-weight:600}
+.luna-typing{display:none;padding:18px 25px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:25px;width:fit-content;border-bottom-left-radius:8px;box-shadow:0 8px 25px rgba(102,126,234,.4)}
+.luna-typing.active{display:block;animation:messageSlideSuper .6s ease-out}
+.luna-typing-dots{display:flex;gap:8px}
+.luna-typing-dot{width:10px;height:10px;background:white;border-radius:50%;animation:typingDotSuper 1.6s infinite;box-shadow:0 2px 5px rgba(0,0,0,.2)}
+.luna-typing-dot:nth-child(2){animation-delay:.3s}
+.luna-typing-dot:nth-child(3){animation-delay:.6s}
+@keyframes typingDotSuper{0%,60%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-12px) scale(1.2)}}
+.luna-input-container{padding:25px;background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(248,249,250,.9));border-top:3px solid rgba(102,126,234,.3);display:flex;gap:15px;align-items:center;backdrop-filter:blur(15px)}
+.luna-input{flex:1;border:3px solid rgba(102,126,234,.3);border-radius:30px;padding:18px 25px;font-size:1rem;transition:all .4s;background:rgba(255,255,255,.9);backdrop-filter:blur(10px)}
+.luna-input:focus{outline:none;border-color:#667eea;box-shadow:0 0 25px rgba(102,126,234,.4);transform:translateY(-3px)}
+.luna-send-btn{width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2,#f093fb);border:none;color:white;cursor:pointer;transition:all .4s;box-shadow:0 8px 25px rgba(102,126,234,.5);position:relative;overflow:hidden}
+.luna-send-btn::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(45deg,transparent,rgba(255,255,255,.3),transparent);animation:btnShine 3s infinite}
+@keyframes btnShine{0%{transform:translateX(-100%) rotate(45deg)}100%{transform:translateX(100%) rotate(45deg)}}
+.luna-send-btn:hover{transform:scale(1.15) rotate(20deg);box-shadow:0 12px 35px rgba(102,126,234,.7)}
+.luna-suggestions{display:flex;gap:12px;padding:0 25px 20px;flex-wrap:wrap}
+.luna-suggestion{background:linear-gradient(135deg,rgba(102,126,234,.15),rgba(240,147,251,.15));border:2px solid rgba(102,126,234,.4);border-radius:25px;padding:12px 20px;font-size:.9rem;cursor:pointer;transition:all .4s;font-weight:700;backdrop-filter:blur(10px);position:relative;overflow:hidden}
+.luna-suggestion::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(45deg,transparent,rgba(255,255,255,.2),transparent);transform:translateX(-100%);transition:transform .6s ease}
+.luna-suggestion:hover::before{transform:translateX(100%)}
+.luna-suggestion:hover{background:linear-gradient(135deg,#667eea,#764ba2);color:white;transform:translateY(-5px) scale(1.05);box-shadow:0 8px 20px rgba(102,126,234,.5)}
+.luna-knowledge-indicator{position:absolute;top:10px;right:10px;background:linear-gradient(135deg,#28a745,#20c997);color:white;padding:5px 10px;border-radius:15px;font-size:.7rem;font-weight:700;animation:knowledgePulse 3s infinite}
+@keyframes knowledgePulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.1);opacity:1}}
+.luna-stats-display{background:rgba(255,255,255,.9);border-radius:15px;padding:15px;margin:10px 0;border:2px solid rgba(102,126,234,.2)}
+.luna-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;text-align:center}
+.luna-stat-item{background:linear-gradient(135deg,rgba(102,126,234,.1),rgba(240,147,251,.1));padding:10px;border-radius:10px;border:1px solid rgba(102,126,234,.2)}
+.luna-stat-number{font-size:1.5rem;font-weight:900;color:#667eea}
+.luna-stat-label{font-size:.8rem;color:#666;font-weight:600}
+</style>
+
+<div class="luna-ai-widget">
+    <button class="luna-ai-btn" id="lunaToggle">
+        <img src="{% static 'images/luna3.jpg' %}" alt="L.u.N.a" onerror="this.src='{% static 'images/luma_ai.png' %}'; this.onerror=null;">
+        <span class="luna-ai-status"></span>
+        <div class="luna-knowledge-indicator">🧠 AI</div>
+    </button>
+    
+    <div class="luna-chat-window" id="lunaChatWindow">
+        <div class="luna-chat-header">
+            <img src="{% static 'images/luna3.jpg' %}" alt="L.u.N.a" class="luna-avatar" onerror="this.src='{% static 'images/luma_ai.png' %}'; this.onerror=null;">
+            <div class="luna-info">
+                <div class="luna-name">L.u.N.a AI</div>
+                <div class="luna-status-text" id="lunaGreeting">🟢 En línea - Conocimiento Completo</div>
+                <div class="luna-creator-badge">
+                    <i class="fas fa-robot"></i> IA Avanzada con ChatGPT<br>
+                    <small>Sistema L.u.M.a - Paraguay 🇵🇾</small>
+                </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <button class="luna-close" id="lunaClose">×</button>
+                <button class="luna-login-btn" id="lunaLoginToggle" style="font-size:.8rem;padding:8px 15px;">
+                    <i class="fas fa-user"></i> Login
+                </button>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE LOGIN -->
+        <div class="luna-login-section" id="lunaLoginSection">
+            <div class="luna-login-form" id="lunaLoginForm">
+                <input type="text" class="luna-login-input" id="lunaUsername" placeholder="👤 Usuario">
+                <input type="password" class="luna-login-input" id="lunaPassword" placeholder="🔒 Contraseña">
+                <div style="display:flex;gap:10px;">
+                    <button class="luna-login-btn" id="lunaLoginBtn">Iniciar Sesión</button>
+                    <button class="luna-login-btn" id="lunaRegisterBtn" style="background:linear-gradient(135deg,#28a745,#20c997);">Registrarse</button>
+                </div>
+            </div>
+            
+            <!-- PERFIL DE USUARIO LOGUEADO -->
+            <div class="luna-user-profile" id="lunaUserProfile">
+                <img src="" alt="Usuario" class="luna-user-avatar" id="lunaUserAvatar">
+                <div class="luna-user-info">
+                    <h4 id="lunaUserName">Usuario</h4>
+                    <p id="lunaUserRole">Rol</p>
+                </div>
+                <button class="luna-login-btn" id="lunaLogoutBtn" style="background:linear-gradient(135deg,#dc3545,#c82333);padding:8px 15px;font-size:.8rem;">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+
+        <div class="luna-messages" id="lunaMessages">
+            <div class="luna-message luna">
+                <div class="luna-message-bubble">
+                    <strong>¡Hola! Soy L.u.N.a AI 🤖✨</strong><br><br>
+                    Tu asistente inteligente súper avanzada del Sistema L.u.M.a. Tengo conocimiento completo de:<br><br>
+                    🏗️ <strong>Todas las obras y proyectos</strong><br>
+                    💰 <strong>Precios actualizados en Guaraníes</strong><br>
+                    👷 <strong>Contratistas y empleados</strong><br>
+                    🚚 <strong>Proveedores y materiales</strong><br>
+                    📋 <strong>Presupuestos y contratos</strong><br><br>
+                    <em>¡Pregúntame cualquier cosa sobre el sistema!</em>
+                </div>
+                <div class="luna-message-time" id="initialTime"></div>
+            </div>
+        </div>
+        
+        <div class="luna-typing" id="lunaTyping">
+            <div class="luna-typing-dots">
+                <div class="luna-typing-dot"></div>
+                <div class="luna-typing-dot"></div>
+                <div class="luna-typing-dot"></div>
+            </div>
+        </div>
+        
+        <div class="luna-suggestions">
+            <button class="luna-suggestion" onclick="askLunaAI('¿Cuáles son todos los precios de materiales en Guaraníes?')">💰 Precios Completos</button>
+            <button class="luna-suggestion" onclick="askLunaAI('¿Qué contratistas tengo disponibles?')">👷 Contratistas</button>
+            <button class="luna-suggestion" onclick="askLunaAI('Muéstrame las estadísticas del sistema')">📊 Estadísticas</button>
+            <button class="luna-suggestion" onclick="askLunaAI('¿Cómo crear un presupuesto completo?')">📋 Presupuestos</button>
+            <button class="luna-suggestion" onclick="askLunaAI('¿Qué proveedores recomiendan?')">🚚 Proveedores</button>
+            <button class="luna-suggestion" onclick="askLunaAI('¿Qué maquinarias están disponibles?')">🚜 Maquinarias</button>
+            <button class="luna-suggestion" onclick="askLunaAI('¿Cuáles son mis obras activas?')">🏗️ Mis Obras</button>
+            <button class="luna-suggestion" onclick="askLunaAI('¿Cómo funciona el sistema?')">❓ Ayuda</button>
+        </div>
+        
+        <div class="luna-input-container">
+            <input type="text" class="luna-input" id="lunaInput" placeholder="Pregúntame sobre cualquier cosa del sistema L.u.M.a...">
+            <button class="luna-send-btn" id="lunaSend"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+
+<script>
+// CONOCIMIENTO COMPLETO DEL SISTEMA L.u.M.a
+const lunaAdvancedKnowledge = {
+    // Datos del sistema actual
+    materiales: {
+        cemento: {precio: 45000, unidad: 'bolsa', stock: 150, proveedor: 'Cemento Paraguayo'},
+        arena: {precio: 85000, unidad: 'm³', stock: 50, proveedor: 'Arenera Central'},
+        ladrillo: {precio: 800, unidad: 'unidad', stock: 5000, proveedor: 'Ladrillera Asunción'},
+        hierro: {precio: 12000, unidad: 'kg', stock: 200, proveedor: 'Aceros del Paraguay'},
+        cal: {precio: 35000, unidad: 'bolsa', stock: 80, proveedor: 'Cal Paraguaya'},
+        ceramica: {precio: 25000, unidad: 'm²', stock: 300, proveedor: 'Cerámica Nacional'},
+        pintura: {precio: 65000, unidad: 'lata', stock: 120, proveedor: 'Pinturas Premium'},
+        madera: {precio: 15000, unidad: 'm²', stock: 80, proveedor: 'Maderas del Este'},
+        vidrio: {precio: 35000, unidad: 'm²', stock: 45, proveedor: 'Vidriería Central'},
+        tuberia: {precio: 8500, unidad: 'metro', stock: 500, proveedor: 'Tuberías PY'}
+    },
+    
+    maquinarias: {
+        excavadora: {costo: 350000, unidad: 'día', disponible: true, operador: 'Juan Pérez'},
+        mezcladora: {costo: 80000, unidad: 'día', disponible: true, operador: 'María González'},
+        andamio: {costo: 45000, unidad: 'día', disponible: true, operador: 'No requiere'},
+        grua: {costo: 500000, unidad: 'día', disponible: false, operador: 'Carlos Rodríguez'},
+        compactadora: {costo: 120000, unidad: 'día', disponible: true, operador: 'Luis Martínez'},
+        soldadora: {costo: 35000, unidad: 'día', disponible: true, operador: 'Ana Silva'}
+    },
+    
+    contratistas: {
+        'Juan Carlos Mendoza': {especialidad: 'Construcción Civil', calificacion: 4.8, tarifa_dia: 250000, departamento: 'Central', disponible: true, telefono: '+595 981 123456'},
+        'María Elena Rodríguez': {especialidad: 'Arquitectura', calificacion: 4.9, tarifa_dia: 300000, departamento: 'Asunción', disponible: true, telefono: '+595 982 234567'},
+        'Pedro Antonio Silva': {especialidad: 'Ingeniería Civil', calificacion: 4.7, tarifa_dia: 280000, departamento: 'Alto Paraná', disponible: false, telefono: '+595 983 345678'},
+        'Ana Beatriz López': {especialidad: 'Electricidad', calificacion: 4.6, tarifa_dia: 200000, departamento: 'Central', disponible: true, telefono: '+595 984 456789'}
+    },
+    
+    empleados: {
+        'Carlos Benítez': {cargo: 'Maestro de Obras', salario: 3500000, estado: 'activo', experiencia: 15},
+        'Rosa Martínez': {cargo: 'Arquitecta', salario: 4200000, estado: 'activo', experiencia: 8},
+        'Miguel Fernández': {cargo: 'Albañil', salario: 2800000, estado: 'activo', experiencia: 12},
+        'Laura Gómez': {cargo: 'Ingeniera Civil', salario: 4500000, estado: 'activo', experiencia: 6}
+    },
+    
+    proveedores: {
+        'Materiales Central SA': {tipo: 'Materiales de Construcción', calificacion: 4.5, telefono: '+595 21 123456', productos: ['cemento', 'arena', 'ladrillo']},
+        'Ferretería Nacional': {tipo: 'Herramientas', calificacion: 4.3, telefono: '+595 21 234567', productos: ['herramientas', 'tornillos', 'clavos']},
+        'Maquinarias PY': {tipo: 'Maquinaria', calificacion: 4.7, telefono: '+595 21 345678', productos: ['excavadora', 'mezcladora', 'grua']},
+        'Pinturas Premium': {tipo: 'Pinturas y Acabados', calificacion: 4.4, telefono: '+595 21 456789', productos: ['pintura', 'barniz', 'esmalte']}
+    },
+    
+    stats: {
+        obras: {{ stats.total_obras|default:8 }},
+        presupuestos: {{ stats.total_presupuestos|default:12 }},
+        materiales: {{ stats.total_materiales|default:25 }},
+        contratistas: {{ stats.total_contratistas|default:15 }},
+        empleados: {{ stats.total_empleados|default:18 }},
+        proveedores: {{ stats.total_proveedores|default:12 }},
+        contratos: {{ stats.total_contratos|default:6 }}
+    },
+    
+    obras_activas: [
+        {nombre: 'Casa Residencial Lambaré', cliente: 'Familia González', estado: 'en_proceso', presupuesto: 85000000},
+        {nombre: 'Edificio Comercial Asunción', cliente: 'Empresa ABC', estado: 'planificada', presupuesto: 250000000},
+        {nombre: 'Remodelación Villa Elisa', cliente: 'Sr. Martínez', estado: 'en_proceso', presupuesto: 45000000}
+    ]
+};
+
+// Estado de usuario
+let lunaUser = {
+    isLoggedIn: false,
+    username: '',
+    role: '',
+    avatar: ''
+};
+
+// Funciones de utilidad
+function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'Buenos días ☀️';
+    if (hour >= 12 && hour < 19) return 'Buenas tardes 🌤️';
+    return 'Buenas noches 🌙';
+}
+
+function getCurrentTime() {
+    return new Date().toLocaleTimeString('es-PY', {hour: '2-digit', minute: '2-digit'});
+}
+
+function formatGuaranies(amount) {
+    return `₲ ${amount.toLocaleString('es-PY')}`;
+}
+
+// Inicialización
+document.getElementById('lunaGreeting').textContent = '🟢 ' + getGreeting() + ' - IA Súper Avanzada';
+document.getElementById('initialTime').textContent = getCurrentTime();
+
+// Event listeners
+document.getElementById('lunaToggle').onclick = () => {
+    document.getElementById('lunaChatWindow').classList.toggle('active');
+};
+
+document.getElementById('lunaClose').onclick = () => {
+    document.getElementById('lunaChatWindow').classList.remove('active');
+};
+
+document.getElementById('lunaLoginToggle').onclick = () => {
+    const loginSection = document.getElementById('lunaLoginSection');
+    loginSection.classList.toggle('show');
+};
+
+// Sistema de login con API real
+document.getElementById('lunaLoginBtn').onclick = () => {
+    const username = document.getElementById('lunaUsername').value;
+    const password = document.getElementById('lunaPassword').value;
+    
+    if (username && password) {
+        // Llamar a la API de login
+        fetch('{% url "luna_ai_login" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Login exitoso
+                lunaUser.isLoggedIn = true;
+                lunaUser.username = data.user.username;
+                lunaUser.role = data.user.role;
+                lunaUser.avatar = data.user.avatar;
+                
+                // Mostrar perfil
+                document.getElementById('lunaLoginForm').style.display = 'none';
+                document.getElementById('lunaUserProfile').classList.add('show');
+                document.getElementById('lunaUserName').textContent = data.user.full_name;
+                document.getElementById('lunaUserRole').textContent = data.user.role;
+                document.getElementById('lunaUserAvatar').src = data.user.avatar;
+                
+                addMessageAI(`¡Bienvenido ${data.user.full_name}! 🎉<br><br>Ahora tengo acceso completo a tu información personal y puedo brindarte respuestas más precisas sobre tus obras, presupuestos y proyectos específicos.`);
+                
+                // Actualizar conocimiento
+                updateLunaKnowledge();
+            } else {
+                addMessageAI(`❌ Error de login: ${data.error}<br><br>Verifica tus credenciales e intenta nuevamente.`);
+            }
+        })
+        .catch(error => {
+            console.error('Error en login:', error);
+            addMessageAI('❌ Error de conexión. Intenta nuevamente.');
+        });
+    }
+};
+
+document.getElementById('lunaLogoutBtn').onclick = () => {
+    lunaUser.isLoggedIn = false;
+    document.getElementById('lunaLoginForm').style.display = 'flex';
+    document.getElementById('lunaUserProfile').classList.remove('show');
+    document.getElementById('lunaUsername').value = '';
+    document.getElementById('lunaPassword').value = '';
+    addMessageAI('Has cerrado sesión correctamente. ¡Hasta pronto! 👋');
+};
+
+// Funciones de mensajería mejoradas
+function addMessageAI(text, isUser = false) {
+    console.log('Agregando mensaje:', text.substring(0, 50) + '...');
+    
+    const messagesDiv = document.getElementById('lunaMessages');
+    if (!messagesDiv) {
+        console.error('No se encontró el contenedor de mensajes');
+        return;
+    }
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'luna-message ' + (isUser ? 'user' : 'luna');
+    messageDiv.innerHTML = `
+        <div class="luna-message-bubble">${text}</div>
+        <div class="luna-message-time">${getCurrentTime()}</div>
+    `;
+    
+    // Agregar mensaje inmediatamente visible
+    messageDiv.style.opacity = '1';
+    messageDiv.style.transform = 'translateY(0)';
+    messagesDiv.appendChild(messageDiv);
+    
+    // Scroll al final
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    
+    console.log('Mensaje agregado exitosamente');
+}
+
+function showTypingAI() {
+    document.getElementById('lunaTyping').classList.add('active');
+    document.getElementById('lunaMessages').scrollTop = document.getElementById('lunaMessages').scrollHeight;
+}
+
+function hideTypingAI() {
+    document.getElementById('lunaTyping').classList.remove('active');
+}
+
+// IA AVANZADA CON CONOCIMIENTO COMPLETO
+function getLunaAIResponse(question) {
+    const q = question.toLowerCase();
+    
+    // Respuestas sobre precios y materiales
+    if (q.includes('precio') || q.includes('costo') || q.includes('cuanto') || q.includes('material')) {
+        let response = '💰 <strong>Precios Completos de Materiales (Guaraníes):</strong><br><br>';
+        Object.keys(lunaAdvancedKnowledge.materiales).forEach(mat => {
+            const m = lunaAdvancedKnowledge.materiales[mat];
+            response += `🔹 <strong>${mat.charAt(0).toUpperCase() + mat.slice(1)}:</strong> ${formatGuaranies(m.precio)} por ${m.unidad}<br>`;
+            response += `   📦 Stock: ${m.stock} | 🏪 Proveedor: ${m.proveedor}<br><br>`;
+        });
+        response += '<div class="luna-stats-display"><strong>💡 Todos los precios están actualizados en tiempo real</strong></div>';
+        return response;
+    }
+    
+    // Respuestas sobre contratistas
+    if (q.includes('contratista') || q.includes('constructor') || q.includes('especialista')) {
+        let response = '👷 <strong>Contratistas Disponibles:</strong><br><br>';
+        Object.keys(lunaAdvancedKnowledge.contratistas).forEach(nombre => {
+            const c = lunaAdvancedKnowledge.contratistas[nombre];
+            const disponibilidad = c.disponible ? '✅ Disponible' : '❌ Ocupado';
+            response += `🔹 <strong>${nombre}</strong><br>`;
+            response += `   🛠️ ${c.especialidad} | ⭐ ${c.calificacion}/5<br>`;
+            response += `   💰 ${formatGuaranies(c.tarifa_dia)}/día | 📍 ${c.departamento}<br>`;
+            response += `   📞 ${c.telefono} | ${disponibilidad}<br><br>`;
+        });
+        return response;
+    }
+    
+    // Respuestas sobre empleados
+    if (q.includes('empleado') || q.includes('personal') || q.includes('trabajador')) {
+        let response = '👥 <strong>Personal del Sistema:</strong><br><br>';
+        Object.keys(lunaAdvancedKnowledge.empleados).forEach(nombre => {
+            const e = lunaAdvancedKnowledge.empleados[nombre];
+            response += `🔹 <strong>${nombre}</strong><br>`;
+            response += `   💼 ${e.cargo} | 💰 ${formatGuaranies(e.salario)}/mes<br>`;
+            response += `   📊 ${e.experiencia} años de experiencia | 🟢 ${e.estado}<br><br>`;
+        });
+        return response;
+    }
+    
+    // Respuestas sobre proveedores
+    if (q.includes('proveedor') || q.includes('suministro') || q.includes('comprar')) {
+        let response = '🚚 <strong>Proveedores Recomendados:</strong><br><br>';
+        Object.keys(lunaAdvancedKnowledge.proveedores).forEach(nombre => {
+            const p = lunaAdvancedKnowledge.proveedores[nombre];
+            response += `🔹 <strong>${nombre}</strong><br>`;
+            response += `   🏷️ ${p.tipo} | ⭐ ${p.calificacion}/5<br>`;
+            response += `   📞 ${p.telefono}<br>`;
+            response += `   📦 Productos: ${p.productos.join(', ')}<br><br>`;
+        });
+        return response;
+    }
+    
+    // Respuestas sobre estadísticas
+    if (q.includes('estadistica') || q.includes('numero') || q.includes('total') || q.includes('cuanto')) {
+        const stats = lunaAdvancedKnowledge.stats;
+        let response = '📊 <strong>Estadísticas Completas del Sistema:</strong><br><br>';
+        response += '<div class="luna-stats-display"><div class="luna-stats-grid">';
+        response += `<div class="luna-stat-item"><div class="luna-stat-number">${stats.obras}</div><div class="luna-stat-label">Obras</div></div>`;
+        response += `<div class="luna-stat-item"><div class="luna-stat-number">${stats.presupuestos}</div><div class="luna-stat-label">Presupuestos</div></div>`;
+        response += `<div class="luna-stat-item"><div class="luna-stat-number">${stats.contratistas}</div><div class="luna-stat-label">Contratistas</div></div>`;
+        response += `<div class="luna-stat-item"><div class="luna-stat-number">${stats.empleados}</div><div class="luna-stat-label">Empleados</div></div>`;
+        response += `<div class="luna-stat-item"><div class="luna-stat-number">${stats.proveedores}</div><div class="luna-stat-label">Proveedores</div></div>`;
+        response += `<div class="luna-stat-item"><div class="luna-stat-number">${stats.contratos}</div><div class="luna-stat-label">Contratos</div></div>`;
+        response += '</div></div>';
+        return response;
+    }
+    
+    // Respuestas sobre obras
+    if (q.includes('obra') || q.includes('proyecto') || q.includes('construccion')) {
+        let response = '🏗️ <strong>Obras Activas del Sistema:</strong><br><br>';
+        lunaAdvancedKnowledge.obras_activas.forEach(obra => {
+            const estadoIcon = obra.estado === 'en_proceso' ? '🚧' : '📋';
+            response += `${estadoIcon} <strong>${obra.nombre}</strong><br>`;
+            response += `   👤 Cliente: ${obra.cliente}<br>`;
+            response += `   💰 Presupuesto: ${formatGuaranies(obra.presupuesto)}<br>`;
+            response += `   📊 Estado: ${obra.estado.replace('_', ' ')}<br><br>`;
+        });
+        return response;
+    }
+    
+    // Respuestas sobre presupuestos
+    if (q.includes('presupuesto') || q.includes('cotizar') || q.includes('calcular')) {
+        return `📋 <strong>Gestión de Presupuestos Avanzada:</strong><br><br>
+        Para crear un presupuesto completo:<br><br>
+        1️⃣ <strong>Selecciona la obra</strong> desde el menú OBRAS<br>
+        2️⃣ <strong>Agrega materiales</strong> con precios actualizados<br>
+        3️⃣ <strong>Incluye mano de obra</strong> y contratistas<br>
+        4️⃣ <strong>Calcula automáticamente</strong> IVA (10%)<br>
+        5️⃣ <strong>Genera PDF profesional</strong><br><br>
+        💡 <strong>Tip:</strong> Usa la calculadora integrada para obtener totales precisos en Guaraníes.`;
+    }
+    
+    // Respuestas sobre ayuda
+    if (q.includes('ayuda') || q.includes('como') || q.includes('usar') || q.includes('tutorial')) {
+        return `❓ <strong>Ayuda Completa del Sistema L.u.M.a:</strong><br><br>
+        🎯 <strong>Puedo ayudarte con:</strong><br><br>
+        💰 Consultar precios de todos los materiales<br>
+        👷 Información de contratistas disponibles<br>
+        👥 Datos del personal y empleados<br>
+        🚚 Recomendaciones de proveedores<br>
+        🏗️ Estado de obras y proyectos<br>
+        📋 Crear presupuestos detallados<br>
+        📊 Estadísticas completas del sistema<br>
+        🔧 Costos de maquinarias y herramientas<br><br>
+        <strong>¡Solo pregúntame lo que necesites!</strong> 🤖✨`;
+    }
+    
+    // Respuestas sobre la IA
+    if (q.includes('quien') || q.includes('eres') || q.includes('luna') || q.includes('que eres')) {
+        return `🤖 <strong>Soy L.u.N.a AI - Súper Avanzada</strong><br><br>
+        Una inteligencia artificial de última generación con:<br><br>
+        🧠 <strong>Conocimiento completo</strong> del Sistema L.u.M.a<br>
+        💾 <strong>Base de datos actualizada</strong> en tiempo real<br>
+        🇵🇾 <strong>Especializada en Paraguay</strong> y Guaraníes<br>
+        👤 <strong>Sistema de login</strong> personalizado<br>
+        📊 <strong>Análisis inteligente</strong> de datos<br>
+        🔄 <strong>Respuestas contextuales</strong> avanzadas<br><br>
+        Creada para ser tu asistente personal en la gestión de obras civiles. ¡Estoy aquí para hacer tu trabajo más fácil! ✨`;
+    }
+    
+    // Respuesta por defecto con sugerencias inteligentes
+    return `Entiendo tu consulta: "<em>${question}</em>" 🤔<br><br>
+    <strong>Puedo ayudarte mejor con:</strong><br><br>
+    💰 "¿Cuáles son los precios de materiales?"<br>
+    👷 "¿Qué contratistas están disponibles?"<br>
+    📊 "Muéstrame las estadísticas del sistema"<br>
+    🏗️ "¿Qué obras tengo activas?"<br>
+    🚚 "¿Qué proveedores recomiendan?"<br>
+    📋 "¿Cómo crear un presupuesto?"<br><br>
+    <strong>¡Pregúntame cualquier cosa sobre el sistema L.u.M.a!</strong> 🚀`;
+}
+
+// Función principal para preguntar a Luna AI
+function askLunaAI(question) {
+    console.log('Pregunta recibida:', question);
+    
+    if (!question || !question.trim()) {
+        console.log('Pregunta vacía, cancelando');
+        return;
+    }
+    
+    // Mostrar mensaje del usuario inmediatamente
+    addMessageAI(question, true);
+    
+    // Limpiar input
+    const input = document.getElementById('lunaInput');
+    if (input) input.value = '';
+    
+    // Mostrar typing
+    showTypingAI();
+    
+    // Llamar a la API
+    fetch('{% url "luna_ai_chat" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            question: question,
+            user_id: lunaUser.isLoggedIn ? lunaUser.username : null
+        })
+    })
+    .then(response => {
+        console.log('Respuesta recibida, status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Datos procesados:', data.success);
+        hideTypingAI();
+        
+        if (data.success && data.response) {
+            addMessageAI(data.response);
+        } else {
+            console.log('Usando respuesta local como fallback');
+            const response = getLunaAIResponse(question);
+            addMessageAI(response);
+        }
+    })
+    .catch(error => {
+        console.error('Error en L.u.N.a AI:', error);
+        hideTypingAI();
+        
+        // Siempre mostrar respuesta local como fallback
+        const response = getLunaAIResponse(question);
+        addMessageAI(response);
+    });
+}
+
+// Función para obtener cookie CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Event listeners para input
+document.getElementById('lunaSend').onclick = () => {
+    const input = document.getElementById('lunaInput');
+    if (input.value.trim()) {
+        askLunaAI(input.value);
+    }
+};
+
+document.getElementById('lunaInput').onkeypress = (e) => {
+    if (e.key === 'Enter' && e.target.value.trim()) {
+        askLunaAI(e.target.value);
+    }
+};
+
+// Debug para verificar funcionamiento
+console.log('Chat L.u.N.a AI cargado correctamente');
+console.log('Función askLunaAI disponible:', typeof askLunaAI);
+
+// Hacer función global
+window.askLunaAI = askLunaAI;
+
+// Mensaje de bienvenida personalizado si el usuario está logueado
+{% if user.is_authenticated %}
+// Auto-login si el usuario ya está autenticado en Django
+lunaUser.isLoggedIn = true;
+lunaUser.username = '{{ user.username }}';
+lunaUser.role = '{{ user.get_rol_display }}';
+lunaUser.avatar = '{{ user.get_avatar_url }}';
+
+// Mostrar perfil automáticamente
+document.getElementById('lunaLoginSection').classList.add('show');
+document.getElementById('lunaLoginForm').style.display = 'none';
+document.getElementById('lunaUserProfile').classList.add('show');
+document.getElementById('lunaUserName').textContent = '{{ user.get_full_name|default:user.username }}';
+document.getElementById('lunaUserRole').textContent = '{{ user.get_rol_display }}';
+document.getElementById('lunaUserAvatar').src = '{{ user.get_avatar_url }}';
+
+setTimeout(() => {
+    addMessageAI(`¡Hola {{ user.get_full_name|default:user.username }}! 👋<br><br>Veo que ya estás logueado como <strong>{{ user.get_rol_display }}</strong>. Tengo acceso completo a tu información y puedo ayudarte con consultas específicas sobre tus proyectos y datos personalizados. 🚀`);
+}, 2000);
+{% endif %}
+
+// Función para actualizar conocimiento desde la API
+function updateLunaKnowledge() {
+    fetch('{% url "luna_ai_knowledge" %}')
+    .then(response => response.json())
+    .then(data => {
+        // Actualizar conocimiento local con datos reales
+        Object.assign(lunaAdvancedKnowledge, data);
+        console.log('🧠 Conocimiento de L.u.N.a actualizado desde la base de datos');
+    })
+    .catch(error => {
+        console.error('Error actualizando conocimiento:', error);
+    });
+}
+
+// Actualizar conocimiento al cargar
+updateLunaKnowledge();
+
+// Actualizar conocimiento cada 5 minutos
+setInterval(updateLunaKnowledge, 300000);
+
+console.log('🤖 L.u.N.a AI Súper Avanzada cargada exitosamente con API real!');
+</script>

@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}👁️ Vista Previa - Categorías - Mi Tienda Premium{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="hero-section bg-gradient-success text-white rounded-3 p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-5 fw-bold">
+                            <i class="fas fa-eye me-3"></i>Vista Previa - Categorías
+                        </h1>
+                        <p class="lead mb-0">Previsualización del reporte de categorías antes de descargar</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <a href="{% url 'exportar_datos' %}" class="btn btn-light btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATOS DE VISTA PREVIA -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-light py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 text-dark">
+                            <i class="fas fa-tags me-2"></i>Previsualización - Análisis por Categoría
+                        </h4>
+                        <div class="btn-group">
+                            <a href="{% url 'descargar_reporte' 'categorias' 'excel' %}" class="btn btn-success">
+                                <i class="fas fa-file-excel me-2"></i>Descargar Excel
+                            </a>
+                            <a href="{% url 'descargar_reporte' 'categorias' 'pdf' %}" class="btn btn-danger">
+                                <i class="fas fa-file-pdf me-2"></i>Descargar PDF
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Categoría</th>
+                                    <th>Total Productos</th>
+                                    <th>Stock Total</th>
+                                    <th>Precio Promedio</th>
+                                    <th>Productos con Stock Bajo</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for categoria in datos %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ categoria.nombre }}</strong>
+                                        {% if categoria.descripcion %}
+                                        <br>
+                                        <small class="text-muted">{{ categoria.descripcion }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary fs-6">{{ categoria.total_productos }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-success">{{ categoria.total_stock|default:0 }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-info fw-bold">
+                                            ${{ categoria.precio_promedio|default:0|floatformat:2 }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% with bajo_stock=categoria.productos.filter.stock__lt=10.count %}
+                                            {% if bajo_stock > 0 %}
+                                                <span class="badge bg-warning">{{ bajo_stock }}</span>
+                                            {% else %}
+                                                <span class="badge bg-success">0</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                    <td>
+                                        {% if categoria.total_productos > 0 %}
+                                            <span class="badge bg-success">Activa</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Vacía</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+                                        <h5>No hay categorías para mostrar</h5>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESUMEN ESTADÍSTICO -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Resumen Estadístico
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-2 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-primary bg-opacity-10">
+                                <h3 class="text-primary mb-1">{{ datos.count }}</h3>
+                                <small class="text-muted">Total Categorías</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-success bg-opacity-10">
+                                <h3 class="text-success mb-1">{{ total_productos }}</h3>
+                                <small class="text-muted">Total Productos</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-info bg-opacity-10">
+                                <h3 class="text-info mb-1">{{ stock_total }}</h3>
+                                <small class="text-muted">Stock Total</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-warning bg-opacity-10">
+                                <h3 class="text-warning mb-1">{{ categorias_activas }}</h3>
+                                <small class="text-muted">Categorías Activas</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-danger bg-opacity-10">
+                                <h3 class="text-danger mb-1">{{ categorias_vacias }}</h3>
+                                <small class="text-muted">Categorías Vacías</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-dark bg-opacity-10">
+                                <h3 class="text-dark mb-1">${{ precio_promedio|floatformat:2 }}</h3>
+                                <small class="text-muted">Precio Promedio</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+}
+
+.stat-card {
+    border-left: 4px solid;
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

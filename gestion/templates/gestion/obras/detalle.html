@@ -1,0 +1,260 @@
+<!-- gestion/templates/gestion/obras/detalle.html -->
+{% extends 'base.html' %}
+
+{% block title %}Detalle de Obra - {{ obra.nombre }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-building text-primary me-2"></i>
+                {{ obra.nombre }}
+            </h1>
+            <div class="btn-group">
+                <a href="{% url 'lista_obras' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Volver
+                </a>
+                {% if user.puede_gestionar_obras %}
+                <a href="{% url 'editar_obra' obra.id %}" class="btn btn-outline-primary">
+                    <i class="fas fa-edit me-1"></i>Editar
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Información Principal -->
+            <div class="col-lg-8 mb-4">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Información de la Obra
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Nombre:</strong>
+                                <p class="mb-0">{{ obra.nombre }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Estado:</strong>
+                                <p class="mb-0">
+                                    <span class="badge 
+                                        {% if obra.estado == 'finalizada' %}bg-success
+                                        {% elif obra.estado == 'en_proceso' %}bg-warning
+                                        {% elif obra.estado == 'planificada' %}bg-info
+                                        {% else %}bg-danger{% endif %}">
+                                        {{ obra.get_estado_display }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Ubicación:</strong>
+                                <p class="mb-0">{{ obra.ubicacion }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Cliente:</strong>
+                                <p class="mb-0">{{ obra.cliente.get_full_name|default:obra.cliente.username }}</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Fecha Inicio:</strong>
+                                <p class="mb-0">{{ obra.fecha_inicio|date:"d/m/Y" }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Fecha Fin Estimada:</strong>
+                                <p class="mb-0">{{ obra.fecha_fin_estimada|date:"d/m/Y" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Descripción:</strong>
+                            <p class="mb-0">{{ obra.descripcion|linebreaks }}</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Presupuesto Asignado:</strong>
+                                <p class="mb-0">
+                                    {% if obra.presupuesto_asignado %}
+                                    <span class="h5 text-success">${{ obra.presupuesto_asignado }}</span>
+                                    {% else %}
+                                    <span class="text-muted">Sin presupuesto asignado</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Duración Estimada:</strong>
+                                <p class="mb-0">
+                                    <span class="h5 text-primary">{{ obra.duracion_dias }} días</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Presupuestos Relacionados -->
+                <div class="card mt-4">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-file-invoice-dollar me-2"></i>
+                            Presupuestos Relacionados
+                        </h5>
+                        {% if user.rol == 'cliente' %}
+                        <a href="{% url 'solicitar_presupuesto' %}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i>Solicitar Presupuesto
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        {% if presupuestos %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Descripción</th>
+                                        <th>Total</th>
+                                        <th>Estado</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for presupuesto in presupuestos %}
+                                    <tr>
+                                        <td>
+                                            <small>{{ presupuesto.descripcion_servicios|truncatewords:8 }}</small>
+                                        </td>
+                                        <td>
+                                            <strong class="text-success">${{ presupuesto.total }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if presupuesto.estado == 'aceptado' %}bg-success
+                                                {% elif presupuesto.estado == 'rechazado' %}bg-danger
+                                                {% elif presupuesto.estado == 'solicitado' %}bg-warning
+                                                {% else %}bg-info{% endif %}">
+                                                {{ presupuesto.get_estado_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small>{{ presupuesto.fecha_creacion|date:"d/m/Y" }}</small>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'detalle_presupuesto' presupuesto.id %}" 
+                                               class="btn btn-sm btn-outline-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-file-invoice-dollar fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0">No hay presupuestos para esta obra</p>
+                            {% if user.rol == 'cliente' %}
+                            <a href="{% url 'solicitar_presupuesto' %}" class="btn btn-sm btn-primary mt-2">
+                                <i class="fas fa-plus me-1"></i>Solicitar Primer Presupuesto
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar con Información Adicional -->
+            <div class="col-lg-4 mb-4">
+                <!-- Estado de la Obra -->
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Progreso
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar 
+                                    {% if obra.estado == 'finalizada' %}bg-success
+                                    {% elif obra.estado == 'en_proceso' %}bg-warning
+                                    {% else %}bg-info{% endif %}" 
+                                    style="width: {{ obra.progreso_porcentaje }}%">
+                                    {{ obra.progreso_porcentaje }}%
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted">Progreso general de la obra</small>
+                    </div>
+                </div>
+
+                <!-- Información de Creación -->
+                <div class="card mt-4">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-history me-2"></i>
+                            Historial
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted">Creado por:</small>
+                            <p class="mb-0">{{ obra.creado_por.get_full_name|default:obra.creado_por.username }}</p>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Fecha creación:</small>
+                            <p class="mb-0">{{ obra.fecha_creacion|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        <div>
+                            <small class="text-muted">Última actualización:</small>
+                            <p class="mb-0">{{ obra.fecha_actualizacion|date:"d/m/Y H:i" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones Rápidas -->
+                <div class="card mt-4">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-bolt me-2"></i>
+                            Acciones
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            {% if user.rol == 'cliente' %}
+                            <a href="{% url 'solicitar_presupuesto' %}" class="btn btn-primary">
+                                <i class="fas fa-file-invoice-dollar me-1"></i>Solicitar Presupuesto
+                            </a>
+                            {% endif %}
+                            
+                            <a href="{% url 'lista_presupuestos' %}?obra={{ obra.id }}" class="btn btn-outline-info">
+                                <i class="fas fa-list me-1"></i>Ver Presupuestos
+                            </a>
+
+                            {% if user.puede_gestionar_obras %}
+                            <a href="{% url 'editar_obra' obra.id %}" class="btn btn-outline-warning">
+                                <i class="fas fa-edit me-1"></i>Editar Obra
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{
+  "name": "L.u.M.a - Sistema de Gestión de Obras Civiles Paraguay",
+  "short_name": "L.u.M.a",
+  "description": "Sistema completo de gestión para obras civiles, presupuestos y construcción en Paraguay",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#002395",
+  "theme_color": "#FF6600",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es-PY",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/static/images/logo.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/images/logo.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/images/gifluma.gif",
+      "sizes": "144x144",
+      "type": "image/gif",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Acceso rápido al dashboard principal",
+      "url": "/dashboard/",
+      "icons": [{ "src": "/static/images/logo.jpeg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Obras",
+      "short_name": "Obras",
+      "description": "Gestionar obras civiles",
+      "url": "/obras/",
+      "icons": [{ "src": "/static/images/logo.jpeg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Presupuestos",
+      "short_name": "Presupuestos",
+      "description": "Crear y gestionar presupuestos",
+      "url": "/presupuestos/",
+      "icons": [{ "src": "/static/images/logo.jpeg", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/static/images/logo.jpeg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ]
+}

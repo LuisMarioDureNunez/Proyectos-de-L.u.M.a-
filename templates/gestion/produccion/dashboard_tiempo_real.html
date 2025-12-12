@@ -1,0 +1,724 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}⏱️ Producción Tiempo Real - L.u.M.a{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.css" rel="stylesheet">
+<style>
+.tiempo-real-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 25px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.vista-selector {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(15px);
+    border-radius: 50px;
+    padding: 8px;
+    display: inline-flex;
+    gap: 5px;
+}
+
+.vista-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 40px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.vista-btn.active {
+    background: rgba(255,255,255,0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.produccion-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.4s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.produccion-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #FF6B35, #F7931E, #FFD23F);
+}
+
+.obra-progress {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-left: 4px solid #28a745;
+}
+
+.tiempo-real-badge {
+    background: linear-gradient(45deg, #ff4757, #ff3838);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.metric-realtime {
+    background: linear-gradient(135deg, #2ed573 0%, #1e90ff 100%);
+    border-radius: 15px;
+    padding: 25px;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-realtime::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.chart-container {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.empleado-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f1f3f4 100%);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-left: 4px solid #007bff;
+    transition: all 0.3s ease;
+}
+
+.empleado-card:hover {
+    transform: translateX(10px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.status-online {
+    width: 12px;
+    height: 12px;
+    background: #28a745;
+    border-radius: 50%;
+    display: inline-block;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.costo-display {
+    font-size: 2.5rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, #FF6B35, #F7931E);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.floating-icon {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.1;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- HERO CON SELECTOR DE TIEMPO -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tiempo-real-hero text-white position-relative">
+                <div class="floating-elements">
+                    <i class="fas fa-hammer floating-icon" style="top: 10%; left: 10%; animation-delay: 0s;"></i>
+                    <i class="fas fa-hard-hat floating-icon" style="top: 20%; right: 15%; animation-delay: 1s;"></i>
+                    <i class="fas fa-tools floating-icon" style="bottom: 20%; left: 20%; animation-delay: 2s;"></i>
+                    <i class="fas fa-building floating-icon" style="bottom: 10%; right: 10%; animation-delay: 3s;"></i>
+                </div>
+                
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-4 fw-bold mb-3">
+                            ⏱️ Producción en Tiempo Real
+                            <span class="tiempo-real-badge ms-3">LIVE</span>
+                        </h1>
+                        <p class="lead mb-4">
+                            Control total de todas las obras, contratistas y empleados
+                        </p>
+                        
+                        <!-- SELECTOR DE VISTAS TEMPORALES -->
+                        <div class="vista-selector">
+                            <button class="vista-btn active" data-periodo="hora">Hora</button>
+                            <button class="vista-btn" data-periodo="dia">Día</button>
+                            <button class="vista-btn" data-periodo="semana">Semana</button>
+                            <button class="vista-btn" data-periodo="quincena">Quincena</button>
+                            <button class="vista-btn" data-periodo="mes">Mes</button>
+                            <button class="vista-btn" data-periodo="año">Año</button>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 text-end">
+                        <div class="bg-white bg-opacity-20 rounded-3 p-4">
+                            <h2 class="mb-0" id="fecha-actual">--</h2>
+                            <h4 class="mb-0" id="hora-actual">--:--:--</h4>
+                            <small>Actualización en tiempo real</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MÉTRICAS EN TIEMPO REAL -->
+    <div class="row mb-4" id="metricas-container">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="metric-realtime">
+                <i class="fas fa-chart-line fa-3x mb-3"></i>
+                <h2 class="mb-0" id="produccion-actual">85%</h2>
+                <p class="mb-0">Producción Actual</p>
+                <small id="periodo-texto">Esta Hora</small>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="metric-realtime">
+                <i class="fas fa-users fa-3x mb-3"></i>
+                <h2 class="mb-0" id="empleados-activos">24</h2>
+                <p class="mb-0">Empleados Activos</p>
+                <small>En todas las obras</small>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="metric-realtime">
+                <i class="fas fa-building fa-3x mb-3"></i>
+                <h2 class="mb-0" id="obras-activas">5</h2>
+                <p class="mb-0">Obras en Proceso</p>
+                <small>Tiempo real</small>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="metric-realtime">
+                <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+                <div class="costo-display" id="costo-periodo">8.5M</div>
+                <p class="mb-0">Costo Total</p>
+                <small id="costo-periodo-texto">Esta Hora</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRÁFICOS Y DATOS -->
+    <div class="row">
+        <!-- GRÁFICO PRINCIPAL -->
+        <div class="col-xl-8 col-lg-7 mb-4">
+            <div class="chart-container">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold text-primary mb-0">
+                        <i class="fas fa-chart-area me-2"></i>
+                        Producción por <span id="grafico-periodo">Hora</span>
+                    </h4>
+                    <div class="text-end">
+                        <small class="text-muted">Última actualización: <span id="ultima-actualizacion">--:--</span></small>
+                    </div>
+                </div>
+                <canvas id="produccionChart" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- OBRAS EN TIEMPO REAL -->
+        <div class="col-xl-4 col-lg-5 mb-4">
+            <div class="produccion-card">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-primary mb-4">
+                        <i class="fas fa-building me-2"></i>
+                        Obras en Tiempo Real
+                    </h5>
+                    
+                    <div id="obras-tiempo-real">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EMPLEADOS Y CONTRATISTAS -->
+    <div class="row">
+        <!-- EMPLEADOS ACTIVOS -->
+        <div class="col-xl-6 col-lg-6 mb-4">
+            <div class="produccion-card">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-primary mb-4">
+                        <i class="fas fa-users me-2"></i>
+                        Empleados Activos
+                    </h5>
+                    
+                    <div id="empleados-lista">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTRATISTAS -->
+        <div class="col-xl-6 col-lg-6 mb-4">
+            <div class="produccion-card">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-primary mb-4">
+                        <i class="fas fa-hard-hat me-2"></i>
+                        Contratistas
+                    </h5>
+                    
+                    <div id="contratistas-lista">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COSTOS DETALLADOS -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="chart-container">
+                <h4 class="fw-bold text-primary mb-4">
+                    <i class="fas fa-calculator me-2"></i>
+                    Análisis de Costos por <span id="costos-periodo">Hora</span>
+                </h4>
+                <canvas id="costosChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script>
+class ProduccionTiempoReal {
+    constructor() {
+        this.periodoActual = 'hora';
+        this.charts = {};
+        this.intervalos = {};
+        this.init();
+    }
+
+    init() {
+        this.setupEventListeners();
+        this.iniciarReloj();
+        this.cargarDatos();
+        this.iniciarActualizacionAutomatica();
+    }
+
+    setupEventListeners() {
+        document.querySelectorAll('.vista-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.cambiarPeriodo(e.target.dataset.periodo);
+            });
+        });
+    }
+
+    cambiarPeriodo(periodo) {
+        this.periodoActual = periodo;
+        
+        // Actualizar botones
+        document.querySelectorAll('.vista-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-periodo="${periodo}"]`).classList.add('active');
+        
+        // Actualizar textos
+        document.getElementById('grafico-periodo').textContent = this.capitalize(periodo);
+        document.getElementById('costos-periodo').textContent = this.capitalize(periodo);
+        document.getElementById('periodo-texto').textContent = `Esta ${this.capitalize(periodo)}`;
+        document.getElementById('costo-periodo-texto').textContent = `Esta ${this.capitalize(periodo)}`;
+        
+        // Recargar datos
+        this.cargarDatos();
+    }
+
+    capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    iniciarReloj() {
+        const actualizarReloj = () => {
+            const ahora = new Date();
+            document.getElementById('fecha-actual').textContent = 
+                ahora.toLocaleDateString('es-PY', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            document.getElementById('hora-actual').textContent = 
+                ahora.toLocaleTimeString('es-PY');
+            document.getElementById('ultima-actualizacion').textContent = 
+                ahora.toLocaleTimeString('es-PY');
+        };
+        
+        actualizarReloj();
+        setInterval(actualizarReloj, 1000);
+    }
+
+    cargarDatos() {
+        this.cargarMetricas();
+        this.cargarGraficos();
+        this.cargarObras();
+        this.cargarEmpleados();
+        this.cargarContratistas();
+    }
+
+    cargarMetricas() {
+        const metricas = this.obtenerMetricasPorPeriodo(this.periodoActual);
+        
+        this.animarContador('produccion-actual', metricas.produccion);
+        this.animarContador('empleados-activos', metricas.empleados);
+        this.animarContador('obras-activas', metricas.obras);
+        
+        document.getElementById('costo-periodo').textContent = metricas.costo;
+    }
+
+    obtenerMetricasPorPeriodo(periodo) {
+        const datos = {
+            hora: { produccion: 85, empleados: 24, obras: 5, costo: '850K' },
+            dia: { produccion: 78, empleados: 32, obras: 7, costo: '8.5M' },
+            semana: { produccion: 82, empleados: 45, obras: 12, costo: '65M' },
+            quincena: { produccion: 79, empleados: 38, obras: 15, costo: '125M' },
+            mes: { produccion: 88, empleados: 52, obras: 18, costo: '280M' },
+            año: { produccion: 85, empleados: 48, obras: 156, costo: '3.2B' }
+        };
+        return datos[periodo] || datos.hora;
+    }
+
+    animarContador(elementId, target) {
+        const element = document.getElementById(elementId);
+        const current = parseInt(element.textContent) || 0;
+        const increment = (target - current) / 50;
+        let counter = current;
+        
+        const timer = setInterval(() => {
+            counter += increment;
+            if ((increment > 0 && counter >= target) || (increment < 0 && counter <= target)) {
+                counter = target;
+                clearInterval(timer);
+            }
+            element.textContent = Math.round(counter) + (elementId === 'produccion-actual' ? '%' : '');
+        }, 20);
+    }
+
+    cargarGraficos() {
+        this.crearGraficoProduccion();
+        this.crearGraficoCostos();
+    }
+
+    crearGraficoProduccion() {
+        const ctx = document.getElementById('produccionChart').getContext('2d');
+        
+        if (this.charts.produccion) {
+            this.charts.produccion.destroy();
+        }
+
+        const datos = this.obtenerDatosGrafico(this.periodoActual);
+        
+        this.charts.produccion = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: datos.labels,
+                datasets: [{
+                    label: 'Producción (%)',
+                    data: datos.produccion,
+                    borderColor: '#FF6B35',
+                    backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Empleados Activos',
+                    data: datos.empleados,
+                    borderColor: '#2ed573',
+                    backgroundColor: 'rgba(46, 213, 115, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        });
+    }
+
+    crearGraficoCostos() {
+        const ctx = document.getElementById('costosChart').getContext('2d');
+        
+        if (this.charts.costos) {
+            this.charts.costos.destroy();
+        }
+
+        const datos = this.obtenerDatosCostos(this.periodoActual);
+        
+        this.charts.costos = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: datos.labels,
+                datasets: [{
+                    label: 'Costos (Gs.)',
+                    data: datos.costos,
+                    backgroundColor: [
+                        'rgba(255, 107, 53, 0.8)',
+                        'rgba(46, 213, 115, 0.8)',
+                        'rgba(30, 144, 255, 0.8)',
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(220, 53, 69, 0.8)'
+                    ],
+                    borderColor: [
+                        '#FF6B35',
+                        '#2ed573',
+                        '#1e90ff',
+                        '#ffc107',
+                        '#dc3545'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                animation: {
+                    duration: 1500,
+                    easing: 'easeOutBounce'
+                }
+            }
+        });
+    }
+
+    obtenerDatosGrafico(periodo) {
+        const datos = {
+            hora: {
+                labels: ['14:00', '15:00', '16:00', '17:00', '18:00'],
+                produccion: [75, 82, 85, 88, 85],
+                empleados: [20, 22, 24, 26, 24]
+            },
+            dia: {
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'],
+                produccion: [78, 82, 85, 79, 88],
+                empleados: [28, 32, 35, 30, 34]
+            },
+            semana: {
+                labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+                produccion: [82, 85, 79, 88],
+                empleados: [42, 45, 38, 48]
+            },
+            mes: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May'],
+                produccion: [85, 78, 82, 88, 85],
+                empleados: [48, 45, 50, 52, 49]
+            },
+            año: {
+                labels: ['2020', '2021', '2022', '2023', '2024'],
+                produccion: [75, 78, 82, 85, 88],
+                empleados: [35, 40, 45, 48, 52]
+            }
+        };
+        return datos[periodo] || datos.hora;
+    }
+
+    obtenerDatosCostos(periodo) {
+        const datos = {
+            hora: {
+                labels: ['Materiales', 'Mano de Obra', 'Maquinaria', 'Transporte', 'Otros'],
+                costos: [350000, 280000, 150000, 50000, 20000]
+            },
+            dia: {
+                labels: ['Materiales', 'Mano de Obra', 'Maquinaria', 'Transporte', 'Otros'],
+                costos: [3500000, 2800000, 1500000, 500000, 200000]
+            },
+            mes: {
+                labels: ['Materiales', 'Mano de Obra', 'Maquinaria', 'Transporte', 'Otros'],
+                costos: [120000000, 85000000, 45000000, 20000000, 10000000]
+            }
+        };
+        return datos[periodo] || datos.hora;
+    }
+
+    cargarObras() {
+        const obras = [
+            { nombre: 'Casa Residencial Asunción', progreso: 65, empleados: 8, estado: 'activa' },
+            { nombre: 'Galpón Industrial Luque', progreso: 35, empleados: 12, estado: 'activa' },
+            { nombre: 'Edificio Comercial CDE', progreso: 78, empleados: 15, estado: 'activa' },
+            { nombre: 'Casa Familiar Lambaré', progreso: 22, empleados: 6, estado: 'iniciando' }
+        ];
+
+        const container = document.getElementById('obras-tiempo-real');
+        container.innerHTML = obras.map(obra => `
+            <div class="obra-progress">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold mb-0">${obra.nombre}</h6>
+                    <span class="badge bg-${obra.estado === 'activa' ? 'success' : 'warning'}">${obra.progreso}%</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                    <div class="progress-bar bg-gradient" style="width: ${obra.progreso}%"></div>
+                </div>
+                <small class="text-muted">
+                    <i class="fas fa-users me-1"></i>${obra.empleados} empleados
+                    <span class="status-online ms-2"></span>
+                </small>
+            </div>
+        `).join('');
+    }
+
+    cargarEmpleados() {
+        const empleados = [
+            { nombre: 'Juan Pérez', especialidad: 'Maestro Mayor', obra: 'Casa Asunción', horas: 8 },
+            { nombre: 'María González', especialidad: 'Electricista', obra: 'Galpón Luque', horas: 7.5 },
+            { nombre: 'Carlos Rodríguez', especialidad: 'Plomero', obra: 'Edificio CDE', horas: 8 },
+            { nombre: 'Ana Martínez', especialidad: 'Carpintera', obra: 'Casa Lambaré', horas: 6 }
+        ];
+
+        const container = document.getElementById('empleados-lista');
+        container.innerHTML = empleados.map(emp => `
+            <div class="empleado-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="fw-bold mb-1">${emp.nombre}</h6>
+                        <small class="text-muted">${emp.especialidad}</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-primary">${emp.horas}h</div>
+                        <small class="text-muted">${emp.obra}</small>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    cargarContratistas() {
+        const contratistas = [
+            { nombre: 'Constructora ABC', obras: 2, empleados: 15, eficiencia: 92 },
+            { nombre: 'Obras XYZ', obras: 1, empleados: 8, eficiencia: 88 },
+            { nombre: 'Construcciones 123', obras: 1, empleados: 12, eficiencia: 95 }
+        ];
+
+        const container = document.getElementById('contratistas-lista');
+        container.innerHTML = contratistas.map(cont => `
+            <div class="empleado-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="fw-bold mb-1">${cont.nombre}</h6>
+                        <small class="text-muted">${cont.obras} obras • ${cont.empleados} empleados</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-success">${cont.eficiencia}%</div>
+                        <small class="text-muted">Eficiencia</small>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    iniciarActualizacionAutomatica() {
+        // Actualizar cada 30 segundos
+        this.intervalos.metricas = setInterval(() => {
+            this.cargarMetricas();
+        }, 30000);
+
+        // Actualizar gráficos cada 2 minutos
+        this.intervalos.graficos = setInterval(() => {
+            this.cargarGraficos();
+        }, 120000);
+
+        // Actualizar listas cada minuto
+        this.intervalos.listas = setInterval(() => {
+            this.cargarObras();
+            this.cargarEmpleados();
+        }, 60000);
+    }
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    window.produccionTiempoReal = new ProduccionTiempoReal();
+});
+</script>
+{% endblock %}

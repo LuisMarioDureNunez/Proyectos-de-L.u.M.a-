@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instalar Mi Tienda Premium - PWA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .install-container {
+            max-width: 500px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .features {
+            text-align: left;
+            margin: 30px 0;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(10px);
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            width: 30px;
+            text-align: center;
+        }
+
+        .install-button {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            border: none;
+            border-radius: 50px;
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+            margin: 20px 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .install-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 184, 148, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .install-button.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+        }
+
+        .install-button.secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 12px 35px rgba(255, 255, 255, 0.2);
+        }
+
+        .device-instructions {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .device-instructions h3 {
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .step {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .step::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #ffd700;
+            color: #000;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .steps {
+            counter-reset: step-counter;
+        }
+
+        @media (max-width: 600px) {
+            .install-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .app-icon {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="install-container">
+        <img src="/static/icons/icon-192x192.png" alt="Mi Tienda Premium" class="app-icon">
+        
+        <h1>Mi Tienda Premium</h1>
+        <p class="subtitle">
+            Instala nuestra aplicación para una experiencia completa de gestión empresarial
+        </p>
+
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">📱</span>
+                <div>
+                    <strong>Acceso rápido</strong><br>
+                    <small>Icono en tu pantalla principal</small>
+                </div>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">⚡</span>
+                <div>
+                    <strong>Carga instantánea</strong><br>
+                    <small>Funciona sin conexión</small>
+                </div>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🔔</span>
+                <div>
+                    <strong>Notificaciones push</strong><br>
+                    <small>Mantente al día con tus obras</small>
+                </div>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">💾</span>
+                <div>
+                    <strong>Datos offline</strong><br>
+                    <small>Trabaja sin internet</small>
+                </div>
+            </div>
+        </div>
+
+        <button id="installButton" class="install-button" style="display: none;">
+            📱 Instalar Aplicación
+        </button>
+        
+        <a href="/dashboard/" class="install-button secondary">
+            🌐 Continuar en el navegador
+        </a>
+
+        <div class="device-instructions">
+            <h3>📋 Instrucciones de instalación manual:</h3>
+            
+            <div id="androidInstructions" style="display: none;">
+                <strong>📱 Android (Chrome):</strong>
+                <div class="steps">
+                    <div class="step">Toca el menú (⋮) en Chrome</div>
+                    <div class="step">Selecciona "Agregar a pantalla de inicio"</div>
+                    <div class="step">Confirma la instalación</div>
+                </div>
+            </div>
+
+            <div id="iosInstructions" style="display: none;">
+                <strong>🍎 iOS (Safari):</strong>
+                <div class="steps">
+                    <div class="step">Toca el botón compartir (□↗)</div>
+                    <div class="step">Selecciona "Agregar a pantalla de inicio"</div>
+                    <div class="step">Toca "Agregar"</div>
+                </div>
+            </div>
+
+            <div id="desktopInstructions" style="display: none;">
+                <strong>💻 Escritorio:</strong>
+                <div class="steps">
+                    <div class="step">Busca el icono de instalación en la barra de direcciones</div>
+                    <div class="step">Haz clic en "Instalar"</div>
+                    <div class="step">Confirma la instalación</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Detectar dispositivo y mostrar instrucciones apropiadas
+        function detectDevice() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            
+            if (/android/.test(userAgent)) {
+                document.getElementById('androidInstructions').style.display = 'block';
+            } else if (/iphone|ipad|ipod/.test(userAgent)) {
+                document.getElementById('iosInstructions').style.display = 'block';
+            } else {
+                document.getElementById('desktopInstructions').style.display = 'block';
+            }
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+
+        window.addEventListener('beforeinstallprompt', function(e) {
+            console.log('PWA instalable detectada');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Mostrar botón de instalación
+            installButton.style.display = 'inline-block';
+            
+            // Ocultar instrucciones manuales si hay prompt automático
+            document.querySelector('.device-instructions').style.display = 'none';
+        });
+
+        installButton.addEventListener('click', function() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                
+                deferredPrompt.userChoice.then(function(choiceResult) {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('Usuario instaló la PWA');
+                        
+                        // Redirigir al dashboard después de la instalación
+                        setTimeout(() => {
+                            window.location.href = '/dashboard/';
+                        }, 2000);
+                        
+                        // Mostrar mensaje de éxito
+                        installButton.innerHTML = '✅ ¡Instalado! Redirigiendo...';
+                        installButton.disabled = true;
+                        
+                    } else {
+                        console.log('Usuario canceló la instalación');
+                    }
+                    
+                    deferredPrompt = null;
+                });
+            }
+        });
+
+        // Detectar si ya está instalada
+        window.addEventListener('appinstalled', function() {
+            console.log('PWA instalada exitosamente');
+            
+            // Redirigir al dashboard
+            setTimeout(() => {
+                window.location.href = '/dashboard/';
+            }, 1000);
+        });
+
+        // Detectar modo standalone
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            // Ya está instalada, redirigir
+            window.location.href = '/dashboard/';
+        }
+
+        // Inicializar
+        detectDevice();
+
+        // Auto-redirigir después de 30 segundos si no se instala
+        setTimeout(() => {
+            if (!window.matchMedia('(display-mode: standalone)').matches) {
+                window.location.href = '/dashboard/';
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

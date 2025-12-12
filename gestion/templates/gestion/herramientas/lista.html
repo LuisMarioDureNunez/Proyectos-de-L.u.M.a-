@@ -1,0 +1,162 @@
+<!-- gestion/templates/gestion/herramientas/lista.html -->
+{% extends 'base.html' %}
+
+{% block title %}Herramientas - Sistema de Gestión{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-tools text-danger me-2"></i>
+                Gestión de Herramientas
+            </h1>
+            <a href="{% url 'nueva_herramienta' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Nueva Herramienta
+            </a>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" name="q" value="{{ query }}" 
+                               class="form-control search-box" placeholder="Buscar herramientas...">
+                    </div>
+                    <div class="col-md-4">
+                        <select name="estado" class="form-select">
+                            <option value="">Todos los estados</option>
+                            <option value="disponible" {% if estado_filter == 'disponible' %}selected{% endif %}>Disponible</option>
+                            <option value="en_uso" {% if estado_filter == 'en_uso' %}selected{% endif %}>En Uso</option>
+                            <option value="mantenimiento" {% if estado_filter == 'mantenimiento' %}selected{% endif %}>En Mantenimiento</option>
+                            <option value="perdida" {% if estado_filter == 'perdida' %}selected{% endif %}>Perdida</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-search me-1"></i>Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista -->
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Lista de Herramientas ({{ herramientas.count }})
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% if herramientas %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th>Disponibilidad</th>
+                                <th>Fecha Creación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for herramienta in herramientas %}
+                            <tr>
+                                <td>
+                                    <strong>{{ herramienta.nombre }}</strong>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ herramienta.descripcion|truncatewords:8 }}</small>
+                                </td>
+                                <td>
+                                    {% if herramienta.estado == 'disponible' %}
+                                    <span class="badge bg-success">{{ herramienta.get_estado_display }}</span>
+                                    {% elif herramienta.estado == 'en_uso' %}
+                                    <span class="badge bg-info">{{ herramienta.get_estado_display }}</span>
+                                    {% elif herramienta.estado == 'mantenimiento' %}
+                                    <span class="badge bg-warning">{{ herramienta.get_estado_display }}</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">{{ herramienta.get_estado_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="fw-bold">{{ herramienta.cantidad_disponible }}/{{ herramienta.cantidad_total }}</span>
+                                    <small class="text-muted">disponibles</small>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ herramienta.fecha_creacion|date:"d/m/Y" }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'editar_herramienta' herramienta.id %}" 
+                                           class="btn btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'eliminar_herramienta' herramienta.id %}" 
+                                           class="btn btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-tools fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No se encontraron herramientas</h4>
+                    <a href="{% url 'nueva_herramienta' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Agregar Primera Herramienta
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        {% if herramientas %}
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center py-3">
+                        <h4 class="mb-0">{{ total_herramientas }}</h4>
+                        <small>Total Herramientas</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center py-3">
+                        <h4 class="mb-0">{{ disponibles }}</h4>
+                        <small>Disponibles</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center py-3">
+                        <h4 class="mb-0">{{ en_uso }}</h4>
+                        <small>En Uso</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center py-3">
+                        <h4 class="mb-0">{{ en_mantenimiento }}</h4>
+                        <small>En Mantenimiento</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

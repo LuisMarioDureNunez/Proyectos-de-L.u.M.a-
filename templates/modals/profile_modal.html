@@ -1,0 +1,42 @@
+<!-- Modal para mostrar imagen de perfil -->
+<div class="modal fade" id="navbarProfileModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="background: rgba(0,0,0,0.95); border: none; border-radius: 20px;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-white d-flex align-items-center">
+                    <i class="fas fa-user-circle me-2 text-primary"></i>
+                    Avatar de {{ user.username|upper }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div class="position-relative d-inline-block">
+                    <img id="navbarModalImage" src="" alt="Foto de Perfil" 
+                         class="img-fluid" 
+                         style="max-height: 70vh; border-radius: 20px; box-shadow: 0 20px 60px rgba(255,255,255,0.2); border: 3px solid rgba(255,255,255,0.3);">
+                    <div class="position-absolute bottom-0 start-0 end-0 p-3" 
+                         style="background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 20px 20px;">
+                        <h6 class="text-white mb-1">{{ user.get_full_name|default:user.username }}</h6>
+                        <small class="text-muted">
+                            {% if user.es_administrador %}
+                            👑 Administrador
+                            {% elif user.rol == 'constructor' %}
+                            👷 Constructor  
+                            {% elif user.rol == 'vendedor' %}
+                            💰 Vendedor
+                            {% else %}
+                            👤 Cliente
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-calendar me-1"></i>
+                        Miembro desde {{ user.date_joined|date:"d/m/Y" }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

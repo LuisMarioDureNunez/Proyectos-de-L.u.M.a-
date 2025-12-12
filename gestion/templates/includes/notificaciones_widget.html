@@ -1,0 +1,312 @@
+<!-- Widget de Notificaciones en Tiempo Real -->
+<style>
+.notification-bell {
+    position: relative;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #6b7280;
+    transition: all 0.3s;
+}
+.notification-bell:hover {
+    color: #3b82f6;
+    transform: scale(1.1);
+}
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+.notification-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 350px;
+    max-height: 500px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    display: none;
+    z-index: 1000;
+    overflow: hidden;
+}
+.notification-dropdown.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.notification-header {
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+}
+.notification-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f3f4f6;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.notification-item:hover {
+    background: #f9fafb;
+}
+.notification-item.unread {
+    background: #eff6ff;
+}
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-right: 15px;
+}
+.notification-content {
+    flex: 1;
+}
+.notification-title {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 5px;
+}
+.notification-text {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+.notification-time {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin-top: 5px;
+}
+.notification-footer {
+    padding: 10px 20px;
+    text-align: center;
+    border-top: 1px solid #f3f4f6;
+}
+.notification-footer a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+</style>
+
+<div class="notification-container" style="position: relative;">
+    <div class="notification-bell" id="notificationBell">
+        <i class="fas fa-bell"></i>
+        <span class="notification-badge" id="notificationCount">0</span>
+    </div>
+    
+    <div class="notification-dropdown" id="notificationDropdown">
+        <div class="notification-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>🔔 Notificaciones</span>
+                <button class="btn btn-sm btn-light" onclick="marcarTodasLeidas()">
+                    Marcar todas como leídas
+                </button>
+            </div>
+        </div>
+        
+        <div class="notification-list" id="notificationList" style="max-height: 400px; overflow-y: auto;">
+            <!-- Las notificaciones se cargarán aquí -->
+        </div>
+        
+        <div class="notification-footer">
+            <a href="{% url 'lista_notificaciones' %}">Ver todas las notificaciones</a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Sistema de Notificaciones en Tiempo Real
+class NotificationSystem {
+    constructor() {
+        this.notifications = [];
+        this.unreadCount = 0;
+        this.init();
+    }
+
+    init() {
+        this.loadNotifications();
+        this.setupEventListeners();
+        this.startPolling();
+    }
+
+    setupEventListeners() {
+        const bell = document.getElementById('notificationBell');
+        const dropdown = document.getElementById('notificationDropdown');
+        
+        bell.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target) && !bell.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    }
+
+    async loadNotifications() {
+        try {
+            // Simulación de carga de notificaciones
+            // En producción, esto sería una llamada AJAX al servidor
+            this.notifications = [
+                {
+                    id: 1,
+                    type: 'presupuesto',
+                    icon: '💰',
+                    color: '#10b981',
+                    title: 'Nuevo Presupuesto',
+                    text: 'Se ha creado un presupuesto para la obra "Casa Lambaré"',
+                    time: 'Hace 5 minutos',
+                    unread: true
+                },
+                {
+                    id: 2,
+                    type: 'stock',
+                    icon: '⚠️',
+                    color: '#f59e0b',
+                    title: 'Stock Bajo',
+                    text: 'El cemento tiene stock bajo (5 unidades)',
+                    time: 'Hace 15 minutos',
+                    unread: true
+                },
+                {
+                    id: 3,
+                    type: 'obra',
+                    icon: '🏗️',
+                    color: '#3b82f6',
+                    title: 'Obra Actualizada',
+                    text: 'La obra "Edificio Central" cambió a estado "En Proceso"',
+                    time: 'Hace 1 hora',
+                    unread: false
+                }
+            ];
+            
+            this.updateUI();
+        } catch (error) {
+            console.error('Error cargando notificaciones:', error);
+        }
+    }
+
+    updateUI() {
+        this.unreadCount = this.notifications.filter(n => n.unread).length;
+        document.getElementById('notificationCount').textContent = this.unreadCount;
+        
+        const list = document.getElementById('notificationList');
+        list.innerHTML = this.notifications.map(n => this.renderNotification(n)).join('');
+    }
+
+    renderNotification(notification) {
+        return `
+            <div class="notification-item ${notification.unread ? 'unread' : ''}" 
+                 onclick="notificationSystem.markAsRead(${notification.id})">
+                <div class="d-flex">
+                    <div class="notification-icon" style="background: ${notification.color}20; color: ${notification.color};">
+                        ${notification.icon}
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">${notification.title}</div>
+                        <div class="notification-text">${notification.text}</div>
+                        <div class="notification-time">${notification.time}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    markAsRead(id) {
+        const notification = this.notifications.find(n => n.id === id);
+        if (notification) {
+            notification.unread = false;
+            this.updateUI();
+        }
+    }
+
+    addNotification(notification) {
+        this.notifications.unshift(notification);
+        this.updateUI();
+        this.showToast(notification);
+    }
+
+    showToast(notification) {
+        // Mostrar notificación toast
+        const toast = document.createElement('div');
+        toast.className = 'notification-toast';
+        toast.innerHTML = `
+            <div style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); margin: 10px;">
+                <div style="display: flex; align-items: center;">
+                    <span style="font-size: 1.5rem; margin-right: 10px;">${notification.icon}</span>
+                    <div>
+                        <strong>${notification.title}</strong>
+                        <div style="font-size: 0.9rem; color: #6b7280;">${notification.text}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 5000);
+    }
+
+    startPolling() {
+        // Polling cada 30 segundos para nuevas notificaciones
+        setInterval(() => {
+            this.checkNewNotifications();
+        }, 30000);
+    }
+
+    async checkNewNotifications() {
+        // Aquí harías una llamada AJAX al servidor
+        console.log('Verificando nuevas notificaciones...');
+    }
+}
+
+// Inicializar sistema de notificaciones
+const notificationSystem = new NotificationSystem();
+
+function marcarTodasLeidas() {
+    notificationSystem.notifications.forEach(n => n.unread = false);
+    notificationSystem.updateUI();
+}
+
+// Ejemplo de cómo agregar una notificación
+function agregarNotificacionEjemplo() {
+    notificationSystem.addNotification({
+        id: Date.now(),
+        type: 'test',
+        icon: '🎉',
+        color: '#8b5cf6',
+        title: 'Notificación de Prueba',
+        text: 'Esta es una notificación de ejemplo',
+        time: 'Ahora',
+        unread: true
+    });
+}
+</script>

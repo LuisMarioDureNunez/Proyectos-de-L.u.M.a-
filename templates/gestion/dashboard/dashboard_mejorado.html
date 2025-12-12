@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load paraguay_filters %}
+
+{% block title %}Dashboard - LUMA Paraguay{% endblock %}
+
+{% block extra_css %}
+<style>
+.card-premium{animation:cardFloat 3s ease-in-out infinite;position:relative}
+@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.guarani-counter{font-size:2.5rem;font-weight:900;background:linear-gradient(135deg,#28a745,#20c997);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 5px 20px rgba(40,167,69,.3)}
+.stat-icon{animation:iconRotate 4s infinite}
+@keyframes iconRotate{0%,100%{transform:rotateY(0)}50%{transform:rotateY(180deg)}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+<h1 style="font-size:3rem;font-weight:900;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:30px">📊 Dashboard Profesional</h1>
+
+<div class="row mb-4">
+<div class="col-md-3">
+<div class="card-premium success">
+<div class="card-body text-center">
+<div class="stat-icon">💰</div>
+<div class="guarani-counter">₲ <span class="counter" data-target="15000000">0</span></div>
+<p>Ingresos Totales</p>
+</div>
+</div>
+</div>
+<div class="col-md-3">
+<div class="card-premium warning">
+<div class="card-body text-center">
+<div class="stat-icon">🏗️</div>
+<h2>{{ stats.total_obras|default:1 }}</h2>
+<p>Obras Totales</p>
+</div>
+</div>
+</div>
+<div class="col-md-3">
+<div class="card-premium info">
+<div class="card-body text-center">
+<div class="stat-icon">📋</div>
+<h2>{{ stats.total_presupuestos|default:0 }}</h2>
+<p>Presupuestos</p>
+</div>
+</div>
+</div>
+<div class="col-md-3">
+<div class="card-premium primary">
+<div class="card-body text-center">
+<div class="stat-icon">🚧</div>
+<h2>{{ stats.obras_en_proceso|default:0 }}</h2>
+<p>En Proceso</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-6">
+<div class="card-premium">
+<div class="card-body">
+<h4>📈 Gráfico de Obras</h4>
+<canvas id="obrasChart" height="200"></canvas>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="card-premium">
+<div class="card-body">
+<h4>💵 Gráfico Financiero</h4>
+<canvas id="financieroChart" height="200"></canvas>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+function animateCounter(el,target){
+let current=0;
+const increment=target/50;
+const timer=setInterval(()=>{
+current+=increment;
+if(current>=target){
+el.textContent=Math.floor(target).toLocaleString('es-PY');
+clearInterval(timer);
+}else{
+el.textContent=Math.floor(current).toLocaleString('es-PY');
+}
+},30);
+}
+
+document.querySelectorAll('.counter').forEach(el=>{
+const target=parseInt(el.dataset.target);
+animateCounter(el,target);
+});
+
+new Chart(document.getElementById('obrasChart'),{
+type:'doughnut',
+data:{
+labels:['Planificadas','En Proceso','Finalizadas'],
+datasets:[{data:[1,{{ stats.obras_en_proceso|default:0 }},0],backgroundColor:['#17a2b8','#ffc107','#28a745']}]
+}
+});
+
+new Chart(document.getElementById('financieroChart'),{
+type:'bar',
+data:{
+labels:['Ingresos','Gastos','Utilidad'],
+datasets:[{data:[15000000,8000000,7000000],backgroundColor:['#28a745','#dc3545','#007bff']}]
+},
+options:{scales:{y:{ticks:{callback:v=>'₲ '+v.toLocaleString('es-PY')}}}}
+});
+</script>
+{% endblock %}

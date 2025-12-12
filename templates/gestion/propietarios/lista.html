@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}🏠 Propietarios - Gestión Avanzada{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --azul-francia: #002395;
+    --naranja: #FF6600;
+    --negro: #1a1a1a;
+}
+
+.propietarios-hero {
+    background: linear-gradient(135deg, var(--azul-francia) 0%, var(--naranja) 100%);
+    border-radius: 25px;
+    padding: 3rem;
+    color: white;
+}
+
+.propietario-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-right: 5px solid var(--azul-francia);
+    transition: all 0.4s ease;
+    position: relative;
+}
+
+.propietario-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--naranja), var(--azul-francia));
+    transform: scaleY(0);
+    transition: transform 0.4s ease;
+}
+
+.propietario-card:hover::before {
+    transform: scaleY(1);
+}
+
+.propietario-card:hover {
+    transform: translateX(10px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+
+.verificado-badge {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    animation: verified-pulse 2s infinite;
+}
+
+@keyframes verified-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.tipo-propietario {
+    background: linear-gradient(45deg, var(--negro), #495057);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+}
+
+.propiedades-count {
+    background: var(--naranja);
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin: 0 auto;
+}
+
+.stats-propietarios {
+    background: linear-gradient(135deg, var(--naranja) 0%, var(--azul-francia) 100%);
+    border-radius: 15px;
+    padding: 20px;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-propietarios::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    animation: ripple 3s infinite;
+}
+
+@keyframes ripple {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+}
+
+.cedula-display {
+    font-family: 'Courier New', monospace;
+    background: #f8f9fa;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.contacto-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.contacto-item {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="propietarios-hero">
+                <h1 class="display-4 fw-bold mb-3">🏠 Gestión de Propietarios</h1>
+                <p class="lead">Registro y control de propietarios de inmuebles</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-propietarios">
+                <i class="fas fa-users fa-3x mb-3"></i>
+                <h3>{{ stats.total_propietarios|default:0 }}</h3>
+                <p>Total Propietarios</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-propietarios">
+                <i class="fas fa-user-check fa-3x mb-3"></i>
+                <h3>{{ stats.verificados|default:0 }}</h3>
+                <p>Verificados</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-propietarios">
+                <i class="fas fa-home fa-3x mb-3"></i>
+                <h3>{{ stats.con_propiedades|default:0 }}</h3>
+                <p>Con Propiedades</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-propietarios">
+                <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                <h3>{{ stats.tipos.count|default:0 }}</h3>
+                <p>Tipos Diferentes</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for propietario in propietarios %}
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="propietario-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center mb-2">
+                            <h5 class="fw-bold text-primary mb-0 me-3">{{ propietario.nombre_completo }}</h5>
+                            {% if propietario.verificado %}
+                            <span class="verificado-badge">✓ Verificado</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="tipo-propietario mb-3">{{ propietario.get_tipo_propietario_display }}</div>
+                        
+                        <div class="cedula-display mb-2">
+                            <small class="text-muted">CI/RUC:</small> {{ propietario.cedula_ruc }}
+                        </div>
+                        
+                        <div class="contacto-grid">
+                            <div class="contacto-item">
+                                <i class="fas fa-phone text-success"></i>
+                                <small class="d-block">{{ propietario.telefono|default:"No registrado" }}</small>
+                            </div>
+                            <div class="contacto-item">
+                                <i class="fas fa-envelope text-info"></i>
+                                <small class="d-block">{{ propietario.email|default:"No registrado" }}</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                {{ propietario.get_departamento_display }}, {{ propietario.ciudad }}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 text-center">
+                        <div class="propiedades-count mb-3">
+                            {{ propietario.propiedades.count|default:0 }}
+                        </div>
+                        <small class="text-muted d-block mb-3">Propiedades</small>
+                        
+                        <small class="text-muted d-block mb-3">
+                            <i class="fas fa-calendar me-1"></i>
+                            Desde {{ propietario.fecha_registro|date:"M Y" }}
+                        </small>
+                        
+                        <div class="btn-group">
+                            <a href="{% url 'detalle_propietario' propietario.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button class="btn btn-sm btn-outline-warning">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-info">
+                                <i class="fas fa-home"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-users fa-5x text-muted mb-3"></i>
+            <h4 class="text-muted">No hay propietarios registrados</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<button class="floating-action" onclick="window.location.href='{% url 'nuevo_propietario' %}'">
+    <i class="fas fa-plus"></i>
+</button>
+{% endblock %}

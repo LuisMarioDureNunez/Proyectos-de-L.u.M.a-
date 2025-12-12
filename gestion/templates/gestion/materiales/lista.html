@@ -1,0 +1,175 @@
+<!-- gestion/templates/gestion/materiales/lista.html -->
+{% extends 'base.html' %}
+
+{% block title %}Materiales - Sistema de Gestión{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-bricks text-warning me-2"></i>
+                Gestión de Materiales
+            </h1>
+            <a href="{% url 'nuevo_material' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Nuevo Material
+            </a>
+        </div>
+
+        <!-- Filtros y Búsqueda -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" name="q" value="{{ query }}" 
+                               class="form-control search-box" placeholder="Buscar materiales...">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="stock" class="form-select">
+                            <option value="">Todos los stocks</option>
+                            <option value="bajo" {% if stock_filter == 'bajo' %}selected{% endif %}>Stock Bajo</option>
+                            <option value="sin_stock" {% if stock_filter == 'sin_stock' %}selected{% endif %}>Sin Stock</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-search me-1"></i>Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista de Materiales -->
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Lista de Materiales ({{ materiales.count }})
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% if materiales %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Unidad</th>
+                                <th>Estado</th>
+                                <th>Fecha Creación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for material in materiales %}
+                            <tr>
+                                <td>
+                                    <strong>{{ material.nombre }}</strong>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ material.descripcion|truncatewords:8 }}</small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success">₲ {{ material.precio|floatformat:0 }}</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold {% if material.stock == 0 %}text-danger{% elif material.stock < 10 %}text-warning{% else %}text-success{% endif %}">
+                                        {{ material.stock }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ material.unidad_medida }}</span>
+                                </td>
+                                <td>
+                                    {% if material.stock == 0 %}
+                                    <span class="badge bg-danger">Agotado</span>
+                                    {% elif material.stock < 10 %}
+                                    <span class="badge bg-warning">Bajo</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Disponible</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ material.fecha_creacion|date:"d/m/Y" }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'editar_material' material.id %}" 
+                                           class="btn btn-outline-primary" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'eliminar_material' material.id %}" 
+                                           class="btn btn-outline-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No se encontraron materiales</h4>
+                    <p class="text-muted">
+                        {% if query %}
+                        No hay resultados para "{{ query }}"
+                        {% else %}
+                        No hay materiales registrados en el sistema
+                        {% endif %}
+                    </p>
+                    <a href="{% url 'nuevo_material' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Agregar Primer Material
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        {% if materiales %}
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center py-3">
+                        <h4 class="mb-0">{{ total_materiales }}</h4>
+                        <small>Total Materiales</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center py-3">
+                        <h4 class="mb-0">{{ stock_alto }}</h4>
+                        <small>Stock Alto</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center py-3">
+                        <h4 class="mb-0">{{ stock_bajo }}</h4>
+                        <small>Stock Bajo</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body text-center py-3">
+                        <h4 class="mb-0">{{ sin_stock }}</h4>
+                        <small>Sin Stock</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

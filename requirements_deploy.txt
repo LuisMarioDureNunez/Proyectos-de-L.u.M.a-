@@ -1,0 +1,14 @@
+Django==4.2.7
+gunicorn==21.2.0
+whitenoise==6.6.0
+psycopg2-binary==2.9.9
+dj-database-url==2.1.0
+python-decouple==3.8
+channels==4.0.0
+channels-redis==4.1.0
+redis==5.0.1
+celery==5.3.4
+django-cors-headers==4.3.1
+Pillow==10.1.0
+reportlab==4.0.7
+openpyxl==3.1.2

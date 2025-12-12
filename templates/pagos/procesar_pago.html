@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}💳 Pago{% endblock %}
+{% block content %}
+<style>
+.pago-card{max-width:700px;margin:50px auto;background:white;border-radius:30px;padding:50px;box-shadow:0 20px 80px rgba(0,0,0,.2)}
+.monto{font-size:3rem;font-weight:900;color:#28a745;text-align:center;margin:30px 0}
+.metodo{border:3px solid #e0e0e0;border-radius:20px;padding:25px;margin:15px 0;cursor:pointer;transition:all .3s}
+.metodo:hover,.metodo.active{border-color:#667eea;background:rgba(102,126,234,.1);transform:translateX(10px)}
+.btn-pagar{width:100%;padding:20px;border:none;border-radius:20px;background:linear-gradient(135deg,#28a745,#20c997);color:white;font-size:1.3rem;font-weight:700;cursor:pointer;margin-top:30px}
+.btn-pagar:hover{transform:translateY(-5px);box-shadow:0 15px 40px rgba(40,167,69,.5)}
+</style>
+<div class="pago-card">
+<h1 style="text-align:center;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent">💳 Procesar Pago</h1>
+<div class="monto">₲ 1,500,000</div>
+<div class="metodo" onclick="this.classList.toggle('active')">
+<h4>💳 Tarjeta</h4>
+<p>Pago con tarjeta de crédito/débito</p>
+</div>
+<div class="metodo" onclick="this.classList.toggle('active')">
+<h4>🏦 Transferencia</h4>
+<p>Transferencia bancaria</p>
+</div>
+<div class="metodo" onclick="this.classList.toggle('active')">
+<h4>💵 Efectivo</h4>
+<p>Pago en efectivo</p>
+</div>
+<button class="btn-pagar" onclick="alert('✅ Pago procesado!');window.location.href='/dashboard/'">
+<i class="fas fa-lock me-2"></i>CONFIRMAR PAGO
+</button>
+</div>
+{% endblock %}

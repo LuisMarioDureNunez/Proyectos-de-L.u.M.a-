@@ -1,0 +1,6 @@
+# Redirects para Netlify
+/*    /index.html   200
+
+# Custom domain redirects
+https://luma-lumapyobras.tk/*  https://L.u.M.a-lumapyobras.com/:splat  301!
+https://www.L.u.M.a-lumapyobras.com/*  https://L.u.M.a-lumapyobras.com/:splat  301!

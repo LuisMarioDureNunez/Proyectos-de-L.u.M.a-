@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load math_filters %}
+
+{% block title %}Panel Obras - Tiempo Real{% endblock %}
+
+{% block extra_css %}
+<style>
+    .panel-obras {
+        background: linear-gradient(135deg, #1a365d 0%, #17a2b8 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+    
+    .obra-card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .obra-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #17a2b8, #20c997);
+    }
+    
+    .obra-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+    }
+    
+    .progreso-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: conic-gradient(#28a745 0deg, #28a745 var(--progreso), #e9ecef var(--progreso));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #1a365d;
+        margin: 0 auto 15px;
+    }
+    
+    .estado-obra {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    .estado-planificada { background: linear-gradient(135deg, #ffc107, #fd7e14); color: white; }
+    .estado-en-proceso { background: linear-gradient(135deg, #28a745, #20c997); color: white; animation: pulse 2s infinite; }
+    .estado-finalizada { background: linear-gradient(135deg, #17a2b8, #138496); color: white; }
+    
+    .empleados-asignados {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        display: inline-block;
+    }
+    
+    .costo-indicator {
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+    
+    .costo-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+        transition: width 0.5s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="panel-obras">
+    <div class="update-timestamp">
+        <i class="fas fa-clock me-2"></i>
+        Actualizado: <span id="timestamp">{{ timestamp_actualizacion|date:"H:i:s" }}</span>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4 fw-bold text-white mb-3">
+                    <img src="{% static 'images/gifluma.gif' %}" alt="Obras" style="width: 60px; height: 60px; margin-right: 15px; border-radius: 10px;" onerror="this.style.display='none'">
+                    Panel de Obras
+                </h1>
+                <div class="tiempo-real-badge">
+                    <i class="fas fa-building me-2"></i>TIEMPO REAL
+                </div>
+            </div>
+        </div>
+
+        <!-- Métricas Generales -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="obra-card text-center">
+                    <div class="progreso-circle" style="--progreso: 252deg;">
+                        <span id="obras-activas">7</span>
+                    </div>
+                    <h6>Obras Activas</h6>
+                    <small class="text-muted">En progreso</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="obra-card text-center">
+                    <div class="progreso-circle" style="--progreso: 288deg;">
+                        <span id="obras-planificadas">4</span>
+                    </div>
+                    <h6>Planificadas</h6>
+                    <small class="text-muted">Por iniciar</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="obra-card text-center">
+                    <div class="progreso-circle" style="--progreso: 360deg;">
+                        <span id="obras-finalizadas">12</span>
+                    </div>
+                    <h6>Finalizadas</h6>
+                    <small class="text-muted">Completadas</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="obra-card text-center">
+                    <div class="progreso-circle" style="--progreso: 306deg;">
+                        <span id="progreso-promedio">85%</span>
+                    </div>
+                    <h6>Progreso Promedio</h6>
+                    <small class="text-muted">Todas las obras</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Obras en Tiempo Real -->
+        <div class="row">
+            <div class="col-12">
+                <div class="obra-card">
+                    <h4 class="mb-4">
+                        <img src="{% static 'images/gifluma.gif' %}" alt="Obras Activas" style="width: 30px; height: 30px; margin-right: 10px; border-radius: 5px;" onerror="this.style.display='none'">
+                        Obras en Tiempo Real
+                    </h4>
+                    
+                    <div class="row" id="obras-grid">
+                        <!-- Obra 1 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h6 class="fw-bold">Casa Residencial Asunción</h6>
+                                            <p class="text-muted mb-2">Cliente: Juan Pérez</p>
+                                            <div class="estado-obra estado-en-proceso">En Proceso</div>
+                                        </div>
+                                        <div class="empleados-asignados">8 empleados</div>
+                                    </div>
+                                    
+                                    <div class="row text-center mb-3">
+                                        <div class="col-4">
+                                            <strong class="text-primary">65%</strong>
+                                            <br><small>Progreso</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <strong class="text-success">15</strong>
+                                            <br><small>Días restantes</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <strong class="text-warning">78%</strong>
+                                            <br><small>Presupuesto usado</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="costo-indicator">
+                                        <div class="costo-fill" style="width: 78%;"></div>
+                                    </div>
+                                    <small class="text-muted">Costo: Gs. 85.000.000 / Gs. 110.000.000</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Obra 2 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h6 class="fw-bold">Galpón Industrial Luque</h6>
+                                            <p class="text-muted mb-2">Cliente: Empresa ABC</p>
+                                            <div class="estado-obra estado-planificada">Planificada</div>
+                                        </div>
+                                        <div class="empleados-asignados">12 empleados</div>
+                                    </div>
+                                    
+                                    <div class="row text-center mb-3">
+                                        <div class="col-4">
+                                            <strong class="text-primary">25%</strong>
+                                            <br><small>Progreso</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <strong class="text-success">45</strong>
+                                            <br><small>Días restantes</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <strong class="text-warning">35%</strong>
+                                            <br><small>Presupuesto usado</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="costo-indicator">
+                                        <div class="costo-fill" style="width: 35%;"></div>
+                                    </div>
+                                    <small class="text-muted">Costo: Gs. 52.000.000 / Gs. 150.000.000</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Obra 3 -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h6 class="fw-bold">Edificio Comercial CDE</h6>
+                                            <p class="text-muted mb-2">Cliente: Inversiones XYZ</p>
+                                            <div class="estado-obra estado-en-proceso">En Proceso</div>
+                                        </div>
+                                        <div class="empleados-asignados">15 empleados</div>
+                                    </div>
+                                    
+                                    <div class="row text-center mb-3">
+                                        <div class="col-4">
+                                            <strong class="text-primary">42%</strong>
+                                            <br><small>Progreso</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <strong class="text-success">28</strong>
+                                            <br><small>Días restantes</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <strong class="text-warning">55%</strong>
+                                            <br><small>Presupuesto usado</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="costo-indicator">
+                                        <div class="costo-fill" style="width: 55%;"></div>
+                                    </div>
+                                    <small class="text-muted">Costo: Gs. 165.000.000 / Gs. 300.000.000</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    setInterval(actualizarDatosObras, 4000);
+    
+    function actualizarDatosObras() {
+        const obrasActivas = Math.floor(Math.random() * 3) + 6;
+        const obrasPlanificadas = Math.floor(Math.random() * 3) + 3;
+        const obrasFinalizadas = Math.floor(Math.random() * 5) + 10;
+        const progresoPromedio = Math.floor(Math.random() * 15) + 80;
+        
+        $('#obras-activas').text(obrasActivas);
+        $('#obras-planificadas').text(obrasPlanificadas);
+        $('#obras-finalizadas').text(obrasFinalizadas);
+        $('#progreso-promedio').text(progresoPromedio + '%');
+        
+        const now = new Date();
+        $('#timestamp').text(now.toLocaleTimeString());
+        
+        $('.card-body').each(function() {
+            const progresoElement = $(this).find('.text-primary strong');
+            if (progresoElement.length > 0) {
+                const nuevoProgreso = Math.floor(Math.random() * 20) + 40;
+                progresoElement.text(nuevoProgreso + '%');
+            }
+        });
+        
+        console.log('Datos de obras actualizados:', now.toLocaleTimeString());
+    }
+});
+</script>
+{% endblock %}

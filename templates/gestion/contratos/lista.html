@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}📋 Contratos - Gestión Avanzada{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --azul-francia: #002395;
+    --naranja: #FF6600;
+    --negro: #1a1a1a;
+}
+
+.contratos-hero {
+    background: linear-gradient(135deg, var(--negro) 0%, var(--naranja) 50%, var(--azul-francia) 100%);
+    border-radius: 25px;
+    padding: 3rem;
+    color: white;
+}
+
+.contrato-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+    transition: all 0.4s ease;
+}
+
+.contrato-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--azul-francia), var(--naranja), var(--negro));
+    border-radius: 22px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.contrato-card:hover::before {
+    opacity: 1;
+}
+
+.contrato-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.numero-contrato {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(45deg, var(--azul-francia), var(--naranja));
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.monto-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, var(--naranja), #fd7e14);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.estado-contrato {
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.estado-firmado {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    color: white;
+    animation: success-glow 2s ease-in-out infinite alternate;
+}
+
+.estado-en_ejecucion {
+    background: linear-gradient(45deg, var(--naranja), #fd7e14);
+    color: white;
+    animation: progress-pulse 1.5s ease-in-out infinite;
+}
+
+.estado-completado {
+    background: linear-gradient(45deg, var(--azul-francia), #0056b3);
+    color: white;
+}
+
+@keyframes success-glow {
+    from { box-shadow: 0 0 5px rgba(40,167,69,0.5); }
+    to { box-shadow: 0 0 20px rgba(40,167,69,0.8); }
+}
+
+@keyframes progress-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.stats-contratos {
+    background: linear-gradient(135deg, var(--azul-francia) 0%, var(--negro) 100%);
+    border-radius: 15px;
+    padding: 25px;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-contratos::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,102,0,0.2), transparent);
+    animation: slide 3s infinite;
+}
+
+@keyframes slide {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.progreso-contrato {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progreso-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--azul-francia), var(--naranja));
+    border-radius: 10px;
+    transition: width 2s ease;
+}
+
+.fecha-badge {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border: 1px solid #dee2e6;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+}
+
+.contratista-info {
+    background: linear-gradient(135deg, rgba(0,35,149,0.1), rgba(255,102,0,0.1));
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 15px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="contratos-hero">
+                <h1 class="display-4 fw-bold mb-3">📋 Gestión de Contratos</h1>
+                <p class="lead">Control completo de contratos con contratistas</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-contratos">
+                <i class="fas fa-file-contract fa-3x mb-3"></i>
+                <h3>{{ stats.total_contratos|default:0 }}</h3>
+                <p>Total Contratos</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-contratos">
+                <i class="fas fa-play-circle fa-3x mb-3"></i>
+                <h3>{{ stats.en_ejecucion|default:0 }}</h3>
+                <p>En Ejecución</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-contratos">
+                <i class="fas fa-check-circle fa-3x mb-3"></i>
+                <h3>{{ stats.completados|default:0 }}</h3>
+                <p>Completados</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-contratos">
+                <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+                <h3>{{ stats.monto_total|floatformat:0|default:0 }}</h3>
+                <p>Monto Total (Gs.)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for contrato in contratos %}
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="contrato-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="numero-contrato">{{ contrato.numero_contrato }}</div>
+                    <div class="estado-contrato estado-{{ contrato.estado }}">
+                        {{ contrato.get_estado_display }}
+                    </div>
+                </div>
+                
+                <h5 class="fw-bold text-primary mb-2">{{ contrato.obra.nombre }}</h5>
+                
+                <div class="contratista-info">
+                    <div class="row">
+                        <div class="col-8">
+                            <small class="text-muted d-block">Contratista</small>
+                            <strong>{{ contrato.contratista.nombre_empresa|default:contrato.contratista.usuario.get_full_name }}</strong>
+                        </div>
+                        <div class="col-4 text-end">
+                            <small class="text-muted d-block">Especialidad</small>
+                            <strong>{{ contrato.contratista.get_especialidad_display }}</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <small class="text-muted d-block">Monto Total</small>
+                        <div class="monto-display">{{ contrato.monto_total|floatformat:0 }} Gs.</div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <small class="text-muted d-block">Anticipo</small>
+                        <strong class="text-success">{{ contrato.anticipo_porcentaje }}% ({{ contrato.anticipo_monto|floatformat:0 }} Gs.)</strong>
+                    </div>
+                </div>
+                
+                <div class="progreso-contrato">
+                    <div class="progreso-bar" style="width: {% if contrato.estado == 'completado' %}100{% elif contrato.estado == 'en_ejecucion' %}60{% elif contrato.estado == 'firmado' %}20{% else %}0{% endif %}%"></div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <div class="fecha-badge">
+                            <i class="fas fa-calendar-plus me-1"></i>
+                            <small>Inicio: {{ contrato.fecha_inicio|date:"d/m/Y" }}</small>
+                        </div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <div class="fecha-badge">
+                            <i class="fas fa-calendar-check me-1"></i>
+                            <small>Fin: {{ contrato.fecha_fin_estimada|date:"d/m/Y" }}</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-group w-100 mt-3">
+                    <button class="btn btn-outline-primary">
+                        <i class="fas fa-eye me-1"></i>Ver Detalles
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="fas fa-edit me-1"></i>Editar
+                    </button>
+                    <button class="btn btn-outline-success">
+                        <i class="fas fa-file-pdf me-1"></i>PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-file-contract fa-5x text-muted mb-3"></i>
+            <h4 class="text-muted">No hay contratos registrados</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<button class="floating-action" onclick="window.location.href='{% url 'nuevo_contrato' %}'">
+    <i class="fas fa-plus"></i>
+</button>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animar barras de progreso
+    setTimeout(() => {
+        document.querySelectorAll('.progreso-bar').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+    }, 500);
+});
+</script>
+{% endblock %}

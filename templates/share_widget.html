@@ -1,0 +1,54 @@
+<!-- Widget para compartir en tiempo real -->
+<div class="share-widget" style="position:fixed;top:50%;right:20px;z-index:9999;background:linear-gradient(135deg,#002395,#FF6600);border-radius:50px;padding:15px;box-shadow:0 10px 30px rgba(0,0,0,0.3)">
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+        <button onclick="shareSystem()" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer" title="Compartir L.u.M.a">
+            <i class="fas fa-share-alt"></i>
+        </button>
+        <button onclick="copyLink()" style="background:none;border:none;color:white;font-size:1.2rem;cursor:pointer" title="Copiar enlace">
+            <i class="fas fa-link"></i>
+        </button>
+        <button onclick="shareWhatsApp()" style="background:none;border:none;color:white;font-size:1.2rem;cursor:pointer" title="WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+        <button onclick="shareFacebook()" style="background:none;border:none;color:white;font-size:1.2rem;cursor:pointer" title="Facebook">
+            <i class="fab fa-facebook"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+const siteUrl = 'https://L.u.M.a-lumapyobras.com';
+const siteTitle = 'L.u.M.a - Sistema de Gestión de Obras Civiles Paraguay';
+
+function shareSystem() {
+    if (navigator.share) {
+        navigator.share({
+            title: siteTitle,
+            text: 'Sistema profesional para gestión de obras civiles en Paraguay',
+            url: siteUrl
+        });
+    } else {
+        copyLink();
+    }
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(siteUrl).then(() => {
+        alert('¡Enlace copiado! ' + siteUrl);
+    });
+}
+
+function shareWhatsApp() {
+    const text = encodeURIComponent(`🏗️ ${siteTitle}\n\nSistema profesional para gestión de obras civiles en Paraguay\n\n${siteUrl}`);
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+}
+
+function shareFacebook() {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}`, '_blank');
+}
+
+function shareTwitter() {
+    const text = encodeURIComponent(`🏗️ ${siteTitle} - Sistema profesional para obras civiles en Paraguay`);
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(siteUrl)}`, '_blank');
+}
+</script>

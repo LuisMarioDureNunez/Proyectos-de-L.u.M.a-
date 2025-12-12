@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load paraguay_filters %}
+
+{% block title %}🏗️ Producción de Obras - L.u.M.a{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+<style>
+.produccion-hero {
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FFD23F 100%);
+    border-radius: 20px;
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.obra-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+
+.obra-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.progress-ring {
+    width: 120px;
+    height: 120px;
+    position: relative;
+}
+
+.progress-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.progress-ring circle {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+}
+
+.progress-bg {
+    stroke: #e9ecef;
+}
+
+.progress-bar {
+    stroke: #28a745;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 283;
+    animation: progress-animation 2s ease-out forwards;
+}
+
+@keyframes progress-animation {
+    to {
+        stroke-dashoffset: calc(283 - (283 * var(--progress)) / 100);
+    }
+}
+
+.metric-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.floating-icon {
+    animation: float-icon 3s ease-in-out infinite;
+}
+
+@keyframes float-icon {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.stats-counter {
+    font-size: 3rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, #FF6B35, #F7931E);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid animate__animated animate__fadeIn">
+    <!-- HERO SECTION -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="produccion-hero text-white position-relative">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-4 fw-bold mb-3">
+                            🏗️ Producción de Obras
+                        </h1>
+                        <p class="lead mb-0">
+                            Control total de la producción en tiempo real
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="bg-white bg-opacity-20 rounded-3 p-3 d-inline-block">
+                            <h2 class="mb-0 stats-counter" data-target="5">0</h2>
+                            <small>Obras Activas</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MÉTRICAS PRINCIPALES -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="metric-card">
+                <div class="d-flex align-items-center">
+                    <div class="floating-icon me-3">
+                        <i class="fas fa-hammer fa-3x"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-0 stats-counter" data-target="85">0</h3>
+                        <small>% Producción Hoy</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="metric-card">
+                <div class="d-flex align-items-center">
+                    <div class="floating-icon me-3">
+                        <i class="fas fa-users fa-3x"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-0 stats-counter" data-target="24">0</h3>
+                        <small>Empleados Activos</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="metric-card">
+                <div class="d-flex align-items-center">
+                    <div class="floating-icon me-3">
+                        <i class="fas fa-chart-line fa-3x"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-0 stats-counter" data-target="92">0</h3>
+                        <small>% Eficiencia</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="metric-card">
+                <div class="d-flex align-items-center">
+                    <div class="floating-icon me-3">
+                        <i class="fas fa-money-bill-wave fa-3x"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-0">8.500.000 Gs.</h3>
+                        <small>Costo Hoy</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OBRAS EN PRODUCCIÓN -->
+    <div class="row">
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="obra-card">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="fw-bold text-primary mb-2">
+                                <i class="fas fa-building me-2"></i>Casa Residencial Asunción
+                            </h4>
+                            <p class="text-muted mb-3">Construcción de vivienda unifamiliar de 180m²</p>
+                            
+                            <div class="mb-3">
+                                <h6 class="fw-bold">Avance Actual</h6>
+                                <div class="progress mb-2" style="height: 10px;">
+                                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                                         style="width: 65%"></div>
+                                </div>
+                                <small class="text-muted">65% completado</small>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Empleados</small>
+                                    <strong class="text-primary">8</strong>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Días Restantes</small>
+                                    <strong class="text-warning">25</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 text-center">
+                            <div class="progress-ring mx-auto mb-3">
+                                <svg>
+                                    <circle class="progress-bg" cx="60" cy="60" r="45"></circle>
+                                    <circle class="progress-bar" cx="60" cy="60" r="45" 
+                                            style="--progress: 65"></circle>
+                                </svg>
+                                <div class="position-absolute top-50 start-50 translate-middle">
+                                    <h3 class="fw-bold text-success mb-0">65%</h3>
+                                    <small class="text-muted">Avance</small>
+                                </div>
+                            </div>
+                            
+                            <small class="text-muted">Presupuesto: 85.000.000 Gs. / 120.000.000 Gs.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="obra-card">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="fw-bold text-primary mb-2">
+                                <i class="fas fa-industry me-2"></i>Galpón Industrial Luque
+                            </h4>
+                            <p class="text-muted mb-3">Construcción de galpón industrial 500m²</p>
+                            
+                            <div class="mb-3">
+                                <h6 class="fw-bold">Avance Actual</h6>
+                                <div class="progress mb-2" style="height: 10px;">
+                                    <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" 
+                                         style="width: 35%"></div>
+                                </div>
+                                <small class="text-muted">35% completado</small>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Empleados</small>
+                                    <strong class="text-primary">12</strong>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Días Restantes</small>
+                                    <strong class="text-warning">45</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 text-center">
+                            <div class="progress-ring mx-auto mb-3">
+                                <svg>
+                                    <circle class="progress-bg" cx="60" cy="60" r="45"></circle>
+                                    <circle class="progress-bar" cx="60" cy="60" r="45" 
+                                            style="--progress: 35"></circle>
+                                </svg>
+                                <div class="position-absolute top-50 start-50 translate-middle">
+                                    <h3 class="fw-bold text-warning mb-0">35%</h3>
+                                    <small class="text-muted">Avance</small>
+                                </div>
+                            </div>
+                            
+                            <small class="text-muted">Presupuesto: 45.000.000 Gs. / 180.000.000 Gs.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function animateCounters() {
+    const counters = document.querySelectorAll('.stats-counter');
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-target'));
+        const increment = target / 100;
+        let current = 0;
+        
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            counter.textContent = Math.floor(current);
+        }, 20);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(animateCounters, 500);
+});
+</script>
+{% endblock %}

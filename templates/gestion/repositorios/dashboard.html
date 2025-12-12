@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}📊 Dashboard Repositorios{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4 fw-bold text-primary mb-2">
+                📊 Dashboard de Repositorios
+            </h1>
+            <p class="lead text-muted">
+                Estadísticas y métricas de todos los repositorios
+            </p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-3 col-md-6">
+            <div class="card-premium text-center">
+                <div class="card-body">
+                    <div class="display-4 text-primary mb-3">📁</div>
+                    <h3 class="fw-bold">{{ stats.total_repositorios }}</h3>
+                    <p class="text-muted mb-0">Total Repositorios</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card-premium text-center">
+                <div class="card-body">
+                    <div class="display-4 text-warning mb-3">⭐</div>
+                    <h3 class="fw-bold">{{ stats.total_estrellas }}</h3>
+                    <p class="text-muted mb-0">Total Estrellas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card-premium text-center">
+                <div class="card-body">
+                    <div class="display-4 text-info mb-3">🍴</div>
+                    <h3 class="fw-bold">{{ stats.total_forks }}</h3>
+                    <p class="text-muted mb-0">Total Forks</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card-premium text-center">
+                <div class="card-body">
+                    <div class="display-4 text-success mb-3">🌟</div>
+                    <h3 class="fw-bold">{{ stats.repositorios_destacados }}</h3>
+                    <p class="text-muted mb-0">Destacados</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Repositorios Populares -->
+        <div class="col-lg-6">
+            <div class="card-premium">
+                <div class="card-header">
+                    <h5 class="mb-0">🔥 Repositorios Más Populares</h5>
+                </div>
+                <div class="card-body">
+                    {% for repo in repositorios_populares %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3">
+                            <span class="badge bg-primary">{{ repo.estrellas }} ⭐</span>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ repo.nombre }}</h6>
+                            <small class="text-muted">{{ repo.descripcion|truncatechars:50 }}</small>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No hay repositorios disponibles</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Repositorios Recientes -->
+        <div class="col-lg-6">
+            <div class="card-premium">
+                <div class="card-header">
+                    <h5 class="mb-0">🆕 Repositorios Recientes</h5>
+                </div>
+                <div class="card-body">
+                    {% for repo in repositorios_recientes %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3">
+                            <span class="badge bg-success">{{ repo.fecha_agregado|date:"d/m" }}</span>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ repo.nombre }}</h6>
+                            <small class="text-muted">{{ repo.get_tipo_proyecto_display }}</small>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No hay repositorios recientes</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="{% url 'lista_repositorios' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-list me-2"></i>Ver Todos los Repositorios
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eliminar Repositorio{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card-premium">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-trash me-2"></i>
+                        Eliminar Repositorio
+                    </h3>
+                </div>
+                <div class="card-body text-center p-5">
+                    <div class="display-1 text-danger mb-4">🗑️</div>
+                    
+                    <h4 class="mb-3">¿Estás seguro?</h4>
+                    <p class="lead mb-4">
+                        Vas a eliminar el repositorio <strong>"{{ repositorio.nombre }}"</strong>
+                    </p>
+                    <p class="text-muted mb-4">
+                        Esta acción no se puede deshacer. El repositorio será marcado como inactivo.
+                    </p>
+
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                            <a href="{% url 'detalle_repositorio' repositorio.id %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Sí, Eliminar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

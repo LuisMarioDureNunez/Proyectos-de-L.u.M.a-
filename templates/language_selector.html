@@ -1,0 +1,1081 @@
+{% load static %}
+<!-- SELECTOR DE IDIOMAS SUPER AVANZADO -->
+<style>
+.language-selector {
+    position: relative;
+    display: inline-block;
+    margin-right: 20px;
+    z-index: 99999;
+}
+
+.language-btn {
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 25px;
+    padding: 8px 15px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+    z-index: 99999;
+}
+
+.language-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s ease;
+}
+
+.language-btn:hover::before {
+    left: 100%;
+}
+
+.language-btn:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    border-color: rgba(255,255,255,0.5);
+}
+
+.language-flag {
+    font-size: 1.2rem;
+    animation: flagWave 3s ease-in-out infinite;
+}
+
+@keyframes flagWave {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(5deg) scale(1.1); }
+    50% { transform: rotate(0deg) scale(1); }
+    75% { transform: rotate(-5deg) scale(1.1); }
+}
+
+.language-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,249,250,0.95) 100%);
+    backdrop-filter: blur(25px);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    border: 2px solid rgba(102,126,234,0.3);
+    min-width: 280px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 999999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px) scale(0.9);
+    transition: all 0.4s ease;
+    margin-top: 10px;
+}
+
+.language-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.language-dropdown::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 20px;
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,249,250,0.95) 100%);
+    border: 2px solid rgba(102,126,234,0.3);
+    border-bottom: none;
+    border-right: none;
+    transform: rotate(45deg);
+}
+
+.language-header {
+    padding: 15px 20px;
+    border-bottom: 2px solid rgba(102,126,234,0.2);
+    background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(240,147,251,0.1) 100%);
+    border-radius: 20px 20px 0 0;
+}
+
+.language-header h6 {
+    margin: 0;
+    color: #333;
+    font-weight: 800;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.language-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    padding: 15px;
+}
+
+.language-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.language-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(102,126,234,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.language-option:hover::before {
+    left: 100%;
+}
+
+.language-option:hover {
+    background: linear-gradient(135deg, rgba(102,126,234,0.15) 0%, rgba(240,147,251,0.15) 100%);
+    transform: translateY(-2px) scale(1.02);
+    border-color: rgba(102,126,234,0.3);
+    box-shadow: 0 5px 15px rgba(102,126,234,0.2);
+}
+
+.language-option.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(102,126,234,0.4);
+}
+
+.language-option.active .language-name {
+    font-weight: 800;
+}
+
+.language-flag-option {
+    font-size: 1.3rem;
+    animation: flagBounce 2s ease-in-out infinite;
+}
+
+@keyframes flagBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.language-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.language-option:hover .language-name {
+    color: #667eea;
+    font-weight: 700;
+}
+
+.language-option.active .language-name {
+    color: white;
+}
+
+.language-search {
+    padding: 10px 15px;
+    border-bottom: 2px solid rgba(102,126,234,0.2);
+}
+
+.language-search input {
+    width: 100%;
+    border: 2px solid rgba(102,126,234,0.3);
+    border-radius: 15px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.8);
+}
+
+.language-search input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 15px rgba(102,126,234,0.3);
+    background: white;
+}
+
+.language-stats {
+    padding: 10px 15px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #666;
+    border-top: 1px solid rgba(102,126,234,0.2);
+    background: rgba(102,126,234,0.05);
+}
+
+/* Scrollbar personalizado */
+.language-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.language-dropdown::-webkit-scrollbar-track {
+    background: rgba(102,126,234,0.1);
+    border-radius: 10px;
+}
+
+.language-dropdown::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+.language-dropdown::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #f093fb 100%);
+}
+
+/* Animación de entrada */
+.language-selector {
+    animation: slideInRight 0.8s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .language-dropdown {
+        right: -50px;
+        min-width: 250px;
+    }
+    
+    .language-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<div class="language-selector">
+    <button class="language-btn" id="languageToggle">
+        <span class="language-flag" id="currentFlag">🇪🇸</span>
+        <span id="currentLanguage">Español</span>
+        <i class="fas fa-chevron-down" style="font-size: 0.8rem; transition: transform 0.3s ease;" id="languageArrow"></i>
+    </button>
+    
+    <div class="language-dropdown" id="languageDropdown">
+        <div class="language-header">
+            <h6>
+                <i class="fas fa-globe"></i>
+                <span data-translate="select_language">Seleccionar Idioma</span>
+            </h6>
+        </div>
+        
+        <div class="language-search">
+            <input type="text" id="languageSearch" placeholder="🔍 Buscar idioma..." data-translate-placeholder="search_language">
+        </div>
+        
+        <div class="language-grid" id="languageGrid">
+            <!-- Los idiomas se cargarán dinámicamente -->
+        </div>
+        
+        <div class="language-stats">
+            <i class="fas fa-info-circle"></i>
+            <span data-translate="language_count">25 idiomas disponibles</span>
+        </div>
+    </div>
+</div>
+
+<script>
+// GESTOR DE IDIOMAS JAVASCRIPT
+const LanguageManager = {
+    currentLanguage: localStorage.getItem('lumaLanguage') || 'es',
+    
+    languages: {
+        'es': {name: 'Español Latino', flag: '🇪🇸'},
+        'gn': {name: 'Guaraní', flag: '🇵🇾'},
+        'en': {name: 'English', flag: '🇺🇸'},
+        'pt': {name: 'Português', flag: '🇧🇷'},
+        'ja': {name: '日本語', flag: '🇯🇵'},
+        'ru': {name: 'Русский', flag: '🇷🇺'},
+        'ko': {name: '한국어', flag: '🇰🇷'},
+        'fr': {name: 'Français', flag: '🇫🇷'},
+        'de': {name: 'Deutsch', flag: '🇩🇪'},
+        'it': {name: 'Italiano', flag: '🇮🇹'},
+        'zh': {name: '中文', flag: '🇨🇳'},
+        'ar': {name: 'العربية', flag: '🇸🇦'},
+        'hi': {name: 'हिन्दी', flag: '🇮🇳'},
+        'tr': {name: 'Türkçe', flag: '🇹🇷'},
+        'nl': {name: 'Nederlands', flag: '🇳🇱'},
+        'sv': {name: 'Svenska', flag: '🇸🇪'},
+        'no': {name: 'Norsk', flag: '🇳🇴'},
+        'da': {name: 'Dansk', flag: '🇩🇰'},
+        'fi': {name: 'Suomi', flag: '🇫🇮'},
+        'pl': {name: 'Polski', flag: '🇵🇱'},
+        'cs': {name: 'Čeština', flag: '🇨🇿'},
+        'hu': {name: 'Magyar', flag: '🇭🇺'},
+        'ro': {name: 'Română', flag: '🇷🇴'},
+        'el': {name: 'Ελληνικά', flag: '🇬🇷'},
+        'he': {name: 'עברית', flag: '🇮🇱'}
+    },
+    
+    translations: {
+        'sistema_gestion_titulo': {
+            'es': 'SISTEMA DE GESTIÓN EN PRESUPUESTOS', 'en': 'BUDGET MANAGEMENT SYSTEM', 'ru': 'СИСТЕМА УПРАВЛЕНИЯ БЮДЖЕТОМ',
+            'gn': 'SISTEMA ÑEÑANGAREKO VIRU REPY', 'pt': 'SISTEMA DE GESTÃO DE ORÇAMENTOS', 'ja': '予算管理システム',
+            'ko': '예산 관리 시스템', 'fr': 'SYSTÈME DE GESTION BUDGÉTAIRE', 'de': 'BUDGET-MANAGEMENT-SYSTEM',
+            'it': 'SISTEMA DI GESTIONE BUDGET', 'zh': '预算管理系统', 'ar': 'نظام إدارة الميزانية', 'hi': 'बजट प्रबंधन प्रणाली'
+        },
+        'para_obras_civiles': {
+            'es': 'PARA OBRAS CIVILES', 'en': 'FOR CIVIL WORKS', 'ru': 'ДЛЯ ГРАЖДАНСКИХ РАБОТ',
+            'gn': 'TEMBIAPO CIVIL-PE G̃UARÃ', 'pt': 'PARA OBRAS CIVIS', 'ja': '土木工事用',
+            'ko': '토목 공사용', 'fr': 'POUR TRAVAUX CIVILS', 'de': 'FÜR TIEFBAU',
+            'it': 'PER LAVORI CIVILI', 'zh': '用于土木工程', 'ar': 'للأعمال المدنية', 'hi': 'सिविल कार्यों के लिए'
+        },
+        'luma_gestion': {
+            'es': 'L.u.M.a - Gestión de Obras Civiles', 'en': 'L.u.M.a - Civil Works Management', 'ru': 'L.u.M.a - Управление гражданскими работами',
+            'gn': 'L.u.M.a - Ñeñangareko Tembiapo Civil', 'pt': 'L.u.M.a - Gestão de Obras Civis', 'ja': 'L.u.M.a - 土木工事管理',
+            'ko': 'L.u.M.a - 토목 공사 관리', 'fr': 'L.u.M.a - Gestion des Travaux Civils', 'de': 'L.u.M.a - Tiefbau-Management',
+            'it': 'L.u.M.a - Gestione Lavori Civili', 'zh': 'L.u.M.a - 土木工程管理', 'ar': 'L.u.M.a - إدارة الأعمال المدنية', 'hi': 'L.u.M.a - सिविल कार्य प्रबंधन'
+        },
+        'dashboard': {
+            'es': 'DASHBOARD', 'gn': 'ÑEMBOGUATA', 'en': 'DASHBOARD', 'pt': 'PAINEL',
+            'ja': 'ダッシュボード', 'ru': 'ПАНЕЛЬ УПРАВЛЕНИЯ', 'ko': '대시보드', 'fr': 'TABLEAU DE BORD',
+            'de': 'DASHBOARD', 'it': 'CRUSCOTTO', 'zh': '仪表板', 'ar': 'لوحة التحكم',
+            'hi': 'डैशबोर्ड', 'tr': 'KONTROL PANELİ', 'nl': 'DASHBOARD', 'sv': 'INSTRUMENTPANEL'
+        },
+        'maquinarias': {
+            'es': 'MAQUINARIAS', 'gn': 'MÁQUINA KUÉRA', 'en': 'MACHINERY', 'pt': 'MAQUINÁRIO',
+            'ja': '機械', 'ru': 'ОБОРУДОВАНИЕ', 'ko': '기계', 'fr': 'MACHINES',
+            'de': 'MASCHINEN', 'it': 'MACCHINARI', 'zh': '机械', 'ar': 'الآلات', 'hi': 'मशीनरी'
+        },
+        'herramientas': {
+            'es': 'HERRAMIENTAS', 'gn': 'TEMBIPORU KUÉRA', 'en': 'TOOLS', 'pt': 'FERRAMENTAS',
+            'ja': 'ツール', 'ru': 'ИНСТРУМЕНТЫ', 'ko': '도구', 'fr': 'OUTILS',
+            'de': 'WERKZEUGE', 'it': 'STRUMENTI', 'zh': '工具', 'ar': 'الأدوات', 'hi': 'उपकरण'
+        },
+        'mi_perfil': {
+            'es': 'MI PERFIL', 'gn': 'CHE PERFIL', 'en': 'MY PROFILE', 'pt': 'MEU PERFIL',
+            'ja': 'マイプロフィール', 'ru': 'МОЙ ПРОФИЛЬ', 'ko': '내 프로필', 'fr': 'MON PROFIL',
+            'de': 'MEIN PROFIL', 'it': 'IL MIO PROFILO', 'zh': '我的资料', 'ar': 'ملفي الشخصي', 'hi': 'मेरी प्रोफ़ाइल'
+        },
+        'gestion_avanzada': {
+            'es': 'GESTIÓN AVANZADA', 'gn': 'ÑEÑANGAREKO TENONDEGUA', 'en': 'ADVANCED MANAGEMENT', 'pt': 'GESTÃO AVANÇADA',
+            'ja': '高度な管理', 'ru': 'РАСШИРЕННОЕ УПРАВЛЕНИЕ', 'ko': '고급 관리', 'fr': 'GESTION AVANCÉE',
+            'de': 'ERWEITERTE VERWALTUNG', 'it': 'GESTIONE AVANZATA', 'zh': '高级管理', 'ar': 'الإدارة المتقدمة', 'hi': 'उन्नत प्रबंधन'
+        },
+        'propietarios': {
+            'es': 'PROPIETARIOS', 'gn': 'JÁRA KUÉRA', 'en': 'OWNERS', 'pt': 'PROPRIETÁRIOS',
+            'ja': '所有者', 'ru': 'ВЛАДЕЛЬЦЫ', 'ko': '소유자', 'fr': 'PROPRIÉTAIRES',
+            'de': 'EIGENTÜMER', 'it': 'PROPRIETARI', 'zh': '业主', 'ar': 'الملاك', 'hi': 'मालिक'
+        },
+        'contratos': {
+            'es': 'CONTRATOS', 'gn': 'CONTRATO KUÉRA', 'en': 'CONTRACTS', 'pt': 'CONTRATOS',
+            'ja': '契約', 'ru': 'КОНТРАКТЫ', 'ko': '계약', 'fr': 'CONTRATS',
+            'de': 'VERTRÄGE', 'it': 'CONTRATTI', 'zh': '合同', 'ar': 'العقود', 'hi': 'अनुबंध'
+        },
+        'propiedades': {
+            'es': 'PROPIEDADES', 'gn': 'MBAʼE JÁRA', 'en': 'PROPERTIES', 'pt': 'PROPRIEDADES',
+            'ja': 'プロパティ', 'ru': 'СВОЙСТВА', 'ko': '속성', 'fr': 'PROPRIÉTÉS',
+            'de': 'EIGENSCHAFTEN', 'it': 'PROPRIETÀ', 'zh': '属性', 'ar': 'الخصائص', 'hi': 'गुण'
+        },
+        'administracion': {
+            'es': 'ADMINISTRACIÓN', 'gn': 'ÑEÑANGAREKO TENONDEGUA', 'en': 'ADMINISTRATION', 'pt': 'ADMINISTRAÇÃO',
+            'ja': '管理', 'ru': 'АДМИНИСТРИРОВАНИЕ', 'ko': '관리', 'fr': 'ADMINISTRATION',
+            'de': 'VERWALTUNG', 'it': 'AMMINISTRAZIONE', 'zh': '管理', 'ar': 'الإدارة', 'hi': 'प्रशासन'
+        },
+        'usuarios': {
+            'es': 'USUARIOS', 'gn': 'PURUHÁRA KUÉRA', 'en': 'USERS', 'pt': 'USUÁRIOS',
+            'ja': 'ユーザー', 'ru': 'ПОЛЬЗОВАТЕЛИ', 'ko': '사용자', 'fr': 'UTILISATEURS',
+            'de': 'BENUTZER', 'it': 'UTENTI', 'zh': '用户', 'ar': 'المستخدمون', 'hi': 'उपयोगकर्ता'
+        },
+        'clientes': {
+            'es': 'CLIENTES', 'gn': 'CLIENTE KUÉRA', 'en': 'CLIENTS', 'pt': 'CLIENTES',
+            'ja': 'クライアント', 'ru': 'КЛИЕНТЫ', 'ko': '클라이언트', 'fr': 'CLIENTS',
+            'de': 'KUNDEN', 'it': 'CLIENTI', 'zh': '客户', 'ar': 'العملاء', 'hi': 'ग्राहक'
+        },
+        'reportes_estadisticas': {
+            'es': 'REPORTES Y ESTADÍSTICAS', 'gn': 'MARANDU HA PAPAPY', 'en': 'REPORTS AND STATISTICS', 'pt': 'RELATÓRIOS E ESTATÍSTICAS',
+            'ja': 'レポートと統計', 'ru': 'ОТЧЕТЫ И СТАТИСТИКА', 'ko': '보고서 및 통계', 'fr': 'RAPPORTS ET STATISTIQUES',
+            'de': 'BERICHTE UND STATISTIKEN', 'it': 'RAPPORTI E STATISTICHE', 'zh': '报告和统计', 'ar': 'التقارير والإحصائيات', 'hi': 'रिपोर्ट और आंकड़े'
+        },
+        'estadisticas': {
+            'es': 'ESTADÍSTICAS', 'gn': 'PAPAPY', 'en': 'STATISTICS', 'pt': 'ESTATÍSTICAS',
+            'ja': '統計', 'ru': 'СТАТИСТИКА', 'ko': '통계', 'fr': 'STATISTIQUES',
+            'de': 'STATISTIKEN', 'it': 'STATISTICHE', 'zh': '统计', 'ar': 'الإحصائيات', 'hi': 'आंकड़े'
+        },
+        'exportar_excel': {
+            'es': 'EXPORTAR EXCEL', 'gn': 'ÑESẼ EXCEL', 'en': 'EXPORT EXCEL', 'pt': 'EXPORTAR EXCEL',
+            'ja': 'エクセルエクスポート', 'ru': 'ЭКСПОРТ EXCEL', 'ko': '엑셀 내보내기', 'fr': 'EXPORTER EXCEL',
+            'de': 'EXCEL EXPORTIEREN', 'it': 'ESPORTA EXCEL', 'zh': '导出EXCEL', 'ar': 'تصدير إكسل', 'hi': 'एक्सेल निर्यात'
+        },
+        'dashboard_super': {
+            'es': 'DASHBOARD SÚPER', 'gn': 'ÑEMBOGUATA IPORÃVÉVA', 'en': 'SUPER DASHBOARD', 'pt': 'PAINEL SUPER',
+            'ja': 'スーパーダッシュボード', 'ru': 'СУПЕР ПАНЕЛЬ', 'ko': '슈퍼 대시보드', 'fr': 'SUPER TABLEAU DE BORD',
+            'de': 'SUPER DASHBOARD', 'it': 'SUPER CRUSCOTTO', 'zh': '超级仪表板', 'ar': 'لوحة التحكم الفائقة', 'hi': 'सुपर डैशबोर्ड'
+        },
+        'panel_administrativo': {
+            'es': 'PANEL ADMINISTRATIVO', 'gn': 'ÑEÑANGAREKO RENDA', 'en': 'ADMINISTRATIVE PANEL', 'pt': 'PAINEL ADMINISTRATIVO',
+            'ja': '管理パネル', 'ru': 'АДМИНИСТРАТИВНАЯ ПАНЕЛЬ', 'ko': '관리 패널', 'fr': 'PANNEAU ADMINISTRATIF',
+            'de': 'VERWALTUNGSPANEL', 'it': 'PANNELLO AMMINISTRATIVO', 'zh': '管理面板', 'ar': 'اللوحة الإدارية', 'hi': 'प्रशासनिक पैनल'
+        },
+        'panel_admin': {
+            'es': 'PANEL ADMIN', 'gn': 'ADMIN RENDA', 'en': 'ADMIN PANEL', 'pt': 'PAINEL ADMIN',
+            'ja': '管理パネル', 'ru': 'ПАНЕЛЬ АДМИНА', 'ko': '관리자 패널', 'fr': 'PANNEAU ADMIN',
+            'de': 'ADMIN PANEL', 'it': 'PANNELLO ADMIN', 'zh': '管理面板', 'ar': 'لوحة الإدارة', 'hi': 'एडमिन पैनल'
+        },
+        'iniciar_sesion': {
+            'es': 'Iniciar Sesión', 'gn': 'Jeike', 'en': 'Login', 'pt': 'Entrar',
+            'ja': 'ログイン', 'ru': 'Войти', 'ko': '로그인', 'fr': 'Se connecter',
+            'de': 'Anmelden', 'it': 'Accedi', 'zh': '登录', 'ar': 'تسجيل الدخول', 'hi': 'लॉग इन करें'
+        },
+        'registrarse': {
+            'es': 'Registrarse', 'gn': 'Jehai', 'en': 'Register', 'pt': 'Registrar',
+            'ja': '登録', 'ru': 'Регистрация', 'ko': '등록', 'fr': 'S\'inscrire',
+            'de': 'Registrieren', 'it': 'Registrati', 'zh': '注册', 'ar': 'التسجيل', 'hi': 'पंजीकरण'
+        },
+        // TRADUCCIONES COMPLETAS DEL SISTEMA
+        'crear': {
+            'es': 'Crear', 'en': 'Create', 'ru': 'Создать', 'ja': '作成', 'it': 'Crea', 'fr': 'Créer', 'de': 'Erstellen', 'pt': 'Criar', 'zh': '创建'
+        },
+        'editar': {
+            'es': 'Editar', 'en': 'Edit', 'ru': 'Редактировать', 'ja': '編集', 'it': 'Modifica', 'fr': 'Modifier', 'de': 'Bearbeiten', 'pt': 'Editar', 'zh': '编辑'
+        },
+        'eliminar': {
+            'es': 'Eliminar', 'en': 'Delete', 'ru': 'Удалить', 'ja': '削除', 'it': 'Elimina', 'fr': 'Supprimer', 'de': 'Löschen', 'pt': 'Excluir', 'zh': '删除'
+        },
+        'guardar': {
+            'es': 'Guardar', 'en': 'Save', 'ru': 'Сохранить', 'ja': '保存', 'it': 'Salva', 'fr': 'Sauvegarder', 'de': 'Speichern', 'pt': 'Salvar', 'zh': '保存'
+        },
+        'cancelar': {
+            'es': 'Cancelar', 'en': 'Cancel', 'ru': 'Отменить', 'ja': 'キャンセル', 'it': 'Annulla', 'fr': 'Annuler', 'de': 'Abbrechen', 'pt': 'Cancelar', 'zh': '取消'
+        },
+        'buscar': {
+            'es': 'Buscar', 'en': 'Search', 'ru': 'Поиск', 'ja': '検索', 'it': 'Cerca', 'fr': 'Rechercher', 'de': 'Suchen', 'pt': 'Buscar', 'zh': '搜索'
+        },
+        'filtrar': {
+            'es': 'Filtrar', 'en': 'Filter', 'ru': 'Фильтр', 'ja': 'フィルター', 'it': 'Filtra', 'fr': 'Filtrer', 'de': 'Filtern', 'pt': 'Filtrar', 'zh': '筛选'
+        },
+        'nombre': {
+            'es': 'Nombre', 'en': 'Name', 'ru': 'Имя', 'ja': '名前', 'it': 'Nome', 'fr': 'Nom', 'de': 'Name', 'pt': 'Nome', 'zh': '姓名'
+        },
+        'descripcion': {
+            'es': 'Descripción', 'en': 'Description', 'ru': 'Описание', 'ja': '説明', 'it': 'Descrizione', 'fr': 'Description', 'de': 'Beschreibung', 'pt': 'Descrição', 'zh': '描述'
+        },
+        'precio': {
+            'es': 'Precio', 'en': 'Price', 'ru': 'Цена', 'ja': '価格', 'it': 'Prezzo', 'fr': 'Prix', 'de': 'Preis', 'pt': 'Preço', 'zh': '价格'
+        },
+        'cantidad': {
+            'es': 'Cantidad', 'en': 'Quantity', 'ru': 'Количество', 'ja': '数量', 'it': 'Quantità', 'fr': 'Quantité', 'de': 'Menge', 'pt': 'Quantidade', 'zh': '数量'
+        },
+        'fecha': {
+            'es': 'Fecha', 'en': 'Date', 'ru': 'Дата', 'ja': '日付', 'it': 'Data', 'fr': 'Date', 'de': 'Datum', 'pt': 'Data', 'zh': '日期'
+        },
+        'estado': {
+            'es': 'Estado', 'en': 'Status', 'ru': 'Статус', 'ja': '状態', 'it': 'Stato', 'fr': 'État', 'de': 'Status', 'pt': 'Estado', 'zh': '状态'
+        },
+        'activo': {
+            'es': 'Activo', 'en': 'Active', 'ru': 'Активный', 'ja': 'アクティブ', 'it': 'Attivo', 'fr': 'Actif', 'de': 'Aktiv', 'pt': 'Ativo', 'zh': '活跃'
+        },
+        'inactivo': {
+            'es': 'Inactivo', 'en': 'Inactive', 'ru': 'Неактивный', 'ja': '非アクティブ', 'it': 'Inattivo', 'fr': 'Inactif', 'de': 'Inaktiv', 'pt': 'Inativo', 'zh': '非活跃'
+        },
+        'total': {
+            'es': 'Total', 'en': 'Total', 'ru': 'Итого', 'ja': '合計', 'it': 'Totale', 'fr': 'Total', 'de': 'Gesamt', 'pt': 'Total', 'zh': '总计'
+        },
+        'acciones': {
+            'es': 'Acciones', 'en': 'Actions', 'ru': 'Действия', 'ja': 'アクション', 'it': 'Azioni', 'fr': 'Actions', 'de': 'Aktionen', 'pt': 'Ações', 'zh': '操作'
+        },
+        'detalles': {
+            'es': 'Detalles', 'en': 'Details', 'ru': 'Подробности', 'ja': '詳細', 'it': 'Dettagli', 'fr': 'Détails', 'de': 'Details', 'pt': 'Detalhes', 'zh': '详情'
+        },
+        'configuracion': {
+            'es': 'Configuración', 'en': 'Settings', 'ru': 'Настройки', 'ja': '設定', 'it': 'Impostazioni', 'fr': 'Paramètres', 'de': 'Einstellungen', 'pt': 'Configurações', 'zh': '设置'
+        },
+        'ayuda': {
+            'es': 'Ayuda', 'en': 'Help', 'ru': 'Помощь', 'ja': 'ヘルプ', 'it': 'Aiuto', 'fr': 'Aide', 'de': 'Hilfe', 'pt': 'Ajuda', 'zh': '帮助'
+        },
+        'cerrar_sesion': {
+            'es': 'Cerrar Sesión', 'en': 'Logout', 'ru': 'Выйти', 'ja': 'ログアウト', 'it': 'Disconnetti', 'fr': 'Déconnexion', 'de': 'Abmelden', 'pt': 'Sair', 'zh': '登出'
+        },
+        'telefono': {
+            'es': 'Teléfono', 'en': 'Phone', 'ru': 'Телефон', 'ja': '電話', 'it': 'Telefono', 'fr': 'Téléphone', 'de': 'Telefon', 'pt': 'Telefone', 'zh': '电话'
+        },
+        'email': {
+            'es': 'Email', 'en': 'Email', 'ru': 'Электронная почта', 'ja': 'メール', 'it': 'Email', 'fr': 'Email', 'de': 'E-Mail', 'pt': 'Email', 'zh': '邮箱'
+        },
+        'direccion': {
+            'es': 'Dirección', 'en': 'Address', 'ru': 'Адрес', 'ja': '住所', 'it': 'Indirizzo', 'fr': 'Adresse', 'de': 'Adresse', 'pt': 'Endereço', 'zh': '地址'
+        },
+        'ciudad': {
+            'es': 'Ciudad', 'en': 'City', 'ru': 'Город', 'ja': '市', 'it': 'Città', 'fr': 'Ville', 'de': 'Stadt', 'pt': 'Cidade', 'zh': '城市'
+        },
+        'departamento': {
+            'es': 'Departamento', 'en': 'Department', 'ru': 'Отдел', 'ja': '部門', 'it': 'Dipartimento', 'fr': 'Département', 'de': 'Abteilung', 'pt': 'Departamento', 'zh': '部门'
+        },
+        'especialidad': {
+            'es': 'Especialidad', 'en': 'Specialty', 'ru': 'Специальность', 'ja': '専門', 'it': 'Specialità', 'fr': 'Spécialité', 'de': 'Spezialität', 'pt': 'Especialidade', 'zh': '专业'
+        },
+        'experiencia': {
+            'es': 'Experiencia', 'en': 'Experience', 'ru': 'Опыт', 'ja': '経験', 'it': 'Esperienza', 'fr': 'Expérience', 'de': 'Erfahrung', 'pt': 'Experiência', 'zh': '经验'
+        },
+        'calificacion': {
+            'es': 'Calificación', 'en': 'Rating', 'ru': 'Рейтинг', 'ja': '評価', 'it': 'Valutazione', 'fr': 'Évaluation', 'de': 'Bewertung', 'pt': 'Avaliação', 'zh': '评级'
+        },
+        'disponible': {
+            'es': 'Disponible', 'en': 'Available', 'ru': 'Доступно', 'ja': '利用可能', 'it': 'Disponibile', 'fr': 'Disponible', 'de': 'Verfügbar', 'pt': 'Disponível', 'zh': '可用'
+        },
+        'ocupado': {
+            'es': 'Ocupado', 'en': 'Busy', 'ru': 'Занят', 'ja': '忙しい', 'it': 'Occupato', 'fr': 'Occupé', 'de': 'Beschäftigt', 'pt': 'Ocupado', 'zh': '忙碌'
+        },
+        'salario': {
+            'es': 'Salario', 'en': 'Salary', 'ru': 'Зарплата', 'ja': '給料', 'it': 'Stipendio', 'fr': 'Salaire', 'de': 'Gehalt', 'pt': 'Salário', 'zh': '薪水'
+        },
+        'cargo': {
+            'es': 'Cargo', 'en': 'Position', 'ru': 'Должность', 'ja': 'ポジション', 'it': 'Posizione', 'fr': 'Poste', 'de': 'Position', 'pt': 'Cargo', 'zh': '职位'
+        },
+        'proyecto': {
+            'es': 'Proyecto', 'en': 'Project', 'ru': 'Проект', 'ja': 'プロジェクト', 'it': 'Progetto', 'fr': 'Projet', 'de': 'Projekt', 'pt': 'Projeto', 'zh': '项目'
+        },
+        'cliente': {
+            'es': 'Cliente', 'en': 'Client', 'ru': 'Клиент', 'ja': 'クライアント', 'it': 'Cliente', 'fr': 'Client', 'de': 'Kunde', 'pt': 'Cliente', 'zh': '客户'
+        },
+        'ubicacion': {
+            'es': 'Ubicación', 'en': 'Location', 'ru': 'Местоположение', 'ja': '場所', 'it': 'Posizione', 'fr': 'Emplacement', 'de': 'Standort', 'pt': 'Localização', 'zh': '位置'
+        },
+        'presupuesto': {
+            'es': 'Presupuesto', 'en': 'Budget', 'ru': 'Бюджет', 'ja': '予算', 'it': 'Budget', 'fr': 'Budget', 'de': 'Budget', 'pt': 'Orçamento', 'zh': '预算'
+        },
+        'progreso': {
+            'es': 'Progreso', 'en': 'Progress', 'ru': 'Прогресс', 'ja': '進捗', 'it': 'Progresso', 'fr': 'Progrès', 'de': 'Fortschritt', 'pt': 'Progresso', 'zh': '进展'
+        },
+        'completado': {
+            'es': 'Completado', 'en': 'Completed', 'ru': 'Завершено', 'ja': '完了', 'it': 'Completato', 'fr': 'Terminé', 'de': 'Abgeschlossen', 'pt': 'Concluído', 'zh': '完成'
+        },
+        'en_proceso': {
+            'es': 'En Proceso', 'en': 'In Progress', 'ru': 'В Процессе', 'ja': '進行中', 'it': 'In Corso', 'fr': 'En Cours', 'de': 'In Bearbeitung', 'pt': 'Em Andamento', 'zh': '进行中'
+        },
+        'pendiente': {
+            'es': 'Pendiente', 'en': 'Pending', 'ru': 'Ожидание', 'ja': '保留中', 'it': 'In Attesa', 'fr': 'En Attente', 'de': 'Ausstehend', 'pt': 'Pendente', 'zh': '待处理'
+        },
+        'cancelado': {
+            'es': 'Cancelado', 'en': 'Cancelled', 'ru': 'Отменено', 'ja': 'キャンセル済み', 'it': 'Annullato', 'fr': 'Annulé', 'de': 'Storniert', 'pt': 'Cancelado', 'zh': '已取消'
+        },
+        'obras': {
+            'es': 'Obras', 'gn': 'Mba\'apo', 'en': 'Projects', 'pt': 'Obras',
+            'ja': 'プロジェクト', 'ru': 'Проекты', 'ko': '프로젝트', 'fr': 'Projets',
+            'de': 'Projekte', 'it': 'Progetti', 'zh': '项目', 'ar': 'المشاريع',
+            'hi': 'परियोजनाएं', 'tr': 'Projeler', 'nl': 'Projecten', 'sv': 'Projekt',
+            'no': 'Prosjekter', 'da': 'Projekter', 'fi': 'Projektit', 'pl': 'Projekty',
+            'cs': 'Projekty', 'hu': 'Projektek', 'ro': 'Proiecte', 'el': 'Έργα', 'he': 'פרויקטים'
+        },
+        'presupuestos': {
+            'es': 'Presupuestos', 'gn': 'Viru repy', 'en': 'Budgets', 'pt': 'Orçamentos',
+            'ja': '予算', 'ru': 'Бюджеты', 'ko': '예산', 'fr': 'Budgets',
+            'de': 'Budgets', 'it': 'Budget', 'zh': '预算', 'ar': 'الميزانيات',
+            'hi': 'बजट', 'tr': 'Bütçeler', 'nl': 'Budgetten', 'sv': 'Budgetar',
+            'no': 'Budsjetter', 'da': 'Budgetter', 'fi': 'Budjetit', 'pl': 'Budżety',
+            'cs': 'Rozpočty', 'hu': 'Költségvetések', 'ro': 'Bugete', 'el': 'Προϋπολογισμοί', 'he': 'תקציבים'
+        },
+        'materiales': {
+            'es': 'Materiales', 'gn': 'Mba\'e', 'en': 'Materials', 'pt': 'Materiais',
+            'ja': '材料', 'ru': 'Материалы', 'ko': '재료', 'fr': 'Matériaux',
+            'de': 'Materialien', 'it': 'Materiali', 'zh': '材料', 'ar': 'المواد',
+            'hi': 'सामग्री', 'tr': 'Malzemeler', 'nl': 'Materialen', 'sv': 'Material',
+            'no': 'Materialer', 'da': 'Materialer', 'fi': 'Materiaalit', 'pl': 'Materiały',
+            'cs': 'Materiály', 'hu': 'Anyagok', 'ro': 'Materiale', 'el': 'Υλικά', 'he': 'חומרים'
+        },
+        'contratistas': {
+            'es': 'Contratistas', 'gn': 'Mba\'apoha', 'en': 'Contractors', 'pt': 'Empreiteiros',
+            'ja': '請負業者', 'ru': 'Подрядчики', 'ko': '계약자', 'fr': 'Entrepreneurs',
+            'de': 'Auftragnehmer', 'it': 'Appaltatori', 'zh': '承包商', 'ar': 'المقاولون',
+            'hi': 'ठेकेदार', 'tr': 'Müteahhitler', 'nl': 'Aannemers', 'sv': 'Entreprenörer',
+            'no': 'Entreprenører', 'da': 'Entreprenører', 'fi': 'Urakoitsijat', 'pl': 'Wykonawcy',
+            'cs': 'Dodavatelé', 'hu': 'Vállalkozók', 'ro': 'Contractori', 'el': 'Εργολάβοι', 'he': 'קבלנים'
+        },
+        'empleados': {
+            'es': 'Empleados', 'gn': 'Mba\'apohára', 'en': 'Employees', 'pt': 'Funcionários',
+            'ja': '従業員', 'ru': 'Сотрудники', 'ko': '직원', 'fr': 'Employés',
+            'de': 'Mitarbeiter', 'it': 'Dipendenti', 'zh': '员工', 'ar': 'الموظفون',
+            'hi': 'कर्मचारी', 'tr': 'Çalışanlar', 'nl': 'Werknemers', 'sv': 'Anställda',
+            'no': 'Ansatte', 'da': 'Medarbejdere', 'fi': 'Työntekijät', 'pl': 'Pracownicy',
+            'cs': 'Zaměstnanci', 'hu': 'Alkalmazottak', 'ro': 'Angajați', 'el': 'Υπάλληλοι', 'he': 'עובדים'
+        },
+        'proveedores': {
+            'es': 'Proveedores', 'gn': 'Me\'ẽha', 'en': 'Suppliers', 'pt': 'Fornecedores',
+            'ja': 'サプライヤー', 'ru': 'Поставщики', 'ko': '공급업체', 'fr': 'Fournisseurs',
+            'de': 'Lieferanten', 'it': 'Fornitori', 'zh': '供应商', 'ar': 'الموردون',
+            'hi': 'आपूर्तिकर्ता', 'tr': 'Tedarikçiler', 'nl': 'Leveranciers', 'sv': 'Leverantörer',
+            'no': 'Leverandører', 'da': 'Leverandører', 'fi': 'Toimittajat', 'pl': 'Dostawcy',
+            'cs': 'Dodavatelé', 'hu': 'Beszállítók', 'ro': 'Furnizori', 'el': 'Προμηθευτές', 'he': 'ספקים'
+        },
+        'bienvenido': {
+            'es': 'Bienvenido', 'gn': 'Tereg̃uahẽporãite', 'en': 'Welcome', 'pt': 'Bem-vindo',
+            'ja': 'ようこそ', 'ru': 'Добро пожаловать', 'ko': '환영합니다', 'fr': 'Bienvenue',
+            'de': 'Willkommen', 'it': 'Benvenuto', 'zh': '欢迎', 'ar': 'مرحبا',
+            'hi': 'स्वागत है', 'tr': 'Hoş geldiniz', 'nl': 'Welkom', 'sv': 'Välkommen'
+        }
+    },
+    
+    init() {
+        this.loadLanguagesFromAPI();
+        this.loadLanguageGrid();
+        this.updateCurrentLanguage();
+        this.bindEvents();
+        this.translatePage();
+        this.loadUserPreference();
+    },
+    
+    loadLanguagesFromAPI() {
+        fetch('/idiomas/api/languages/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Actualizar idiomas con datos del servidor
+                Object.keys(data.languages).forEach(code => {
+                    if (data.languages[code]) {
+                        this.languages[code] = {
+                            name: data.languages[code].native_name,
+                            flag: data.languages[code].flag
+                        };
+                    }
+                });
+                
+                // Actualizar idioma actual si viene del servidor
+                if (data.current_language) {
+                    this.currentLanguage = data.current_language;
+                }
+                
+                this.loadLanguageGrid();
+                this.updateCurrentLanguage();
+                
+                console.log('Idiomas cargados desde API:', data.total_languages);
+            }
+        })
+        .catch(error => {
+            console.error('Error cargando idiomas desde API:', error);
+        });
+    },
+    
+    loadUserPreference() {
+        fetch('/idiomas/api/language/preference/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.language_code) {
+                this.currentLanguage = data.language_code;
+                localStorage.setItem('lumaLanguage', data.language_code);
+                this.updateCurrentLanguage();
+                this.loadLanguageGrid();
+                this.translatePage();
+                console.log('Preferencia de idioma cargada:', data.language_code, 'Fuente:', data.source);
+            }
+        })
+        .catch(error => {
+            console.error('Error cargando preferencia de idioma:', error);
+        });
+    },
+    
+    saveUserPreference(languageCode) {
+        fetch('/idiomas/api/language/save-preference/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                language_code: languageCode
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Preferencia de idioma guardada:', languageCode);
+            } else {
+                console.warn('No se pudo guardar la preferencia:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error guardando preferencia:', error);
+        });
+    },
+    
+    loadLanguageGrid() {
+        const grid = document.getElementById('languageGrid');
+        grid.innerHTML = '';
+        
+        Object.keys(this.languages).forEach(code => {
+            const lang = this.languages[code];
+            const option = document.createElement('div');
+            option.className = `language-option ${code === this.currentLanguage ? 'active' : ''}`;
+            option.dataset.language = code;
+            option.innerHTML = `
+                <span class="language-flag-option">${lang.flag}</span>
+                <span class="language-name">${lang.name}</span>
+            `;
+            option.onclick = () => this.changeLanguage(code);
+            grid.appendChild(option);
+        });
+    },
+    
+    updateCurrentLanguage() {
+        const current = this.languages[this.currentLanguage];
+        document.getElementById('currentFlag').textContent = current.flag;
+        document.getElementById('currentLanguage').textContent = current.name;
+    },
+    
+    changeLanguage(code) {
+        // Llamar a la API de Django para cambiar idioma
+        fetch('/idiomas/api/language/change/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                language_code: code
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                this.currentLanguage = code;
+                localStorage.setItem('lumaLanguage', code);
+                this.updateCurrentLanguage();
+                this.loadLanguageGrid();
+                this.translatePage();
+                this.closeDropdown();
+                
+                // Notificar cambio de idioma
+                this.showLanguageNotification(code);
+                
+                // Disparar evento para el sistema de idiomas JavaScript
+                document.dispatchEvent(new CustomEvent('changeLanguage', {
+                    detail: { language: code }
+                }));
+                
+                // Actualizar L.u.N.a AI si está disponible
+                if (window.updateLunaLanguage) {
+                    window.updateLunaLanguage(code);
+                }
+                
+                // Traducir TODO el contenido dinámico
+                this.translateAllContent();
+                
+                // Recargar después de un momento para aplicar cambios del servidor
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                console.error('Error cambiando idioma:', data.error);
+                alert('Error al cambiar idioma: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error en la petición:', error);
+            // Fallback al cambio local si falla la API
+            this.currentLanguage = code;
+            localStorage.setItem('lumaLanguage', code);
+            this.updateCurrentLanguage();
+            this.loadLanguageGrid();
+            this.translatePage();
+            this.closeDropdown();
+            this.showLanguageNotification(code);
+            this.translateAllContent();
+        });
+    },
+    
+    translateAllContent() {
+        // Traducir TODO el contenido de la página
+        setTimeout(() => {
+            this.translatePage();
+            this.autoTranslateCommonElements();
+            
+            // Traducir contenido dinámico adicional
+            this.translateDynamicContent();
+        }, 100);
+    },
+    
+    translateDynamicContent() {
+        // Traducir contenido que se carga dinámicamente
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeType === Node.ELEMENT_NODE) {
+                            this.translateElement(node);
+                        }
+                    });
+                }
+            });
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    },
+    
+    translateElement(element) {
+        // Traducir un elemento específico
+        element.querySelectorAll('[data-translate]').forEach(el => {
+            const key = el.dataset.translate;
+            const translation = this.getTranslation(key);
+            if (translation && translation !== key) {
+                el.textContent = translation;
+            }
+        });
+        
+        // Traducir texto sin atributos
+        if (element.textContent && element.children.length === 0) {
+            const text = element.textContent.trim().toLowerCase();
+            const translation = this.getTranslation(text);
+            if (translation && translation !== text) {
+                element.textContent = translation;
+            }
+        }
+    },
+    
+    getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    },
+    
+    translatePage() {
+        // Traducir elementos con data-translate
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.dataset.translate;
+            const translation = this.getTranslation(key);
+            if (translation && translation !== key) {
+                element.textContent = translation;
+            }
+        });
+        
+        // Traducir placeholders
+        document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+            const key = element.dataset.translatePlaceholder;
+            const translation = this.getTranslation(key);
+            if (translation && translation !== key) {
+                element.placeholder = translation;
+            }
+        });
+        
+        // Traducir títulos
+        document.querySelectorAll('[data-translate-title]').forEach(element => {
+            const key = element.dataset.translateTitle;
+            const translation = this.getTranslation(key);
+            if (translation && translation !== key) {
+                element.title = translation;
+            }
+        });
+        
+        // Aplicar traducciones automáticas a elementos comunes sin data-translate
+        this.autoTranslateCommonElements();
+    },
+    
+    autoTranslateCommonElements() {
+        // Auto-traducir tablas y elementos dinámicos
+        this.translateTables();
+        this.translateButtons();
+        this.translateForms();
+        this.translateAdminPanel();
+    },
+    
+    translateTables() {
+        // Traducir encabezados de tablas
+        document.querySelectorAll('th').forEach(th => {
+            const text = th.textContent.trim().toLowerCase();
+            const translation = this.getTranslation(text);
+            if (translation && translation !== text) {
+                th.textContent = translation;
+            }
+        });
+    },
+    
+    translateButtons() {
+        // Traducir botones comunes
+        document.querySelectorAll('button, .btn').forEach(btn => {
+            const text = btn.textContent.trim().toLowerCase();
+            const translation = this.getTranslation(text);
+            if (translation && translation !== text) {
+                btn.textContent = translation;
+            }
+        });
+    },
+    
+    translateForms() {
+        // Traducir labels y placeholders
+        document.querySelectorAll('label').forEach(label => {
+            const text = label.textContent.trim().toLowerCase();
+            const translation = this.getTranslation(text);
+            if (translation && translation !== text) {
+                label.textContent = translation;
+            }
+        });
+        
+        document.querySelectorAll('input[placeholder]').forEach(input => {
+            const placeholder = input.placeholder.toLowerCase();
+            const translation = this.getTranslation(placeholder);
+            if (translation && translation !== placeholder) {
+                input.placeholder = translation;
+            }
+        });
+    },
+    
+    translateAdminPanel() {
+        // Traducir elementos del panel de administración
+        document.querySelectorAll('.admin-panel, .django-admin').forEach(panel => {
+            panel.querySelectorAll('*').forEach(element => {
+                if (element.textContent && element.children.length === 0) {
+                    const text = element.textContent.trim().toLowerCase();
+                    const translation = this.getTranslation(text);
+                    if (translation && translation !== text) {
+                        element.textContent = translation;
+                    }
+                }
+            });
+        });
+    },
+    
+    getTranslation(key) {
+        return this.translations[key]?.[this.currentLanguage] || 
+               this.translations[key]?.['es'] || 
+               key;
+    },
+    
+    bindEvents() {
+        document.getElementById('languageToggle').onclick = () => {
+            this.toggleDropdown();
+        };
+        
+        document.getElementById('languageSearch').oninput = (e) => {
+            this.filterLanguages(e.target.value);
+        };
+        
+        // Cerrar al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.language-selector')) {
+                this.closeDropdown();
+            }
+        });
+    },
+    
+    toggleDropdown() {
+        const dropdown = document.getElementById('languageDropdown');
+        const arrow = document.getElementById('languageArrow');
+        
+        dropdown.classList.toggle('show');
+        arrow.style.transform = dropdown.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+    },
+    
+    closeDropdown() {
+        const dropdown = document.getElementById('languageDropdown');
+        const arrow = document.getElementById('languageArrow');
+        
+        dropdown.classList.remove('show');
+        arrow.style.transform = 'rotate(0deg)';
+    },
+    
+    filterLanguages(query) {
+        const options = document.querySelectorAll('.language-option');
+        options.forEach(option => {
+            const name = option.querySelector('.language-name').textContent.toLowerCase();
+            const visible = name.includes(query.toLowerCase());
+            option.style.display = visible ? 'flex' : 'none';
+        });
+    },
+    
+    showLanguageNotification(code) {
+        const lang = this.languages[code];
+        const notification = document.createElement('div');
+        notification.className = 'language-notification';
+        notification.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 20px;
+                box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+                z-index: 10001;
+                animation: slideInRight 0.5s ease-out;
+                backdrop-filter: blur(15px);
+                border: 2px solid rgba(255,255,255,0.3);
+            ">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5rem;">${lang.flag}</span>
+                    <div>
+                        <div style="font-weight: 700;">Idioma cambiado</div>
+                        <div style="font-size: 0.9rem; opacity: 0.9;">${lang.name}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.5s ease-out';
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    }
+};
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    LanguageManager.init();
+    
+    // Escuchar eventos de cambio de idioma
+    document.addEventListener('changeLanguage', (e) => {
+        const languageCode = e.detail.language;
+        LanguageManager.saveUserPreference(languageCode);
+        
+        // Traducir TODO el sistema
+        setTimeout(() => {
+            LanguageManager.translateAllContent();
+        }, 500);
+    });
+    
+    // Traducir contenido inicial
+    setTimeout(() => {
+        LanguageManager.translateAllContent();
+    }, 1000);
+});
+
+// Hacer disponible globalmente
+window.LanguageManager = LanguageManager;
+window.changeLanguage = (code) => LanguageManager.changeLanguage(code);
+
+console.log('🌐 Selector de idiomas súper avanzado con API Django inicializado correctamente!');
+</script>

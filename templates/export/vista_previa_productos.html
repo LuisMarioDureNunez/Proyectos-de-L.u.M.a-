@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}👁️ Vista Previa - Productos - Mi Tienda Premium{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="hero-section bg-gradient-primary text-white rounded-3 p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-5 fw-bold">
+                            <i class="fas fa-eye me-3"></i>Vista Previa - Productos
+                        </h1>
+                        <p class="lead mb-0">Previsualización del reporte antes de descargar</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <a href="{% url 'exportar_datos' %}" class="btn btn-light btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATOS DE VISTA PREVIA -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-light py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 text-dark">
+                            <i class="fas fa-table me-2"></i>Previsualización ({{ datos.count }} registros)
+                        </h4>
+                        <div class="btn-group">
+                            <a href="{% url 'descargar_reporte' 'productos' 'excel' %}" class="btn btn-success">
+                                <i class="fas fa-file-excel me-2"></i>Descargar Excel
+                            </a>
+                            <a href="{% url 'descargar_reporte' 'productos' 'pdf' %}" class="btn btn-danger">
+                                <i class="fas fa-file-pdf me-2"></i>Descargar PDF
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Precio</th>
+                                    <th>Categoría</th>
+                                    <th>Stock</th>
+                                    <th>Estado</th>
+                                    <th>Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for producto in datos %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ producto.nombre }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="text-success fw-bold">${{ producto.precio }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ producto.categoria.nombre }}</span>
+                                    </td>
+                                    <td>
+                                        {% if producto.stock > 10 %}
+                                            <span class="badge bg-success">{{ producto.stock }}</span>
+                                        {% elif producto.stock > 0 %}
+                                            <span class="badge bg-warning">{{ producto.stock }}</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ producto.stock }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if producto.stock > 10 %}
+                                            <span class="badge bg-success">Disponible</span>
+                                        {% elif producto.stock > 0 %}
+                                            <span class="badge bg-warning">Stock Bajo</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Agotado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ producto.descripcion|truncatewords:8|default:"Sin descripción" }}
+                                        </small>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                        <h5>No hay productos para mostrar</h5>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+</style>
+{% endblock %}

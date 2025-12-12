@@ -1,0 +1,338 @@
+/* ===== ESTILOS PARA GESTIÓN AVANZADA - COLORES FRANCIA ===== */
+
+:root {
+    --azul-francia: #002395;
+    --naranja: #FF6600;
+    --negro: #1a1a1a;
+    --blanco: #ffffff;
+    --gris-claro: #f8f9fa;
+}
+
+/* BOTÓN FLOTANTE COMÚN */
+.floating-action {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(45deg, var(--naranja), #fd7e14);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+    box-shadow: 0 10px 30px rgba(255,102,0,0.4);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.floating-action:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 15px 40px rgba(255,102,0,0.6);
+    background: linear-gradient(45deg, #fd7e14, var(--azul-francia));
+}
+
+/* ANIMACIONES GLOBALES */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(0,35,149,0.3); }
+    50% { box-shadow: 0 0 20px rgba(255,102,0,0.6); }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* UTILIDADES DE ANIMACIÓN */
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+.glow-animation {
+    animation: glow 3s infinite;
+}
+
+.rotate-animation {
+    animation: rotate 10s linear infinite;
+}
+
+/* EFECTOS DE HOVER GLOBALES */
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.hover-scale {
+    transition: all 0.3s ease;
+}
+
+.hover-scale:hover {
+    transform: scale(1.05);
+}
+
+/* GRADIENTES PERSONALIZADOS */
+.gradient-francia {
+    background: linear-gradient(135deg, var(--azul-francia) 0%, var(--naranja) 100%);
+}
+
+.gradient-francia-reverse {
+    background: linear-gradient(135deg, var(--naranja) 0%, var(--azul-francia) 100%);
+}
+
+.gradient-negro-francia {
+    background: linear-gradient(135deg, var(--negro) 0%, var(--azul-francia) 100%);
+}
+
+.gradient-text-francia {
+    background: linear-gradient(45deg, var(--azul-francia), var(--naranja));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* BOTONES PERSONALIZADOS */
+.btn-francia {
+    background: linear-gradient(45deg, var(--azul-francia), var(--naranja));
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-francia:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,35,149,0.4);
+    color: white;
+    background: linear-gradient(45deg, var(--naranja), var(--azul-francia));
+}
+
+.btn-francia-outline {
+    background: transparent;
+    border: 2px solid var(--azul-francia);
+    color: var(--azul-francia);
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-francia-outline:hover {
+    background: var(--azul-francia);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* BADGES Y ETIQUETAS */
+.badge-francia {
+    background: linear-gradient(45deg, var(--azul-francia), var(--naranja));
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.badge-naranja {
+    background: linear-gradient(45deg, var(--naranja), #fd7e14);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-weight: bold;
+}
+
+.badge-negro {
+    background: linear-gradient(45deg, var(--negro), #495057);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-weight: bold;
+}
+
+/* EFECTOS DE PARTÍCULAS */
+.particles-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--naranja);
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: float-particle 8s infinite ease-in-out;
+}
+
+@keyframes float-particle {
+    0%, 100% {
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-20px) translateX(10px) rotate(90deg);
+    }
+    50% {
+        transform: translateY(0px) translateX(20px) rotate(180deg);
+    }
+    75% {
+        transform: translateY(20px) translateX(10px) rotate(270deg);
+    }
+}
+
+/* LOADING STATES */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--azul-francia);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+    .floating-action {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .btn-francia {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+    
+    .badge-francia {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+/* EFECTOS DE GLASSMORPHISM */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* SOMBRAS PERSONALIZADAS */
+.shadow-francia {
+    box-shadow: 0 10px 30px rgba(0,35,149,0.2);
+}
+
+.shadow-naranja {
+    box-shadow: 0 10px 30px rgba(255,102,0,0.2);
+}
+
+.shadow-negro {
+    box-shadow: 0 10px 30px rgba(26,26,26,0.2);
+}
+
+/* TRANSICIONES SUAVES */
+.smooth-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.smooth-transition-slow {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* EFECTOS DE TEXTO */
+.text-shadow-francia {
+    text-shadow: 2px 2px 4px rgba(0,35,149,0.3);
+}
+
+.text-glow-naranja {
+    text-shadow: 0 0 10px rgba(255,102,0,0.5);
+}
+
+/* BORDES ANIMADOS */
+.border-animated {
+    position: relative;
+    overflow: hidden;
+}
+
+.border-animated::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--naranja), transparent);
+    animation: slide-border 2s infinite;
+}
+
+@keyframes slide-border {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}

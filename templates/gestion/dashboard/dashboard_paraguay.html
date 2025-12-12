@@ -1,0 +1,802 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load paraguay_filters %}
+
+{% block title %}Dashboard Profesional - Sistema Paraguay{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<style>
+/* Estilos adicionales inline para garantizar que se carguen */
+.card-premium {
+    background: white;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.card-premium:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.btn-premium {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+.btn-outline-premium {
+    border: 2px solid #667eea;
+    color: #667eea;
+    background: transparent;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+.avatar-sm {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-title {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.bg-soft {
+    opacity: 0.1;
+}
+
+.progress {
+    height: 0.5rem;
+    border-radius: 0.25rem;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.progress-sm {
+    height: 0.375rem;
+}
+
+.stagger-animation > * {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- HEADER DEL DASHBOARD -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div class="mb-3 mb-md-0">
+                    <h1 class="h2 mb-1">
+                        <i class="fas fa-chart-line text-primary me-2"></i>
+                        Dashboard Profesional
+                    </h1>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-calendar me-1"></i>
+                        {{ hoy|date:"d \d\e F \d\e Y" }}
+                        <span class="mx-2">|</span>
+                        <i class="fas fa-user me-1"></i>
+                        Bienvenido, <strong>{{ user.get_full_name|default:user.username }}</strong>
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-premium" onclick="exportarReporte()">
+                        <i class="fas fa-download me-2"></i>Exportar Reporte
+                    </button>
+                    <button class="btn btn-outline-premium" onclick="location.reload()">
+                        <i class="fas fa-sync-alt me-2"></i>Actualizar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TARJETAS DE ESTADÍSTICAS PRINCIPALES -->
+    <div class="row mb-4 stagger-animation">
+        <!-- TOTAL PRESUPUESTOS ACEPTADOS -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card-premium success h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-0">{{ stats.total_presupuestos_aceptados|guaranies|safe }}</h4>
+                            <p class="text-muted mb-0">Presupuestos Aceptados</p>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <div class="avatar-title bg-success bg-soft rounded-circle">
+                                <i class="fas fa-check-circle fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="progress progress-sm">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ stats.presupuestos_aceptados|default:0|add:stats.total_presupuestos|default:1|div:stats.total_presupuestos|default:1|multiply:100 }}%">
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            {{ stats.presupuestos_aceptados }} de {{ stats.total_presupuestos }} presupuestos
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COSTO TOTAL OBRAS -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card-premium warning h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-0">{{ stats.total_costo_obras|guaranies|safe }}</h4>
+                            <p class="text-muted mb-0">Inversión en Obras</p>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <div class="avatar-title bg-warning bg-soft rounded-circle">
+                                <i class="fas fa-hard-hat fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <span class="badge bg-warning">{{ stats.obras_en_proceso }} en proceso</span>
+                        <small class="text-muted d-block mt-1">
+                            {{ stats.obras_finalizadas }} obras finalizadas
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VALOR INVENTARIO -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card-premium info h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-0">{{ stats.valor_inventario|guaranies|safe }}</h4>
+                            <p class="text-muted mb-0">Valor en Inventario</p>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <div class="avatar-title bg-info bg-soft rounded-circle">
+                                <i class="fas fa-warehouse fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <span class="badge bg-info">{{ stats.total_materiales }} materiales</span>
+                        <small class="text-muted d-block mt-1">
+                            Stock disponible
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRESUPUESTOS DEL MES -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card-premium primary h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-0">{{ stats.total_presupuestos_mes|guaranies|safe }}</h4>
+                            <p class="text-muted mb-0">Este Mes</p>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <div class="avatar-title bg-primary bg-soft rounded-circle">
+                                <i class="fas fa-chart-line fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <span class="badge bg-primary">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ hoy|date:"F" }}
+                        </span>
+                        <small class="text-muted d-block mt-1">
+                            Total presupuestado
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEGUNDA FILA DE ESTADÍSTICAS -->
+    <div class="row mb-4">
+        <!-- TOTAL OBRAS -->
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="card-premium h-100 text-center">
+                <div class="card-body py-3">
+                    <h3 class="text-primary mb-1">{{ stats.total_obras }}</h3>
+                    <small class="text-muted">Total Obras</small>
+                    <i class="fas fa-building fa-lg text-primary mt-2 d-block"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- OBRAS PLANIFICADAS -->
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="card-premium h-100 text-center">
+                <div class="card-body py-3">
+                    <h3 class="text-info mb-1">{{ stats.obras_planificadas }}</h3>
+                    <small class="text-muted">Planificadas</small>
+                    <i class="fas fa-clipboard-list fa-lg text-info mt-2 d-block"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- OBRAS EN PROCESO -->
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="card-premium h-100 text-center">
+                <div class="card-body py-3">
+                    <h3 class="text-warning mb-1">{{ stats.obras_en_proceso }}</h3>
+                    <small class="text-muted">En Proceso</small>
+                    <i class="fas fa-tools fa-lg text-warning mt-2 d-block"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- OBRAS FINALIZADAS -->
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="card-premium h-100 text-center">
+                <div class="card-body py-3">
+                    <h3 class="text-success mb-1">{{ stats.obras_finalizadas }}</h3>
+                    <small class="text-muted">Finalizadas</small>
+                    <i class="fas fa-flag-checkered fa-lg text-success mt-2 d-block"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOTAL USUARIOS -->
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="card-premium h-100 text-center">
+                <div class="card-body py-3">
+                    <h3 class="text-secondary mb-1">{{ stats.total_usuarios }}</h3>
+                    <small class="text-muted">Usuarios</small>
+                    <i class="fas fa-users fa-lg text-secondary mt-2 d-block"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRESUPUESTOS RECHAZADOS -->
+        <div class="col-xl-2 col-md-4 col-6 mb-3">
+            <div class="card-premium h-100 text-center">
+                <div class="card-body py-3">
+                    <h3 class="text-danger mb-1">{{ stats.presupuestos_rechazados }}</h3>
+                    <small class="text-muted">Rechazados</small>
+                    <i class="fas fa-times-circle fa-lg text-danger mt-2 d-block"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRÁFICOS Y ANÁLISIS -->
+    <div class="row mb-4">
+        <!-- GRÁFICO DE OBRAS POR ESTADO -->
+        <div class="col-xl-4 col-lg-6 mb-4">
+            <div class="card-premium h-100">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie text-primary me-2"></i>
+                        Obras por Estado
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="obrasEstadoChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRÁFICO DE PRESUPUESTOS -->
+        <div class="col-xl-4 col-lg-6 mb-4">
+            <div class="card-premium h-100">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar text-success me-2"></i>
+                        Presupuestos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="presupuestosChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESUMEN FINANCIERO -->
+        <div class="col-xl-4 col-lg-12 mb-4">
+            <div class="card-premium h-100">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-money-bill-wave text-success me-2"></i>
+                        Resumen Financiero
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Ingresos Potenciales</span>
+                            <span class="badge bg-success">Presupuestos Aceptados</span>
+                        </div>
+                        <h3 class="text-success mb-0">{{ stats.total_presupuestos_aceptados|guaranies|safe }}</h3>
+                        <small class="text-muted">{{ stats.presupuestos_aceptados }} presupuestos</small>
+                    </div>
+                    <hr>
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Inversión Activa</span>
+                            <span class="badge bg-warning">Obras en Proceso</span>
+                        </div>
+                        <h3 class="text-warning mb-0">{{ stats.total_costo_obras|guaranies|safe }}</h3>
+                        <small class="text-muted">{{ stats.obras_en_proceso }} obras activas</small>
+                    </div>
+                    <hr>
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Valor en Stock</span>
+                            <span class="badge bg-info">Inventario</span>
+                        </div>
+                        <h3 class="text-info mb-0">{{ stats.valor_inventario|guaranies|safe }}</h3>
+                        <small class="text-muted">{{ stats.total_materiales }} materiales</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="row">
+        <!-- OBRAS RECIENTES -->
+        <div class="col-xl-6 mb-4">
+            <div class="card-premium h-100">
+                <div class="card-header bg-transparent border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-building text-warning me-2"></i>
+                            Obras Recientes
+                        </h5>
+                        <span class="badge bg-primary">{{ stats.total_obras }} Total</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if obras_recientes %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-borderless mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Obra</th>
+                                    <th>Ubicación</th>
+                                    <th>Estado</th>
+                                    <th>Presupuesto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for obra in obras_recientes %}
+                                <tr class="border-bottom">
+                                    <td>
+                                        <strong>{{ obra.nombre|truncatechars:20 }}</strong>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ obra.ubicacion|truncatechars:15|default:"-" }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        {% if obra.estado == 'planificada' %}
+                                        <span class="badge bg-info">📋 Planificada</span>
+                                        {% elif obra.estado == 'en_proceso' %}
+                                        <span class="badge bg-warning">🚧 En Proceso</span>
+                                        {% elif obra.estado == 'finalizada' %}
+                                        <span class="badge bg-success">✅ Finalizada</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ obra.estado }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <strong>{{ obra.presupuesto_asignado|guaranies|safe }}</strong>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No hay obras registradas</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <a href="{% url 'lista_obras' %}" class="btn btn-sm btn-outline-premium w-100">
+                        Ver Todas las Obras
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRESUPUESTOS RECIENTES -->
+        <div class="col-xl-6 mb-4">
+            <div class="card-premium h-100">
+                <div class="card-header bg-transparent border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-file-invoice-dollar text-success me-2"></i>
+                            Presupuestos Recientes
+                        </h5>
+                        <span class="badge bg-primary">{{ stats.total_presupuestos }} Total</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if presupuestos_recientes %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-borderless mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Obra</th>
+                                    <th>Cliente</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for presupuesto in presupuestos_recientes %}
+                                <tr class="border-bottom">
+                                    <td><strong>#{{ presupuesto.id }}</strong></td>
+                                    <td>
+                                        <small>{{ presupuesto.obra.nombre|truncatechars:15 }}</small>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ presupuesto.cliente.username }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ presupuesto.total|guaranies|safe }}</strong>
+                                    </td>
+                                    <td>
+                                        {% if presupuesto.estado == 'aceptado' %}
+                                        <span class="badge bg-success">✅ Aceptado</span>
+                                        {% elif presupuesto.estado == 'rechazado' %}
+                                        <span class="badge bg-danger">❌ Rechazado</span>
+                                        {% elif presupuesto.estado == 'en_revision' %}
+                                        <span class="badge bg-warning">🔍 En Revisión</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">📨 Solicitado</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-file-invoice-dollar fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No hay presupuestos registrados</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <a href="{% url 'lista_presupuestos' %}" class="btn btn-sm btn-outline-premium w-100">
+                        Ver Todos los Presupuestos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TERCERA FILA - ACTIVIDAD Y DEPARTAMENTOS -->
+    <div class="row">
+        <!-- ACTIVIDAD RECIENTE -->
+        <div class="col-xl-8 mb-4">
+            <div class="card-premium h-100">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history text-info me-2"></i>
+                        Actividad Reciente
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if actividades_recientes %}
+                    <div class="timeline">
+                        {% for actividad in actividades_recientes %}
+                        <div class="timeline-item mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <div class="avatar-sm">
+                                        <span class="avatar-title bg-soft-primary rounded-circle">
+                                            {{ actividad.icono }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">
+                                        <strong>{{ actividad.usuario }}</strong> 
+                                        {{ actividad.accion }} 
+                                        {{ actividad.objeto }}
+                                    </h6>
+                                    <p class="text-muted mb-0 small">
+                                        <i class="fas fa-clock me-1"></i>
+                                        {{ actividad.fecha|timesince }} ago
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No hay actividad reciente</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- OBRAS POR DEPARTAMENTO -->
+        <div class="col-xl-4 mb-4">
+            <div class="card-premium h-100">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-map-marked-alt text-danger me-2"></i>
+                        Obras por Ubicación
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if obras_por_departamento %}
+                    <div class="list-group list-group-flush">
+                        {% for dept in obras_por_departamento %}
+                        <div class="list-group-item border-0 px-0 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                    <strong>{{ dept.ubicacion|truncatechars:25 }}</strong>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">{{ dept.total }}</span>
+                            </div>
+                            <div class="progress mt-2" style="height: 5px;">
+                                <div class="progress-bar bg-danger" role="progressbar" 
+                                     style="width: {% widthratio dept.total stats.total_obras 100 %}%"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-map fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No hay datos de ubicación</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCESOS RÁPIDOS -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card-premium">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>
+                        Accesos Rápidos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'nueva_obra' %}" class="btn btn-lg btn-outline-primary w-100 py-3">
+                                <i class="fas fa-plus-circle fa-2x mb-2 d-block"></i>
+                                <strong>Nueva Obra</strong>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'nuevo_presupuesto' %}" class="btn btn-lg btn-outline-success w-100 py-3">
+                                <i class="fas fa-file-invoice-dollar fa-2x mb-2 d-block"></i>
+                                <strong>Nuevo Presupuesto</strong>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'lista_materiales' %}" class="btn btn-lg btn-outline-info w-100 py-3">
+                                <i class="fas fa-boxes fa-2x mb-2 d-block"></i>
+                                <strong>Ver Inventario</strong>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="#" onclick="exportarReporte()" class="btn btn-lg btn-outline-warning w-100 py-3">
+                                <i class="fas fa-chart-bar fa-2x mb-2 d-block"></i>
+                                <strong>Ver Reportes</strong>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // Función para exportar reporte
+    function exportarReporte() {
+        alert('Funcionalidad de exportación en desarrollo');
+    }
+
+    $(document).ready(function() {
+        // Animaciones específicas del dashboard
+        if (typeof gsap !== 'undefined') {
+            gsap.from('.card-premium', {
+                duration: 0.8,
+                y: 30,
+                opacity: 0,
+                stagger: 0.1,
+                ease: "power2.out"
+            });
+
+            // Efectos hover mejorados para tarjetas
+            $('.card-premium').hover(
+                function() {
+                    gsap.to($(this), {
+                        duration: 0.3,
+                        y: -5,
+                        boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+                        ease: "power2.out"
+                    });
+                },
+                function() {
+                    gsap.to($(this), {
+                        duration: 0.3,
+                        y: 0,
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                        ease: "power2.out"
+                    });
+                }
+            );
+        }
+
+        // GRÁFICO DE OBRAS POR ESTADO
+        const ctxObras = document.getElementById('obrasEstadoChart');
+        if (ctxObras) {
+            new Chart(ctxObras, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Planificadas', 'En Proceso', 'Finalizadas'],
+                    datasets: [{
+                        data: [
+                            {{ stats.obras_planificadas }},
+                            {{ stats.obras_en_proceso }},
+                            {{ stats.obras_finalizadas }}
+                        ],
+                        backgroundColor: [
+                            'rgba(23, 162, 184, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(40, 167, 69, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(23, 162, 184, 1)',
+                            'rgba(255, 193, 7, 1)',
+                            'rgba(40, 167, 69, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    let value = context.parsed || 0;
+                                    let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    let percentage = ((value / total) * 100).toFixed(1);
+                                    return label + ': ' + value + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // GRÁFICO DE PRESUPUESTOS
+        const ctxPresupuestos = document.getElementById('presupuestosChart');
+        if (ctxPresupuestos) {
+            new Chart(ctxPresupuestos, {
+                type: 'bar',
+                data: {
+                    labels: ['Solicitados', 'Aceptados', 'Rechazados'],
+                    datasets: [{
+                        label: 'Presupuestos',
+                        data: [
+                            {{ stats.presupuestos_solicitados }},
+                            {{ stats.presupuestos_aceptados }},
+                            {{ stats.presupuestos_rechazados }}
+                        ],
+                        backgroundColor: [
+                            'rgba(108, 117, 125, 0.8)',
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(220, 53, 69, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(108, 117, 125, 1)',
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(220, 53, 69, 1)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Cantidad: ' + context.parsed.y;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        console.log('🚀 Dashboard profesional cargado correctamente!');
+    });
+</script>
+{% endblock %}

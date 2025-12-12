@@ -1,0 +1,97 @@
+<!-- SISTEMA DE NOTIFICACIONES PUSH -->
+<style>
+.notif-container{position:fixed;top:80px;right:20px;z-index:9998;width:350px}
+.notif-item{background:white;border-radius:20px;padding:20px;margin-bottom:15px;box-shadow:0 10px 40px rgba(0,0,0,.2);animation:notifSlide .5s ease-out;cursor:pointer;transition:all .3s}
+@keyframes notifSlide{from{opacity:0;transform:translateX(400px)}to{opacity:1;transform:translateX(0)}}
+.notif-item:hover{transform:translateX(-10px);box-shadow:0 15px 50px rgba(0,0,0,.3)}
+.notif-item.success{border-left:5px solid #28a745}
+.notif-item.warning{border-left:5px solid #ffc107}
+.notif-item.danger{border-left:5px solid #dc3545}
+.notif-item.info{border-left:5px solid #17a2b8}
+.notif-icon{font-size:2rem;margin-right:15px}
+.notif-content h5{margin:0 0 5px;font-weight:700;font-size:1rem}
+.notif-content p{margin:0;font-size:.85rem;color:#666}
+.notif-close{position:absolute;top:10px;right:10px;background:none;border:none;color:#999;cursor:pointer;font-size:1.2rem}
+.notif-bell{position:fixed;top:20px;right:20px;width:60px;height:60px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 30px rgba(102,126,234,.5);z-index:9999;animation:bellShake 2s infinite}
+@keyframes bellShake{0%,100%{transform:rotate(0)}10%,30%{transform:rotate(-10deg)}20%,40%{transform:rotate(10deg)}}
+.notif-bell i{color:white;font-size:1.8rem}
+.notif-badge{position:absolute;top:-5px;right:-5px;background:#dc3545;color:white;border-radius:50%;width:25px;height:25px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold}
+</style>
+
+<div class="notif-bell" onclick="toggleNotificaciones()">
+<i class="fas fa-bell"></i>
+<span class="notif-badge" id="notifBadge">3</span>
+</div>
+
+<div class="notif-container" id="notifContainer" style="display:none"></div>
+
+<script>
+const notificaciones=[
+{tipo:'success',icono:'✅',titulo:'Presupuesto Aceptado',mensaje:'El cliente aceptó tu presupuesto #PY-20251114-0001',tiempo:'Hace 5 min'},
+{tipo:'info',icono:'📋',titulo:'Nueva Obra Asignada',mensaje:'Se te asignó la obra "Casa Residencial"',tiempo:'Hace 15 min'},
+{tipo:'warning',icono:'⚠️',titulo:'Stock Bajo',mensaje:'Material "Cemento" tiene stock bajo',tiempo:'Hace 1 hora'}
+];
+
+function toggleNotificaciones(){
+const container=document.getElementById('notifContainer');
+container.style.display=container.style.display==='none'?'block':'none';
+if(container.style.display==='block'){mostrarNotificaciones()}
+}
+
+function mostrarNotificaciones(){
+const container=document.getElementById('notifContainer');
+container.innerHTML='';
+notificaciones.forEach((n,i)=>{
+const div=document.createElement('div');
+div.className=`notif-item ${n.tipo}`;
+div.innerHTML=`
+<button class="notif-close" onclick="cerrarNotif(this)">&times;</button>
+<div style="display:flex;align-items:start">
+<div class="notif-icon">${n.icono}</div>
+<div class="notif-content">
+<h5>${n.titulo}</h5>
+<p>${n.mensaje}</p>
+<small style="color:#999">${n.tiempo}</small>
+</div>
+</div>`;
+container.appendChild(div);
+});
+}
+
+function cerrarNotif(btn){
+btn.parentElement.style.animation='notifSlide .3s reverse';
+setTimeout(()=>btn.parentElement.remove(),300);
+const badge=document.getElementById('notifBadge');
+badge.textContent=parseInt(badge.textContent)-1;
+if(badge.textContent==='0')badge.style.display='none';
+}
+
+function agregarNotificacion(tipo,icono,titulo,mensaje){
+const container=document.getElementById('notifContainer');
+const div=document.createElement('div');
+div.className=`notif-item ${tipo}`;
+div.innerHTML=`
+<button class="notif-close" onclick="cerrarNotif(this)">&times;</button>
+<div style="display:flex;align-items:start">
+<div class="notif-icon">${icono}</div>
+<div class="notif-content">
+<h5>${titulo}</h5>
+<p>${mensaje}</p>
+<small style="color:#999">Ahora</small>
+</div>
+</div>`;
+container.insertBefore(div,container.firstChild);
+const badge=document.getElementById('notifBadge');
+badge.textContent=parseInt(badge.textContent||0)+1;
+badge.style.display='flex';
+setTimeout(()=>div.remove(),10000);
+}
+
+setInterval(()=>{
+if(Math.random()>.7){
+const tipos=['success','info','warning'];
+const tipo=tipos[Math.floor(Math.random()*tipos.length)];
+agregarNotificacion(tipo,'🔔','Nueva Notificación','Tienes una actualización del sistema');
+}
+},30000);
+</script>

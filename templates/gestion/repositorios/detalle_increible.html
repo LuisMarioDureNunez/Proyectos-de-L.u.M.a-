@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ repositorio.nombre }} - Detalle{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card-premium mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0">
+                            {{ repositorio.get_icono_tipo }} {{ repositorio.nombre }}
+                            {% if repositorio.es_destacado %}
+                            <span class="badge bg-warning text-dark ms-2">⭐ Destacado</span>
+                            {% endif %}
+                        </h3>
+                        <small class="text-muted">{{ repositorio.get_tipo_proyecto_display }}</small>
+                    </div>
+                    {% if puede_editar %}
+                    <div>
+                        <a href="{% url 'editar_repositorio' repositorio.id %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ repositorio.descripcion }}</p>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3 text-center">
+                            <div class="h4 text-warning">{{ repositorio.estrellas }}</div>
+                            <small class="text-muted">⭐ Estrellas</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="h4 text-info">{{ repositorio.forks }}</div>
+                            <small class="text-muted">🍴 Forks</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="h4 text-success">{{ repositorio.watchers }}</div>
+                            <small class="text-muted">👁️ Watchers</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="h4 text-primary">{{ repositorio.vistas }}</div>
+                            <small class="text-muted">👀 Vistas</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mb-4">
+                        <a href="{{ repositorio.url_repositorio }}" target="_blank" class="btn btn-primary">
+                            <i class="fab fa-github me-2"></i>Ver en GitHub
+                        </a>
+                        {% if repositorio.url_demo %}
+                        <a href="{{ repositorio.url_demo }}" target="_blank" class="btn btn-success">
+                            <i class="fas fa-external-link-alt me-2"></i>Ver Demo
+                        </a>
+                        {% endif %}
+                        {% if repositorio.url_documentacion %}
+                        <a href="{{ repositorio.url_documentacion }}" target="_blank" class="btn btn-info">
+                            <i class="fas fa-book me-2"></i>Documentación
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Tecnología Principal</h6>
+                            <span class="badge bg-primary">{{ repositorio.get_tecnologia_principal_display }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Estado</h6>
+                            <span class="badge" style="background-color: {{ repositorio.get_color_estado }};">
+                                {{ repositorio.get_estado_display }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card-premium">
+                <div class="card-header">
+                    <h5 class="mb-0">📊 Información</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Desarrollador:</strong><br>
+                        {{ repositorio.desarrollador.get_full_name|default:repositorio.desarrollador.username }}
+                    </div>
+                    
+                    {% if repositorio.lenguaje_principal %}
+                    <div class="mb-3">
+                        <strong>Lenguaje:</strong><br>
+                        {{ repositorio.lenguaje_principal }}
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <strong>Progreso:</strong><br>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: {{ repositorio.progreso_porcentaje }}%">
+                                {{ repositorio.progreso_porcentaje }}%
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if repositorio.fecha_ultimo_commit %}
+                    <div class="mb-3">
+                        <strong>Último commit:</strong><br>
+                        <small class="text-muted">{{ repositorio.fecha_ultimo_commit|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    {% endif %}
+
+                    {% if repositorio.tags.exists %}
+                    <div class="mb-3">
+                        <strong>Tags:</strong><br>
+                        {% for tag in repositorio.tags.all %}
+                        <span class="badge bg-secondary me-1">{{ tag.nombre }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Repositorios Relacionados -->
+    {% if repositorios_relacionados %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h4 class="mb-4">🔗 Repositorios Relacionados</h4>
+            <div class="row g-4">
+                {% for repo in repositorios_relacionados %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card-premium">
+                        <div class="card-body">
+                            <h6>{{ repo.get_icono_tipo }} {{ repo.nombre }}</h6>
+                            <p class="text-muted small">{{ repo.descripcion|truncatechars:80 }}</p>
+                            <a href="{% url 'detalle_repositorio' repo.id %}" class="btn btn-sm btn-outline-primary">
+                                Ver Detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

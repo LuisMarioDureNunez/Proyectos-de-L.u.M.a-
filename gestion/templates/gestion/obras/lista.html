@@ -1,0 +1,161 @@
+<!-- gestion/templates/gestion/obras/lista.html -->
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo_especial|default:"Obras" }} - Sistema de Gestión{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-building text-primary me-2"></i>
+                {{ titulo_especial|default:"Gestión de Obras" }}
+            </h1>
+            {% if puede_crear %}
+            <div class="btn-group">
+                <a href="{% url 'obras_finalizadas' %}" class="btn btn-outline-success">
+                    <i class="fas fa-check-circle me-1"></i>Obras Finalizadas
+                </a>
+                <a href="{% url 'nueva_obra' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Nueva Obra
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-5">
+                        <input type="text" name="q" value="{{ query }}" 
+                               class="form-control search-box" placeholder="Buscar obras...">
+                    </div>
+                    <div class="col-md-5">
+                        <select name="estado" class="form-select">
+                            <option value="">Todos los estados</option>
+                            <option value="planificada" {% if estado_filter == 'planificada' %}selected{% endif %}>Planificada</option>
+                            <option value="en_proceso" {% if estado_filter == 'en_proceso' %}selected{% endif %}>En Proceso</option>
+                            <option value="finalizada" {% if estado_filter == 'finalizada' %}selected{% endif %}>Finalizada</option>
+                            <option value="cancelada" {% if estado_filter == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-filter me-1"></i>Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista de Obras -->
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Lista de Obras ({{ obras.count }})
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% if obras %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Ubicación</th>
+                                <th>Cliente</th>
+                                <th>Estado</th>
+                                <th>Fecha Inicio</th>
+                                <th>Presupuesto</th>
+                                <th>Duración</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for obra in obras %}
+                            <tr>
+                                <td>
+                                    <strong>{{ obra.nombre }}</strong>
+                                    {% if obra.descripcion %}
+                                    <br><small class="text-muted">{{ obra.descripcion|truncatewords:5 }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ obra.ubicacion }}</td>
+                                <td>
+                                    <small>{{ obra.cliente.get_full_name|default:obra.cliente.username }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge 
+                                        {% if obra.estado == 'finalizada' %}bg-success
+                                        {% elif obra.estado == 'en_proceso' %}bg-warning
+                                        {% elif obra.estado == 'planificada' %}bg-info
+                                        {% else %}bg-danger{% endif %}">
+                                        {{ obra.get_estado_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small>{{ obra.fecha_inicio|date:"d/m/Y" }}</small>
+                                </td>
+                                <td>
+                                    {% if obra.presupuesto_asignado %}
+                                    <span class="fw-bold text-success">₲ {{ obra.presupuesto_asignado|floatformat:0 }}</span>
+                                    {% else %}
+                                    <span class="text-muted">Sin presupuesto</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small>{{ obra.duracion_dias }} días</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'detalle_obra' obra.id %}" 
+                                           class="btn btn-outline-info" title="Ver Detalles">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% if puede_crear %}
+                                        <a href="{% url 'editar_obra' obra.id %}" 
+                                           class="btn btn-outline-primary" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        {% endif %}
+                                        {% if user.es_administrador %}
+                                        <a href="{% url 'eliminar_obra' obra.id %}" 
+                                           class="btn btn-outline-danger" title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-building fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No se encontraron obras</h4>
+                    <p class="text-muted">
+                        {% if query %}
+                        No hay resultados para "{{ query }}"
+                        {% elif estado_filter %}
+                        No hay obras con estado "{{ estado_filter }}"
+                        {% else %}
+                        No hay obras registradas en el sistema
+                        {% endif %}
+                    </p>
+                    {% if puede_crear %}
+                    <a href="{% url 'nueva_obra' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Crear Primera Obra
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

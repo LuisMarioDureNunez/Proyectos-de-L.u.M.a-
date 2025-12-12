@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}🎉 Confirmación de Pedido - Mi Tienda Premium{% endblock %}
+
+{% block extra_css %}
+<style>
+.confirmation-hero {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+    border-radius: 15px;
+    padding: 3rem 2rem;
+}
+
+.order-timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.order-timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #28a745, #17a2b8);
+}
+
+.timeline-step {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.timeline-step::before {
+    content: '';
+    position: absolute;
+    left: -33px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #28a745;
+    border: 3px solid white;
+    box-shadow: 0 0 0 3px #28a745;
+}
+
+.timeline-step.completed::before {
+    background: #28a745;
+    box-shadow: 0 0 0 3px #28a745;
+}
+
+.timeline-step.current::before {
+    background: #17a2b8;
+    box-shadow: 0 0 0 3px #17a2b8;
+    animation: pulse 2s infinite;
+}
+
+.timeline-step.pending::before {
+    background: #6c757d;
+    box-shadow: 0 0 0 3px #6c757d;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(23, 162, 184, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(23, 162, 184, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(23, 162, 184, 0); }
+}
+
+.order-summary-card {
+    border-left: 4px solid #28a745;
+    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+}
+
+.product-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.download-buttons .btn {
+    transition: all 0.3s ease;
+}
+
+.download-buttons .btn:hover {
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- HERO SECTION -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="confirmation-hero text-white text-center shadow-lg">
+                <div class="row align-items-center">
+                    <div class="col-md-8 text-md-start">
+                        <h1 class="display-4 fw-bold mb-3">
+                            <i class="fas fa-check-circle me-3"></i>¡Pedido Confirmado!
+                        </h1>
+                        <p class="lead mb-0">Tu pedido ha sido procesado exitosamente. Te hemos enviado un email de confirmación.</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="bg-white bg-opacity-25 rounded-3 p-4 d-inline-block">
+                            <h2 class="mb-0">{{ pedido.numero_pedido }}</h2>
+                            <small>Número de Pedido</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- INFORMACIÓN DEL PEDIDO -->
+        <div class="col-lg-8">
+            <!-- Timeline del Pedido -->
+            <div class="card shadow-lg mb-4">
+                <div class="card-header bg-light py-3">
+                    <h4 class="mb-0 text-dark">
+                        <i class="fas fa-history me-2"></i>Estado del Pedido
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="order-timeline">
+                        <div class="timeline-step completed">
+                            <h5 class="text-success">
+                                <i class="fas fa-shopping-cart me-2"></i>Pedido Realizado
+                            </h5>
+                            <p class="text-muted mb-2">Tu pedido ha sido recibido y confirmado</p>
+                            <small class="text-success">{{ pedido.fecha_pedido|date:"d/m/Y H:i" }}</small>
+                        </div>
+                        
+                        <div class="timeline-step {% if pedido.estado != 'pendiente' %}completed{% else %}current{% endif %}">
+                            <h5 class="{% if pedido.estado != 'pendiente' %}text-success{% else %}text-info{% endif %}">
+                                <i class="fas fa-cog me-2"></i>Preparando Pedido
+                            </h5>
+                            <p class="text-muted mb-2">Estamos preparando tu pedido para el envío</p>
+                            {% if pedido.estado != 'pendiente' %}
+                            <small class="text-success">Completado</small>
+                            {% else %}
+                            <small class="text-info">En proceso</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="timeline-step {% if pedido.estado == 'enviado' or pedido.estado == 'entregado' %}completed{% elif pedido.estado == 'preparando' %}current{% else %}pending{% endif %}">
+                            <h5 class="{% if pedido.estado == 'enviado' or pedido.estado == 'entregado' %}text-success{% elif pedido.estado == 'preparando' %}text-info{% else %}text-muted{% endif %}">
+                                <i class="fas fa-shipping-fast me-2"></i>En Camino
+                            </h5>
+                            <p class="text-muted mb-2">Tu pedido ha sido enviado</p>
+                            {% if pedido.estado == 'enviado' or pedido.estado == 'entregado' %}
+                            <small class="text-success">Enviado</small>
+                            {% elif pedido.estado == 'preparando' %}
+                            <small class="text-info">Próximamente</small>
+                            {% else %}
+                            <small class="text-muted">Pendiente</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="timeline-step {% if pedido.estado == 'entregado' %}completed{% else %}pending{% endif %}">
+                            <h5 class="{% if pedido.estado == 'entregado' %}text-success{% else %}text-muted{% endif %}">
+                                <i class="fas fa-home me-2"></i>Entregado
+                            </h5>
+                            <p class="text-muted mb-2">Tu pedido ha sido entregado</p>
+                            {% if pedido.estado == 'entregado' %}
+                            <small class="text-success">Entregado</small>
+                            {% else %}
+                            <small class="text-muted">Pendiente</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen del Pedido -->
+            <div class="card shadow-lg">
+                <div class="card-header bg-light py-3">
+                    <h4 class="mb-0 text-dark">
+                        <i class="fas fa-boxes me-2"></i>Detalles del Pedido
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    {% for item in items_pedido %}
+                    <div class="border-bottom p-4 {% if forloop.last %}border-bottom-0{% endif %}">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                {% if item.producto.imagen %}
+                                <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" 
+                                     class="product-image shadow-sm">
+                                {% else %}
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center product-image">
+                                    <i class="fas fa-box text-muted"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-5">
+                                <h5 class="mb-1">{{ item.producto.nombre }}</h5>
+                                <p class="text-muted mb-1 small">{{ item.producto.categoria.nombre }}</p>
+                                <span class="badge bg-secondary">SKU: {{ item.producto.id }}</span>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="fw-bold">x{{ item.cantidad }}</span>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <h5 class="text-success mb-0">{{ item.precio_unitario|floatformat:0 }} Gs.</h5>
+                                <small class="text-muted">c/u</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- INFORMACIÓN DE ENVÍO Y PAGO -->
+        <div class="col-lg-4">
+            <!-- Resumen de Costos -->
+            <div class="card shadow-lg mb-4">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-receipt me-2"></i>Resumen de Pago
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <strong>{{ pedido.subtotal|floatformat:0 }} Gs.</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Impuestos (16%):</span>
+                            <strong>{{ pedido.impuesto|floatformat:0 }} Gs.</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Envío:</span>
+                            <strong>{{ pedido.envio|floatformat:0 }} Gs.</strong>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="h5">Total:</span>
+                            <strong class="h4 text-success">{{ pedido.total|floatformat:0 }} Gs.</strong>
+                        </div>
+                    </div>
+
+                    <!-- Método de Pago -->
+                    <div class="mb-3">
+                        <h6 class="text-muted">Método de Pago</h6>
+                        <div class="d-flex align-items-center">
+                            {% if pedido.metodo_pago == 'tarjeta' %}
+                            <i class="fab fa-cc-visa fa-2x text-primary me-3"></i>
+                            <span class="fw-bold">Tarjeta de Crédito/Débito</span>
+                            {% elif pedido.metodo_pago == 'paypal' %}
+                            <i class="fab fa-paypal fa-2x text-info me-3"></i>
+                            <span class="fw-bold">PayPal</span>
+                            {% elif pedido.metodo_pago == 'transferencia' %}
+                            <i class="fas fa-university fa-2x text-success me-3"></i>
+                            <span class="fw-bold">Transferencia Bancaria</span>
+                            {% else %}
+                            <i class="fas fa-money-bill-wave fa-2x text-success me-3"></i>
+                            <span class="fw-bold">Efectivo al recibir</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de Envío -->
+            <div class="card shadow-lg mb-4">
+                <div class="card-header bg-gradient-info text-white py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-truck me-2"></i>Información de Envío
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-muted">Destinatario</h6>
+                        <p class="mb-1 fw-bold">{{ pedido.nombre_completo }}</p>
+                        <p class="mb-1 text-muted small">{{ pedido.email }}</p>
+                        <p class="mb-0 text-muted small">{{ pedido.telefono }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="text-muted">Dirección de Envío</h6>
+                        <p class="mb-1 small">{{ pedido.direccion }}</p>
+                        <p class="mb-1 small">{{ pedido.ciudad }}, {{ pedido.codigo_postal }}</p>
+                        <p class="mb-0 small">{{ pedido.pais }}</p>
+                    </div>
+
+                    {% if pedido.notas %}
+                    <div>
+                        <h6 class="text-muted">Notas Especiales</h6>
+                        <p class="small text-muted mb-0">{{ pedido.notas }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Acciones Rápidas -->
+            <div class="card shadow-lg">
+                <div class="card-header bg-light py-3">
+                    <h5 class="mb-0">Acciones</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2 download-buttons">
+                        <a href="{% url 'lista_pedidos' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-list me-2"></i>Ver Todos mis Pedidos
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-outline-success">
+                            <i class="fas fa-shopping-bag me-2"></i>Seguir Comprando
+                        </a>
+                        <button class="btn btn-outline-info" onclick="window.print()">
+                            <i class="fas fa-print me-2"></i>Imprimir Comprobante
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Soporte -->
+            <div class="card shadow-lg mt-4 border-warning">
+                <div class="card-body text-center">
+                    <i class="fas fa-headset fa-2x text-warning mb-3"></i>
+                    <h6 class="mb-2">¿Necesitas ayuda?</h6>
+                    <p class="small text-muted mb-2">Nuestro equipo de soporte está disponible 24/7</p>
+                    <a href="mailto:soporte@mitienda.com" class="btn btn-warning btn-sm">
+                        <i class="fas fa-envelope me-1"></i>Contactar Soporte
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

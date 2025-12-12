@@ -1,0 +1,445 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}📊 Reporte Completo de Producción - L.u.M.a{% endblock %}
+
+{% block extra_css %}
+<style>
+.reporte-hero {
+    background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+    border-radius: 25px;
+    padding: 3rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.periodo-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.4s ease;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.periodo-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #FF6B35, #F7931E, #FFD23F);
+}
+
+.periodo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.metric-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 20px;
+    color: white;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.periodo-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2C3E50;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.comparacion-table {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.table-header {
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+    color: white;
+    font-weight: bold;
+}
+
+.btn-export {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 12px 30px;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-export:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+    color: white;
+}
+
+.progress-comparison {
+    height: 8px;
+    border-radius: 10px;
+    background: #e9ecef;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progress-bar-custom {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 2s ease;
+}
+
+.icon-periodo {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- HERO SECTION -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="reporte-hero">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-4 fw-bold mb-3">
+                            📊 Reporte Completo de Producción
+                        </h1>
+                        <p class="lead mb-0">
+                            Análisis detallado por todos los períodos de tiempo
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="bg-white bg-opacity-20 rounded-3 p-3">
+                            <h5 class="mb-1">Generado:</h5>
+                            <h6 class="mb-0">{{ fecha_generacion|date:"d/m/Y H:i" }}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTONES DE EXPORTACIÓN -->
+    <div class="row mb-4">
+        <div class="col-12 text-end">
+            <button class="btn btn-export me-2" onclick="exportarPDF()">
+                <i class="fas fa-file-pdf me-2"></i>Exportar PDF
+            </button>
+            <button class="btn btn-export me-2" onclick="exportarExcel()">
+                <i class="fas fa-file-excel me-2"></i>Exportar Excel
+            </button>
+            <button class="btn btn-export" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Imprimir
+            </button>
+        </div>
+    </div>
+
+    <!-- REPORTES POR PERÍODO -->
+    <div class="row">
+        <!-- REPORTE POR HORA -->
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="periodo-card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-clock icon-periodo text-primary"></i>
+                        <h3 class="periodo-title">Producción por Hora</h3>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="metric-box">
+                            <div class="metric-value">{{ reporte_completo.hora.produccion_promedio }}%</div>
+                            <div class="metric-label">Producción Promedio</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">{{ reporte_completo.hora.empleados_promedio }}</div>
+                            <div class="metric-label">Empleados Activos</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">{{ reporte_completo.hora.eficiencia_promedio }}%</div>
+                            <div class="metric-label">Eficiencia</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">{{ reporte_completo.hora.costo_total|floatformat:0 }}</div>
+                            <div class="metric-label">Costo Total (Gs.)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPORTE POR DÍA -->
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="periodo-card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-calendar-day icon-periodo text-success"></i>
+                        <h3 class="periodo-title">Producción por Día</h3>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="metric-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                            <div class="metric-value">{{ reporte_completo.dia.produccion_promedio }}%</div>
+                            <div class="metric-label">Producción Promedio</div>
+                        </div>
+                        <div class="metric-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                            <div class="metric-value">{{ reporte_completo.dia.empleados_promedio }}</div>
+                            <div class="metric-label">Empleados Activos</div>
+                        </div>
+                        <div class="metric-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                            <div class="metric-value">{{ reporte_completo.dia.eficiencia_promedio }}%</div>
+                            <div class="metric-label">Eficiencia</div>
+                        </div>
+                        <div class="metric-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                            <div class="metric-value">{{ reporte_completo.dia.costo_total|floatformat:0 }}</div>
+                            <div class="metric-label">Costo Total (Gs.)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPORTE POR SEMANA -->
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="periodo-card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-calendar-week icon-periodo text-warning"></i>
+                        <h3 class="periodo-title">Producción por Semana</h3>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="metric-box" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+                            <div class="metric-value">{{ reporte_completo.semana.produccion_promedio }}%</div>
+                            <div class="metric-label">Producción Promedio</div>
+                        </div>
+                        <div class="metric-box" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+                            <div class="metric-value">{{ reporte_completo.semana.empleados_promedio }}</div>
+                            <div class="metric-label">Empleados Activos</div>
+                        </div>
+                        <div class="metric-box" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+                            <div class="metric-value">{{ reporte_completo.semana.eficiencia_promedio }}%</div>
+                            <div class="metric-label">Eficiencia</div>
+                        </div>
+                        <div class="metric-box" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+                            <div class="metric-value">{{ reporte_completo.semana.costo_total|floatformat:0 }}</div>
+                            <div class="metric-label">Costo Total (Gs.)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPORTE POR MES -->
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="periodo-card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-calendar-alt icon-periodo text-info"></i>
+                        <h3 class="periodo-title">Producción por Mes</h3>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="metric-box" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);">
+                            <div class="metric-value">{{ reporte_completo.mes.produccion_promedio }}%</div>
+                            <div class="metric-label">Producción Promedio</div>
+                        </div>
+                        <div class="metric-box" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);">
+                            <div class="metric-value">{{ reporte_completo.mes.empleados_promedio }}</div>
+                            <div class="metric-label">Empleados Activos</div>
+                        </div>
+                        <div class="metric-box" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);">
+                            <div class="metric-value">{{ reporte_completo.mes.eficiencia_promedio }}%</div>
+                            <div class="metric-label">Eficiencia</div>
+                        </div>
+                        <div class="metric-box" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);">
+                            <div class="metric-value">{{ reporte_completo.mes.costo_total|floatformat:0 }}</div>
+                            <div class="metric-label">Costo Total (Gs.)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPORTE POR AÑO -->
+        <div class="col-12 mb-4">
+            <div class="periodo-card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-calendar icon-periodo text-danger"></i>
+                        <h3 class="periodo-title">Producción por Año</h3>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="metric-box" style="background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);">
+                                <div class="metric-value">{{ reporte_completo.año.produccion_promedio }}%</div>
+                                <div class="metric-label">Producción Promedio</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric-box" style="background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);">
+                                <div class="metric-value">{{ reporte_completo.año.empleados_promedio }}</div>
+                                <div class="metric-label">Empleados Promedio</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric-box" style="background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);">
+                                <div class="metric-value">{{ reporte_completo.año.obras_completadas }}</div>
+                                <div class="metric-label">Obras Completadas</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="metric-box" style="background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);">
+                                <div class="metric-value">{{ reporte_completo.año.costo_total|floatformat:0 }}</div>
+                                <div class="metric-label">Costo Total (Gs.)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLA COMPARATIVA -->
+    <div class="row">
+        <div class="col-12">
+            <div class="comparacion-table">
+                <table class="table table-hover mb-0">
+                    <thead class="table-header">
+                        <tr>
+                            <th>Período</th>
+                            <th>Producción (%)</th>
+                            <th>Empleados</th>
+                            <th>Eficiencia (%)</th>
+                            <th>Costo Total (Gs.)</th>
+                            <th>Obras</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Hora</strong></td>
+                            <td>
+                                <div class="progress-comparison">
+                                    <div class="progress-bar-custom" style="width: {{ reporte_completo.hora.produccion_promedio }}%; background: linear-gradient(90deg, #667eea, #764ba2);"></div>
+                                </div>
+                                {{ reporte_completo.hora.produccion_promedio }}%
+                            </td>
+                            <td>{{ reporte_completo.hora.empleados_promedio }}</td>
+                            <td>{{ reporte_completo.hora.eficiencia_promedio }}%</td>
+                            <td>{{ reporte_completo.hora.costo_total|floatformat:0 }}</td>
+                            <td>{{ reporte_completo.hora.obras_completadas }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Día</strong></td>
+                            <td>
+                                <div class="progress-comparison">
+                                    <div class="progress-bar-custom" style="width: {{ reporte_completo.dia.produccion_promedio }}%; background: linear-gradient(90deg, #28a745, #20c997);"></div>
+                                </div>
+                                {{ reporte_completo.dia.produccion_promedio }}%
+                            </td>
+                            <td>{{ reporte_completo.dia.empleados_promedio }}</td>
+                            <td>{{ reporte_completo.dia.eficiencia_promedio }}%</td>
+                            <td>{{ reporte_completo.dia.costo_total|floatformat:0 }}</td>
+                            <td>{{ reporte_completo.dia.obras_completadas }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Semana</strong></td>
+                            <td>
+                                <div class="progress-comparison">
+                                    <div class="progress-bar-custom" style="width: {{ reporte_completo.semana.produccion_promedio }}%; background: linear-gradient(90deg, #ffc107, #fd7e14);"></div>
+                                </div>
+                                {{ reporte_completo.semana.produccion_promedio }}%
+                            </td>
+                            <td>{{ reporte_completo.semana.empleados_promedio }}</td>
+                            <td>{{ reporte_completo.semana.eficiencia_promedio }}%</td>
+                            <td>{{ reporte_completo.semana.costo_total|floatformat:0 }}</td>
+                            <td>{{ reporte_completo.semana.obras_completadas }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mes</strong></td>
+                            <td>
+                                <div class="progress-comparison">
+                                    <div class="progress-bar-custom" style="width: {{ reporte_completo.mes.produccion_promedio }}%; background: linear-gradient(90deg, #17a2b8, #6f42c1);"></div>
+                                </div>
+                                {{ reporte_completo.mes.produccion_promedio }}%
+                            </td>
+                            <td>{{ reporte_completo.mes.empleados_promedio }}</td>
+                            <td>{{ reporte_completo.mes.eficiencia_promedio }}%</td>
+                            <td>{{ reporte_completo.mes.costo_total|floatformat:0 }}</td>
+                            <td>{{ reporte_completo.mes.obras_completadas }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Año</strong></td>
+                            <td>
+                                <div class="progress-comparison">
+                                    <div class="progress-bar-custom" style="width: {{ reporte_completo.año.produccion_promedio }}%; background: linear-gradient(90deg, #dc3545, #e83e8c);"></div>
+                                </div>
+                                {{ reporte_completo.año.produccion_promedio }}%
+                            </td>
+                            <td>{{ reporte_completo.año.empleados_promedio }}</td>
+                            <td>{{ reporte_completo.año.eficiencia_promedio }}%</td>
+                            <td>{{ reporte_completo.año.costo_total|floatformat:0 }}</td>
+                            <td>{{ reporte_completo.año.obras_completadas }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function exportarPDF() {
+    window.open('{% url "reporte_produccion_completo" %}?format=pdf', '_blank');
+}
+
+function exportarExcel() {
+    window.open('{% url "reporte_produccion_completo" %}?format=excel', '_blank');
+}
+
+// Animar barras de progreso al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        document.querySelectorAll('.progress-bar-custom').forEach(bar => {
+            bar.style.width = bar.style.width;
+        });
+    }, 500);
+});
+</script>
+{% endblock %}

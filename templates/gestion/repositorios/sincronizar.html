@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}🔄 Sincronizar Repositorios{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card-premium">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-sync me-2"></i>
+                        Sincronizar Repositorios con GitHub
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        La sincronización actualizará las estadísticas de tus repositorios desde GitHub API.
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <div class="form-check">
+                                {{ form.sincronizar_todos }}
+                                <label class="form-check-label fw-bold" for="{{ form.sincronizar_todos.id_for_label }}">
+                                    {{ form.sincronizar_todos.label }}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Seleccionar repositorios específicos:</label>
+                            <div class="row">
+                                {% for repo in form.repositorios %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        {{ repo.tag }}
+                                        <label class="form-check-label" for="{{ repo.id_for_label }}">
+                                            {{ repo.choice_label }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'lista_repositorios' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-sync me-2"></i>Sincronizar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}🧪 Probar Notificaciones - Mi Tienda Premium{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="hero-section bg-gradient-warning text-white rounded-3 p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-5 fw-bold">
+                            <i class="fas fa-bell me-3"></i>Probar Notificaciones
+                        </h1>
+                        <p class="lead mb-0">Sistema de notificaciones por email - Módulo de pruebas</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="bg-white bg-opacity-25 rounded-3 p-3 d-inline-block">
+                            <h4 class="mb-0">📧</h4>
+                            <small>Email Testing</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info">
+        <h5><i class="fas fa-info-circle me-2"></i>Información</h5>
+        <p class="mb-0">
+            Esta página es solo para desarrollo. En producción, las notificaciones se enviarán automáticamente.
+            <strong>Configura tu email en settings.py antes de probar.</strong>
+        </p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-paper-plane me-2"></i>Enviar Notificaciones de Prueba</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Selecciona el tipo de notificación:</label>
+                            
+                            <div class="list-group">
+                                <button type="submit" name="tipo_notificacion" value="producto_creado" 
+                                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                        {% if not producto %}disabled{% endif %}>
+                                    <div>
+                                        <i class="fas fa-plus-circle text-success me-2"></i>
+                                        <strong>Producto Creado</strong>
+                                        <div class="text-muted small">Notificación cuando se crea un producto</div>
+                                    </div>
+                                    <span class="badge bg-success rounded-pill">🎉</span>
+                                </button>
+                                
+                                <button type="submit" name="tipo_notificacion" value="producto_actualizado" 
+                                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                        {% if not producto %}disabled{% endif %}>
+                                    <div>
+                                        <i class="fas fa-edit text-info me-2"></i>
+                                        <strong>Producto Actualizado</strong>
+                                        <div class="text-muted small">Notificación cuando se actualiza un producto</div>
+                                    </div>
+                                    <span class="badge bg-info rounded-pill">✏️</span>
+                                </button>
+                                
+                                <button type="submit" name="tipo_notificacion" value="stock_bajo" 
+                                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                                        {% if not producto %}disabled{% endif %}>
+                                    <div>
+                                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                        <strong>Stock Bajo</strong>
+                                        <div class="text-muted small">Alerta cuando un producto tiene stock bajo</div>
+                                    </div>
+                                    <span class="badge bg-warning rounded-pill">⚠️</span>
+                                </button>
+                                
+                                <button type="submit" name="tipo_notificacion" value="bienvenida" 
+                                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-hand-wave text-primary me-2"></i>
+                                        <strong>Email de Bienvenida</strong>
+                                        <div class="text-muted small">Notificación de bienvenida a nuevos usuarios</div>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">👋</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    {% if not producto %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Necesitas tener al menos un producto creado para probar algunas notificaciones.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-terminal me-2"></i>Comandos Disponibles</h4>
+                </div>
+                <div class="card-body">
+                    <h5>Revisar stock bajo automáticamente:</h5>
+                    <div class="bg-dark text-light p-3 rounded mb-3">
+                        <code>python manage.py check_stock --verbose</code>
+                    </div>
+                    
+                    <h5>Configuración de Email:</h5>
+                    <div class="bg-light p-3 rounded">
+                        <small>
+                            <strong>Gmail:</strong> Usar contraseña de aplicación<br>
+                            <strong>Desarrollo:</strong> Los emails se muestran en la consola<br>
+                            <strong>Producción:</strong> Configurar SMTP real
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #f6c23e 0%, #e74a3b 100%) !important;
+}
+
+.list-group-item {
+    border: 1px solid #dee2e6;
+    margin-bottom: 5px;
+    border-radius: 8px !important;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+    transition: all 0.3s ease;
+}
+</style>
+{% endblock %}

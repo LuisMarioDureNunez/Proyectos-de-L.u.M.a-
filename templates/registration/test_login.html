@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test Login - Sistema LUMA</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .test-container {
+            padding: 50px 0;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .user-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .btn-test {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-test:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .status-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-online {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container test-container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- HEADER -->
+                <div class="test-card text-center">
+                    <h1 class="display-4 mb-4">
+                        🧪 <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            TEST LOGIN
+                        </span>
+                    </h1>
+                    <p class="lead text-muted">
+                        Página de prueba para verificar el funcionamiento del sistema de login
+                    </p>
+                    
+                    <!-- ESTADO DEL SISTEMA -->
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="fas fa-server fa-2x text-success me-3"></i>
+                                <div>
+                                    <h6 class="mb-0">Servidor</h6>
+                                    <span class="status-badge status-online">
+                                        <i class="fas fa-check-circle me-1"></i>Online
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="fas fa-database fa-2x text-info me-3"></i>
+                                <div>
+                                    <h6 class="mb-0">Base de Datos</h6>
+                                    <span class="status-badge status-online">
+                                        <i class="fas fa-check-circle me-1"></i>Conectada
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="fas fa-shield-alt fa-2x text-warning me-3"></i>
+                                <div>
+                                    <h6 class="mb-0">Autenticación</h6>
+                                    <span class="status-badge status-online">
+                                        <i class="fas fa-check-circle me-1"></i>Activa
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- USUARIOS DE PRUEBA -->
+                <div class="test-card">
+                    <h3 class="mb-4">
+                        <i class="fas fa-users text-primary me-2"></i>
+                        Usuarios de Prueba Disponibles
+                    </h3>
+                    
+                    <div class="row">
+                        {% for usuario in usuarios_demo %}
+                        <div class="col-lg-6 mb-3">
+                            <div class="user-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-2">
+                                            {% if usuario.rol == 'Administrador' %}
+                                                <i class="fas fa-crown text-warning me-2"></i>
+                                            {% elif usuario.rol == 'Constructor' %}
+                                                <i class="fas fa-hard-hat text-info me-2"></i>
+                                            {% elif usuario.rol == 'Cliente' %}
+                                                <i class="fas fa-user text-success me-2"></i>
+                                            {% else %}
+                                                <i class="fas fa-briefcase text-secondary me-2"></i>
+                                            {% endif %}
+                                            {{ usuario.rol }}
+                                        </h5>
+                                        <p class="mb-2">
+                                            <strong>Usuario:</strong> <code>{{ usuario.username }}</code><br>
+                                            <strong>Contraseña:</strong> <code>{{ usuario.password }}</code>
+                                        </p>
+                                        <small class="text-muted">
+                                            {% if usuario.rol == 'Administrador' %}
+                                                Acceso completo al sistema, gestión de usuarios y configuración.
+                                            {% elif usuario.rol == 'Constructor' %}
+                                                Gestión de obras, presupuestos y recursos de construcción.
+                                            {% elif usuario.rol == 'Cliente' %}
+                                                Solicitud de presupuestos y seguimiento de obras.
+                                            {% else %}
+                                                Gestión de productos y atención al cliente.
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-test" onclick="loginRapido('{{ usuario.username }}', '{{ usuario.password }}')">
+                                            <i class="fas fa-sign-in-alt me-2"></i>
+                                            Login Rápido
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- ACCIONES RÁPIDAS -->
+                <div class="test-card">
+                    <h3 class="mb-4">
+                        <i class="fas fa-bolt text-warning me-2"></i>
+                        Acciones Rápidas
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'login' %}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="fas fa-sign-in-alt fa-2x mb-2 d-block"></i>
+                                <strong>Login Manual</strong>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'registro' %}" class="btn btn-outline-success w-100 py-3">
+                                <i class="fas fa-user-plus fa-2x mb-2 d-block"></i>
+                                <strong>Registro</strong>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-info w-100 py-3">
+                                <i class="fas fa-tachometer-alt fa-2x mb-2 d-block"></i>
+                                <strong>Dashboard</strong>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary w-100 py-3">
+                                <i class="fas fa-home fa-2x mb-2 d-block"></i>
+                                <strong>Inicio</strong>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- INFORMACIÓN DEL SISTEMA -->
+                <div class="test-card">
+                    <h3 class="mb-4">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        Información del Sistema
+                    </h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>🔧 Configuración Actual:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Django 4.2.7</li>
+                                <li><i class="fas fa-check text-success me-2"></i>SQLite Database</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Bootstrap 5.3.2</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Font Awesome 6.4.0</li>
+                                <li><i class="fas fa-check text-success me-2"></i>GSAP Animations</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>🛡️ Características de Seguridad:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-shield-alt text-primary me-2"></i>Middleware de Permisos</li>
+                                <li><i class="fas fa-eye text-primary me-2"></i>Auditoría de Acciones</li>
+                                <li><i class="fas fa-lock text-primary me-2"></i>Protección CSRF</li>
+                                <li><i class="fas fa-user-shield text-primary me-2"></i>Roles y Permisos</li>
+                                <li><i class="fas fa-history text-primary me-2"></i>Logs de Seguridad</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <script>
+        function loginRapido(username, password) {
+            // Crear formulario dinámico para login rápido
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{% url "login" %}';
+            
+            // CSRF Token
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = 'csrfmiddlewaretoken';
+            csrfToken.value = '{{ csrf_token }}';
+            
+            // Username
+            const usernameInput = document.createElement('input');
+            usernameInput.type = 'hidden';
+            usernameInput.name = 'username';
+            usernameInput.value = username;
+            
+            // Password
+            const passwordInput = document.createElement('input');
+            passwordInput.type = 'hidden';
+            passwordInput.name = 'password';
+            passwordInput.value = password;
+            
+            // Agregar campos al formulario
+            form.appendChild(csrfToken);
+            form.appendChild(usernameInput);
+            form.appendChild(passwordInput);
+            
+            // Agregar al DOM y enviar
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        // Animaciones
+        $(document).ready(function() {
+            $('.user-card').each(function(index) {
+                $(this).css('animation-delay', (index * 0.1) + 's');
+                $(this).addClass('animate__animated animate__fadeInUp');
+            });
+            
+            console.log('🧪 Página de test cargada correctamente!');
+        });
+    </script>
+</body>
+</html>

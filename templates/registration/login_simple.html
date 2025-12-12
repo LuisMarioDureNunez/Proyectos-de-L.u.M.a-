@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema LUMA Paraguay</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 3px solid #667eea;
+        }
+        
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .demo-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 25px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .demo-title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .demo-user {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-user:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0 10px;
+        }
+        
+        .links a:hover {
+            text-decoration: underline;
+        }
+        
+        .btn-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-back:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- BOTÓN VOLVER -->
+    <a href="{% url 'home' %}" class="btn-back">
+        <i class="fas fa-arrow-left me-2"></i>Volver al Inicio
+    </a>
+
+    <div class="login-container">
+        <!-- LOGO -->
+        <div class="logo-container">
+            <img src="{% static 'images/logo.jpeg' %}" alt="LUMA" class="logo" onerror="this.src='{% static 'images/logo1.png' %}'">
+            <div class="title">L.U.M.A</div>
+            <div class="subtitle">
+                <img src="{% static 'images/paraguay-flag.png' %}" alt="Paraguay" style="width: 20px; height: 15px; margin-right: 5px;" onerror="this.style.display='none'">
+                Sistema Paraguay
+            </div>
+        </div>
+
+        <!-- ALERTAS -->
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Error:</strong> Usuario o contraseña incorrectos
+        </div>
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- FORMULARIO SIMPLE SIN JAVASCRIPT COMPLEJO -->
+        <form method="post" action="{% url 'login' %}" id="loginForm">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label" for="id_username">
+                    <i class="fas fa-user me-2"></i>Usuario
+                </label>
+                <input type="text" 
+                       name="username" 
+                       class="form-control" 
+                       id="id_username" 
+                       required 
+                       autofocus
+                       value="{{ form.username.value|default:'' }}"
+                       placeholder="Ingresa tu usuario">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="id_password">
+                    <i class="fas fa-lock me-2"></i>Contraseña
+                </label>
+                <input type="password" 
+                       name="password" 
+                       class="form-control" 
+                       id="id_password" 
+                       required
+                       placeholder="Ingresa tu contraseña">
+            </div>
+
+            <!-- Campo Next -->
+            {% if request.GET.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+            {% endif %}
+
+            <button type="submit" class="btn-login" id="btnLogin">
+                <i class="fas fa-sign-in-alt me-2"></i>
+                <span id="btnText">INICIAR SESIÓN</span>
+            </button>
+        </form>
+
+        <!-- ENLACES -->
+        <div class="links">
+            <a href="{% url 'registro' %}">¿No tienes cuenta? Regístrate aquí</a>
+        </div>
+
+        <!-- DEMO SECTION -->
+        <div class="demo-section">
+            <div class="demo-title">
+                <i class="fas fa-info-circle me-2"></i>Cuentas de Demostración
+            </div>
+            
+            <div class="demo-user" onclick="fillLogin('admin', '123')">
+                <img src="{% static 'images/admin-icon.png' %}" alt="Admin" style="width: 20px; height: 20px; margin-right: 8px;" onerror="this.innerHTML='<i class=\"fas fa-crown me-2\"></i>'">
+                <strong>Administrador:</strong> admin / 123
+            </div>
+            <div class="demo-user" onclick="fillLogin('constructor1', '123')">
+                <img src="{% static 'images/constructor-icon.png' %}" alt="Constructor" style="width: 20px; height: 20px; margin-right: 8px;" onerror="this.innerHTML='<i class=\"fas fa-hard-hat me-2\"></i>'">
+                <strong>Constructor:</strong> constructor1 / 123
+            </div>
+            <div class="demo-user" onclick="fillLogin('cliente1', '123')">
+                <img src="{% static 'images/client-icon.png' %}" alt="Cliente" style="width: 20px; height: 20px; margin-right: 8px;" onerror="this.innerHTML='<i class=\"fas fa-user me-2\"></i>'">
+                <strong>Cliente:</strong> cliente1 / 123
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT MÍNIMO Y SEGURO -->
+    <script>
+        // Función para llenar el login (sin envío automático)
+        function fillLogin(username, password) {
+            document.getElementById('id_username').value = username;
+            document.getElementById('id_password').value = password;
+            // NO enviar automáticamente, dejar que el usuario haga clic en el botón
+        }
+
+        // Manejar envío del formulario
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('btnLogin');
+            const btnText = document.getElementById('btnText');
+            
+            // Validación básica
+            const username = document.getElementById('id_username').value.trim();
+            const password = document.getElementById('id_password').value.trim();
+            
+            if (!username || !password) {
+                e.preventDefault();
+                alert('Por favor, completa todos los campos');
+                return false;
+            }
+            
+            // Mostrar loading
+            btnText.textContent = 'Iniciando sesión...';
+            btn.disabled = true;
+            
+            // Permitir que el formulario se envíe normalmente
+            return true;
+        });
+
+        console.log('Login simple cargado correctamente');
+    </script>
+</body>
+</html>

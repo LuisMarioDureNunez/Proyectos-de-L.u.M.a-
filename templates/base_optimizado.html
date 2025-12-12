@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Gestión L.u.M.a - Paraguay{% endblock %}</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1a365d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="{% static 'icons/icon-192x192.png' %}">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    
+    <!-- CSS Optimizado -->
+    <link rel="stylesheet" href="{% static 'css/base_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion_avanzada.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- FONDO ANIMADO -->
+    <div class="background-animation">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <!-- PARTÍCULAS -->
+    <div class="particles-container" id="particles-container"></div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-premium">
+        <div class="container-fluid">
+            <a class="navbar-brand-premium" href="{% url 'home' %}" style="display:flex;align-items:center;gap:15px;text-decoration:none">
+                <img src="{% static 'images/logo.jpeg' %}" 
+                     alt="L.u.M.a" 
+                     class="logo-grande"
+                     onclick="showLogoModal(); event.preventDefault();"
+                     style="cursor: pointer;"
+                     onerror="this.src='{% static 'images/logo1.png' %}'">
+                <div style="display:flex;flex-direction:column">
+                    <span style="font-family:'Orbitron',sans-serif;font-size:1.8rem;letter-spacing:3px;font-weight:900">
+                        SISTEMA DE GESTIÓN EN PRESUPUESTOS
+                    </span>
+                    <span style="font-family:'Orbitron',sans-serif;font-size:1.8rem;letter-spacing:3px;font-weight:900">
+                        PARA OBRAS CIVILES
+                    </span>
+                    <small style="font-size:1.1rem;color:#40E0D0;font-weight:800;letter-spacing:2px;margin-top:5px">
+                        L.u.M.a - Gestión de Obras Civiles
+                    </small>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        {% include 'language_selector.html' %}
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link-premium dropdown-toggle d-flex align-items-center" 
+                           href="#" 
+                           role="button" 
+                           data-bs-toggle="dropdown"
+                           id="userDropdown"
+                           style="gap: 10px;">
+                            <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'images/logo.png' %}{% endif %}" 
+                                 alt="{{ user.username }}" 
+                                 style="height: 40px; width: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); object-fit: cover;"
+                                 onclick="showProfileModal()"
+                                 onerror="this.src='{% static 'images/logo1.png' %}'">
+                            <strong>{{ user.username|upper }}</strong>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'gestionar_perfil' %}">
+                                    <i class="fas fa-user-circle me-2"></i>MI PERFIL
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>CERRAR SESIÓN
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link-premium" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link-premium" href="{% url 'registro' %}">
+                            <i class="fas fa-user-plus me-2"></i>Registrarse
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- SIDEBAR -->
+            {% if user.is_authenticated %}
+            <div class="col-lg-2 col-md-3 sidebar-lujo d-none d-md-block slide-in-left">
+                <div class="pt-4">
+                    <!-- PERFIL -->
+                    <div class="user-profile-card">
+                        <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'images/logo.png' %}{% endif %}" 
+                             alt="{{ user.username }}" 
+                             class="user-avatar-grande"
+                             onerror="this.src='{% static 'images/logo1.png' %}'">
+                        <div class="user-name">
+                            {{ user.get_full_name|default:user.username }}
+                        </div>
+                        <div class="user-role">
+                            {% if user.es_administrador %}
+                            👑 Administrador
+                            {% elif user.rol == 'constructor' %}
+                            👷 Constructor
+                            {% elif user.rol == 'vendedor' %}
+                            💰 Vendedor
+                            {% else %}
+                            👤 Cliente
+                            {% endif %}
+                        </div>
+                        <small class="text-light opacity-75">
+                            <i class="fas fa-calendar me-1"></i>
+                            Miembro desde {{ user.date_joined|date:"M Y" }}
+                        </small>
+                    </div>
+                    
+                    <!-- MENÚ -->
+                    <nav class="sidebar-nav">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                            <i class="fas fa-home"></i>INICIO
+                        </a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                            <i class="fas fa-chart-line"></i>DASHBOARD
+                        </a>
+                        <a class="nav-link" href="{% url 'lista_obras' %}">
+                            <i class="fas fa-building"></i>OBRAS
+                        </a>
+                        <a class="nav-link" href="{% url 'lista_presupuestos' %}">
+                            <i class="fas fa-file-invoice-dollar"></i>PRESUPUESTOS
+                        </a>
+                        <a class="nav-link" href="{% url 'lista_materiales' %}">
+                            <i class="fas fa-bricks"></i>MATERIALES
+                        </a>
+                        <a class="nav-link" href="{% url 'gestionar_perfil' %}">
+                            <i class="fas fa-user-circle"></i>MI PERFIL
+                        </a>
+                        
+                        {% if user.es_administrador %}
+                        <div class="sidebar-section-title">
+                            👑 ADMINISTRACIÓN
+                        </div>
+                        <a class="nav-link" href="{% url 'admin_usuarios' %}">
+                            <i class="fas fa-users-cog"></i>USUARIOS
+                        </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- CONTENIDO PRINCIPAL -->
+            <div class="{% if user.is_authenticated %}col-lg-10 col-md-9{% else %}col-12{% endif %}">
+                <main class="main-content fade-in-up">
+                    <!-- MENSAJES -->
+                    {% if messages %}
+                    <div class="messages-container mb-4">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    {% block content %}{% endblock %}
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALES -->
+    {% include 'modals/profile_modal.html' %}
+    {% include 'modals/logo_modal.html' %}
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Scripts Optimizados -->
+    <script src="{% static 'js/base_scripts.js' %}"></script>
+    <script src="{% static 'js/language_system.js' %}"></script>
+    <script src="{% static 'js/gestion_avanzada.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Widgets -->
+    {% if user.is_authenticated %}
+    {% include 'chat/chat_widget.html' %}
+    {% include 'notificaciones_push.html' %}
+    {% endif %}
+    
+    {% include 'whatsapp_widget.html' %}
+    {% include 'luna_ai_super_avanzada.html' %}
+    
+    <!-- PWA Install Button -->
+    <button id="pwaInstallButton" class="pwa-install-button">
+        📱 Instalar App
+    </button>
+</body>
+</html>

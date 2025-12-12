@@ -1,0 +1,14 @@
+[build]
+  publish = "staticfiles_build"
+  command = "python manage.py collectstatic --noinput"
+
+[build.environment]
+  PYTHON_VERSION = "3.9"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[context.production.environment]
+  DEBUG = "False"

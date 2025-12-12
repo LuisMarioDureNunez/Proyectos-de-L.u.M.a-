@@ -1,0 +1,369 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load paraguay_filters %}
+
+{% block title %}Reportes y Estadísticas Avanzadas - Sistema Paraguay{% endblock %}
+
+{% block extra_css %}
+<style>
+    .reporte-container {
+        background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        box-shadow: var(--shadow-large);
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: var(--shadow-soft);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-medium);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+    
+    .filtros-sidebar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 25px;
+    }
+    
+    .grafico-container {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: var(--shadow-soft);
+        margin-bottom: 20px;
+    }
+    
+    .export-buttons .btn {
+        border-radius: 10px;
+        font-weight: 600;
+        padding: 10px 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h2 mb-1">📊 Reportes y Estadísticas Avanzadas</h1>
+                    <p class="text-muted mb-0">Análisis detallado y métricas del sistema</p>
+                </div>
+                <div class="export-buttons">
+                    <a href="{% url 'exportar_estadisticas_excel' %}?{{ request.GET.urlencode }}" 
+                       class="btn btn-success-premium me-2">
+                        <i class="fas fa-file-excel me-2"></i>Exportar Excel
+                    </a>
+                    <button class="btn btn-premium" onclick="window.print()">
+                        <i class="fas fa-print me-2"></i>Imprimir Reporte
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- FILTROS -->
+        <div class="col-lg-3">
+            <div class="filtros-sidebar mb-4">
+                <h5 class="mb-4">🔍 Filtros del Reporte</h5>
+                
+                <form method="get" id="filtrosForm">
+                    <div class="mb-3">
+                        <label class="form-label">Fecha Inicio</label>
+                        <input type="date" name="fecha_inicio" class="form-control" 
+                               value="{{ fecha_inicio }}" max="{{ fecha_fin }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Fecha Fin</label>
+                        <input type="date" name="fecha_fin" class="form-control" 
+                               value="{{ fecha_fin }}" min="{{ fecha_inicio }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Reporte</label>
+                        <select name="tipo_reporte" class="form-control">
+                            <option value="general" {% if tipo_reporte == 'general' %}selected{% endif %}>General</option>
+                            <option value="detallado" {% if tipo_reporte == 'detallado' %}selected{% endif %}>Detallado</option>
+                            <option value="comparativo" {% if tipo_reporte == 'comparativo' %}selected{% endif %}>Comparativo</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-outline-light w-100 mb-2">
+                        <i class="fas fa-filter me-2"></i>Aplicar Filtros
+                    </button>
+                    
+                    <button type="button" class="btn btn-light w-100" onclick="resetFiltros()">
+                        <i class="fas fa-redo me-2"></i>Limpiar Filtros
+                    </button>
+                </form>
+                
+                <hr class="my-4" style="border-color: rgba(255,255,255,0.3);">
+                
+                <div class="text-center">
+                    <small class="opacity-75">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Período: {{ fecha_inicio }} al {{ fecha_fin }}
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESTADÍSTICAS PRINCIPALES -->
+        <div class="col-lg-9">
+            <div class="reporte-container p-4 mb-4">
+                <h4 class="mb-4">📈 Resumen General</h4>
+                
+                <div class="row g-4">
+                    <!-- Total Presupuestos -->
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-primary">{{ stats.total_presupuestos }}</div>
+                            <div class="text-muted">Total Presupuestos</div>
+                            <i class="fas fa-file-invoice-dollar fa-2x text-primary mt-3"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Presupuestos Aceptados -->
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-success">{{ stats.presupuestos_aceptados }}</div>
+                            <div class="text-muted">Presupuestos Aceptados</div>
+                            <i class="fas fa-check-circle fa-2x text-success mt-3"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Monto Total Presupuestado -->
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-warning">{{ stats.monto_total_presupuestado|floatformat:0 }}</div>
+                            <div class="text-muted">Monto Total Presupuestado</div>
+                            <i class="fas fa-chart-line fa-2x text-warning mt-3"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Monto Total Aceptado -->
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-info">{{ stats.monto_total_aceptado|floatformat:0 }}</div>
+                            <div class="text-muted">Monto Total Aceptado</div>
+                            <i class="fas fa-handshake fa-2x text-info mt-3"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRÁFICOS Y DETALLES -->
+            <div class="row">
+                <!-- Distribución por Estado -->
+                <div class="col-lg-6">
+                    <div class="grafico-container">
+                        <h5 class="mb-3">📊 Distribución por Estado</h5>
+                        <canvas id="graficoEstados" width="400" height="300"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Evolución Mensual -->
+                <div class="col-lg-6">
+                    <div class="grafico-container">
+                        <h5 class="mb-3">📈 Evolución Mensual</h5>
+                        <canvas id="graficoEvolucion" width="400" height="300"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Materiales Más Usados -->
+                <div class="col-12">
+                    <div class="grafico-container">
+                        <h5 class="mb-3">🏗️ Materiales Más Utilizados</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Material</th>
+                                        <th>Precio Unitario</th>
+                                        <th>Veces Utilizado</th>
+                                        <th>Stock Disponible</th>
+                                        <th>Valor Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for material in materiales_populares %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ material.nombre }}</strong>
+                                            {% if material.descripcion %}
+                                            <br><small class="text-muted">{{ material.descripcion|truncatechars:50 }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ material.precio|guaranies|safe }}</td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ material.veces_usado }}</span>
+                                        </td>
+                                        <td>
+                                            {% if material.stock > 10 %}
+                                            <span class="badge bg-success">{{ material.stock }} unidades</span>
+                                            {% elif material.stock > 0 %}
+                                            <span class="badge bg-warning">{{ material.stock }} unidades</span>
+                                            {% else %}
+                                            <span class="badge bg-danger">Sin stock</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <strong>{{ material.precio|multiply:material.veces_usado|guaranies|safe }}</strong>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            <i class="fas fa-box-open fa-3x mb-3"></i>
+                                            <p>No hay datos de materiales utilizados</p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Gráfico de distribución por estado
+        const ctxEstados = document.getElementById('graficoEstados').getContext('2d');
+        const graficoEstados = new Chart(ctxEstados, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    {% for item in presupuestos_por_estado %}
+                    '{{ item.estado }}'{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                datasets: [{
+                    data: [
+                        {% for item in presupuestos_por_estado %}
+                        {{ item.cantidad }}{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    backgroundColor: [
+                        '#1a365d', '#2d74da', '#00b894', '#fdcb6e', '#e17055', '#764ba2'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de evolución mensual
+        const ctxEvolucion = document.getElementById('graficoEvolucion').getContext('2d');
+        const graficoEvolucion = new Chart(ctxEvolucion, {
+            type: 'line',
+            data: {
+                labels: [
+                    {% for item in presupuestos_por_mes %}
+                    '{{ item.mes }}'{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: 'Monto Total (Gs.)',
+                    data: [
+                        {% for item in presupuestos_por_mes %}
+                        {{ item.monto|default:0 }}{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    borderColor: '#2d74da',
+                    backgroundColor: 'rgba(45, 116, 218, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'Gs. ' + value.toLocaleString('es-PY');
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Monto: Gs. ' + context.parsed.y.toLocaleString('es-PY');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Función para resetear filtros
+        window.resetFiltros = function() {
+            const today = new Date().toISOString().split('T')[0];
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
+            
+            $('input[name="fecha_inicio"]').val(thirtyDaysAgoStr);
+            $('input[name="fecha_fin"]').val(today);
+            $('select[name="tipo_reporte"]').val('general');
+            
+            $('#filtrosForm').submit();
+        };
+
+        console.log('📊 Sistema de reportes avanzados cargado!');
+    });
+</script>
+{% endblock %}

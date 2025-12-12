@@ -1,0 +1,515 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}👤 Mi Perfil - {{ user.get_full_name|default:user.username }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/image_modals.css' %}">
+<style>
+.profile-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 3rem;
+}
+
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 5px solid white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    object-fit: cover;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+}
+
+.company-logo {
+    width: 100px;
+    height: 100px;
+    border-radius: 15px;
+    border: 3px solid white;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.info-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 10px;
+    background: #f8f9fa;
+    margin-bottom: 1rem;
+}
+
+.edit-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 50%;
+}
+
+.avatar-container:hover .edit-overlay {
+    opacity: 1;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="profile-hero text-white">
+                <div class="row align-items-center">
+                    <div class="col-md-3 text-center">
+                        <div class="avatar-container position-relative d-inline-block">
+                            {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" 
+                                 alt="{{ user.username }}" 
+                                 class="profile-avatar clickable-image shine-effect" 
+                                 id="profileImage"
+                                 data-tooltip="Clic para ver en grande • Doble clic para cambiar">
+                            {% else %}
+                            <div class="profile-avatar bg-light d-flex align-items-center justify-content-center clickable-image" 
+                                 id="profileImage"
+                                 data-tooltip="Clic para ver en grande • Doble clic para cambiar">
+                                <i class="fas fa-user fa-4x text-muted"></i>
+                            </div>
+                            {% endif %}
+                            <div class="edit-overlay">
+                                <i class="fas fa-camera fa-2x text-white"></i>
+                            </div>
+                        </div>
+                        <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h1 class="display-5 fw-bold mb-2">
+                            {{ user.get_full_name|default:user.username }}
+                        </h1>
+                        <p class="lead mb-3">
+                            <span class="badge bg-warning text-dark">
+                                {{ user.get_rol_display }}
+                            </span>
+                        </p>
+                        <p class="mb-2">
+                            <i class="fas fa-envelope me-2"></i>{{ user.email }}
+                        </p>
+                        {% if user.telefono %}
+                        <p class="mb-2">
+                            <i class="fas fa-phone me-2"></i>{{ user.telefono }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-3 text-center">
+                        {% if user.tienda and user.tienda.logo %}
+                        <div class="mb-3">
+                            <img src="{{ user.tienda.logo.url }}" 
+                                 alt="Logo Empresa" 
+                                 class="company-logo clickable-image shine-effect" 
+                                 id="companyLogo"
+                                 data-tooltip="Clic para ver en grande • Doble clic para cambiar">
+                            <input type="file" id="logoInput" accept="image/*" style="display: none;">
+                        </div>
+                        <h5 class="mb-0">{{ user.tienda.nombre }}</h5>
+                        <small class="text-white-50">Mi Empresa</small>
+                        {% else %}
+                        <div class="company-logo bg-light d-flex align-items-center justify-content-center mx-auto mb-3 clickable-image" 
+                             id="companyLogo"
+                             data-tooltip="Clic para agregar logo de empresa">
+                            <i class="fas fa-building fa-2x text-muted"></i>
+                        </div>
+                        <button class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-plus me-1"></i>Crear Empresa
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="info-card">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-circle me-2 text-primary"></i>Información Personal
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="profileForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" value="{{ user.get_full_name }}" name="full_name">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" name="email">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" value="{{ user.telefono|default:'' }}" name="telefono">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save me-2"></i>Actualizar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="info-card">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2 text-success"></i>Estadísticas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="stat-item">
+                        <h3 class="text-primary mb-1">15</h3>
+                        <small class="text-muted">Productos Creados</small>
+                    </div>
+                    <div class="stat-item">
+                        <h3 class="text-success mb-1">8</h3>
+                        <small class="text-muted">Obras Realizadas</small>
+                    </div>
+                    <div class="stat-item">
+                        <h3 class="text-info mb-1">25</h3>
+                        <small class="text-muted">Pedidos</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="info-card">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2 text-info"></i>Actividad Reciente
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-plus-circle text-success me-3"></i>
+                        <div>
+                            <strong>Producto creado</strong>
+                            <br><small class="text-muted">Hace 2 horas</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-edit text-primary me-3"></i>
+                        <div>
+                            <strong>Perfil actualizado</strong>
+                            <br><small class="text-muted">Hace 1 día</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para vista ampliada de foto de perfil -->
+<div class="modal fade profile-modal" id="profileImageModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-particles"></div>
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-circle me-2 text-warning"></i>Mi Foto de Perfil
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-5">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <img id="profileModalImage" src="" alt="Foto de Perfil" 
+                             class="img-fluid modal-image" 
+                             style="max-height: 60vh; border-radius: 20px; box-shadow: 0 20px 60px rgba(255,255,255,0.3); border: 3px solid rgba(255,215,0,0.5);">
+                    </div>
+                    <div class="col-md-4">
+                        <div class="modal-info text-start">
+                            <h4 class="text-white mb-3">
+                                <i class="fas fa-id-card me-2 text-warning"></i>
+                                {{ user.get_full_name|default:user.username }}
+                            </h4>
+                            <div class="mb-3">
+                                <span class="badge" style="background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; font-size: 1rem; padding: 8px 15px;">
+                                    {% if user.es_administrador %}
+                                    👑 Administrador
+                                    {% elif user.rol == 'constructor' %}
+                                    👷 Constructor
+                                    {% elif user.rol == 'vendedor' %}
+                                    💰 Vendedor
+                                    {% else %}
+                                    👤 Cliente
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="text-light mb-2">
+                                <i class="fas fa-envelope me-2 text-info"></i>
+                                {{ user.email }}
+                            </div>
+                            {% if user.telefono %}
+                            <div class="text-light mb-2">
+                                <i class="fas fa-phone me-2 text-success"></i>
+                                {{ user.telefono }}
+                            </div>
+                            {% endif %}
+                            <div class="text-light mb-3">
+                                <i class="fas fa-calendar me-2 text-warning"></i>
+                                Miembro desde {{ user.date_joined|date:"d/m/Y" }}
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="modal-action-btn" onclick="document.getElementById('avatarInput').click()">
+                                    <i class="fas fa-camera me-2"></i>Cambiar Foto
+                                </button>
+                                <a href="{% url 'gestionar_perfil' %}" class="modal-action-btn">
+                                    <i class="fas fa-edit me-2"></i>Editar Perfil
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para vista ampliada del logo de empresa -->
+<div class="modal fade profile-modal" id="companyLogoModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-particles"></div>
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-building me-2 text-warning"></i>Logo de Mi Empresa
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-5">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <img id="companyModalImage" src="" alt="Logo Empresa" 
+                             class="img-fluid modal-image" 
+                             style="max-height: 60vh; border-radius: 20px; box-shadow: 0 20px 60px rgba(255,255,255,0.3); border: 3px solid rgba(255,215,0,0.5);">
+                    </div>
+                    <div class="col-md-4">
+                        <div class="modal-info text-start">
+                            <h4 class="text-white mb-3">
+                                <i class="fas fa-building me-2 text-warning"></i>
+                                <span id="companyName">{{ user.tienda.nombre|default:"Mi Empresa" }}</span>
+                            </h4>
+                            <div class="mb-3">
+                                <span class="badge" style="background: linear-gradient(135deg, #40E0D0, #00cec9); color: #000; font-size: 1rem; padding: 8px 15px;">
+                                    🏢 Logo Corporativo
+                                </span>
+                            </div>
+                            <div class="text-light mb-2">
+                                <i class="fas fa-user me-2 text-info"></i>
+                                Propietario: {{ user.get_full_name|default:user.username }}
+                            </div>
+                            <div class="text-light mb-2">
+                                <i class="fas fa-calendar me-2 text-success"></i>
+                                Empresa desde {{ user.date_joined|date:"M Y" }}
+                            </div>
+                            <div class="text-light mb-3">
+                                <i class="fas fa-flag me-2 text-warning"></i>
+                                Paraguay 🇵🇾
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="modal-action-btn" onclick="document.getElementById('logoInput').click()">
+                                    <i class="fas fa-upload me-2"></i>Cambiar Logo
+                                </button>
+                                {% if user.tienda %}
+                                <button class="modal-action-btn">
+                                    <i class="fas fa-edit me-2"></i>Editar Empresa
+                                </button>
+                                {% else %}
+                                <button class="modal-action-btn">
+                                    <i class="fas fa-plus me-2"></i>Crear Empresa
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Función para mostrar imagen de perfil en modal
+function showProfileImage() {
+    const profileImage = document.getElementById('profileImage');
+    const modalImage = document.getElementById('profileModalImage');
+    
+    if (profileImage && modalImage) {
+        modalImage.src = profileImage.src;
+        const modal = new bootstrap.Modal(document.getElementById('profileImageModal'));
+        modal.show();
+    }
+}
+
+// Función para mostrar logo de empresa en modal
+function showCompanyLogo() {
+    const companyLogo = document.getElementById('companyLogo');
+    const modalImage = document.getElementById('companyModalImage');
+    
+    if (companyLogo && modalImage) {
+        modalImage.src = companyLogo.src;
+        const modal = new bootstrap.Modal(document.getElementById('companyLogoModal'));
+        modal.show();
+    }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Click en imagen de perfil para mostrar modal
+    const profileImage = document.getElementById('profileImage');
+    if (profileImage) {
+        profileImage.addEventListener('click', showProfileImage);
+    }
+    
+    // Click en logo de empresa para mostrar modal
+    const companyLogo = document.getElementById('companyLogo');
+    if (companyLogo) {
+        companyLogo.addEventListener('click', showCompanyLogo);
+    }
+    
+    // Click en contenedor de avatar para cambiar imagen (funcionalidad existente)
+    const avatarContainer = document.querySelector('.avatar-container');
+    if (avatarContainer) {
+        avatarContainer.addEventListener('dblclick', function() {
+            document.getElementById('avatarInput').click();
+        });
+    }
+    
+    // Manejo de cambio de avatar
+    const avatarInput = document.getElementById('avatarInput');
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const profileImage = document.getElementById('profileImage');
+                    if (profileImage) {
+                        if (profileImage.tagName === 'IMG') {
+                            profileImage.src = e.target.result;
+                        } else {
+                            profileImage.innerHTML = `<img src="${e.target.result}" class="profile-avatar" alt="Avatar">`;
+                        }
+                        showNotification('Imagen de perfil actualizada', 'success');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Manejo de cambio de logo
+    const logoInput = document.getElementById('logoInput');
+    if (logoInput) {
+        logoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const companyLogo = document.getElementById('companyLogo');
+                    if (companyLogo) {
+                        if (companyLogo.tagName === 'IMG') {
+                            companyLogo.src = e.target.result;
+                        } else {
+                            companyLogo.innerHTML = `<img src="${e.target.result}" class="company-logo" alt="Logo">`;
+                        }
+                        showNotification('Logo de empresa actualizado', 'success');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+
+// Crear partículas en modales
+function createModalParticles(modalId) {
+    const modal = document.getElementById(modalId);
+    const particlesContainer = modal.querySelector('.modal-particles');
+    
+    if (particlesContainer) {
+        particlesContainer.innerHTML = '';
+        for (let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'modal-particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 8 + 's';
+            particlesContainer.appendChild(particle);
+        }
+    }
+}
+
+// Inicializar partículas cuando se abren los modales
+document.getElementById('profileImageModal')?.addEventListener('shown.bs.modal', function() {
+    createModalParticles('profileImageModal');
+});
+
+document.getElementById('companyLogoModal')?.addEventListener('shown.bs.modal', function() {
+    createModalParticles('companyLogoModal');
+});
+
+// Efecto de zoom en imágenes del modal
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-image')) {
+        e.target.style.transform = e.target.style.transform === 'scale(1.5)' ? 'scale(1)' : 'scale(1.5)';
+    }
+});
+
+// Función para mostrar notificaciones
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} position-fixed`;
+    notification.style.cssText = `
+        top: 20px; right: 20px; z-index: 10000; min-width: 300px;
+        border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    `;
+    notification.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="fas fa-check-circle me-2"></i>${message}
+            <button type="button" class="btn-close ms-auto" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+}
+</script>
+{% endblock %}

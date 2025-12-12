@@ -1,0 +1,158 @@
+<!-- gestion/templates/gestion/maquinarias/lista.html -->
+{% extends 'base.html' %}
+
+{% block title %}Maquinarias - Sistema de Gestión{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-tractor text-success me-2"></i>
+                Gestión de Maquinarias
+            </h1>
+            <a href="{% url 'nueva_maquinaria' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Nueva Maquinaria
+            </a>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" name="q" value="{{ query }}" 
+                               class="form-control search-box" placeholder="Buscar maquinarias...">
+                    </div>
+                    <div class="col-md-4">
+                        <select name="estado" class="form-select">
+                            <option value="">Todos los estados</option>
+                            <option value="disponible" {% if estado_filter == 'disponible' %}selected{% endif %}>Disponible</option>
+                            <option value="mantenimiento" {% if estado_filter == 'mantenimiento' %}selected{% endif %}>En Mantenimiento</option>
+                            <option value="alquilada" {% if estado_filter == 'alquilada' %}selected{% endif %}>Alquilada</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-search me-1"></i>Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista -->
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Lista de Maquinarias ({{ maquinarias.count }})
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% if maquinarias %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th>Costo Alquiler/Día</th>
+                                <th>Fecha Creación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for maquinaria in maquinarias %}
+                            <tr>
+                                <td>
+                                    <strong>{{ maquinaria.nombre }}</strong>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ maquinaria.descripcion|truncatewords:8 }}</small>
+                                </td>
+                                <td>
+                                    {% if maquinaria.estado == 'disponible' %}
+                                    <span class="badge bg-success">{{ maquinaria.get_estado_display }}</span>
+                                    {% elif maquinaria.estado == 'mantenimiento' %}
+                                    <span class="badge bg-warning">{{ maquinaria.get_estado_display }}</span>
+                                    {% else %}
+                                    <span class="badge bg-info">{{ maquinaria.get_estado_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success">₲ {{ maquinaria.costo_alquiler_dia|floatformat:0 }}/día</span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ maquinaria.fecha_creacion|date:"d/m/Y" }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'editar_maquinaria' maquinaria.id %}" 
+                                           class="btn btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'eliminar_maquinaria' maquinaria.id %}" 
+                                           class="btn btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-tractor fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No se encontraron maquinarias</h4>
+                    <a href="{% url 'nueva_maquinaria' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Agregar Primera Maquinaria
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        {% if maquinarias %}
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center py-3">
+                        <h4 class="mb-0">{{ total_maquinarias }}</h4>
+                        <small>Total Maquinarias</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center py-3">
+                        <h4 class="mb-0">{{ disponibles }}</h4>
+                        <small>Disponibles</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center py-3">
+                        <h4 class="mb-0">{{ en_mantenimiento }}</h4>
+                        <small>En Mantenimiento</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center py-3">
+                        <h4 class="mb-0">{{ alquiladas }}</h4>
+                        <small>Alquiladas</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

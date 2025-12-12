@@ -1,0 +1,48 @@
+# requirements_production.txt - Dependencias adicionales para producción
+
+# Dependencias base (incluir requirements.txt)
+-r requirements.txt
+
+# Base de datos PostgreSQL
+psycopg2-binary==2.9.9
+
+# Variables de entorno
+python-decouple==3.8
+
+# Cache con Redis
+django-redis==5.4.0
+redis==5.0.1
+
+# Almacenamiento en la nube (AWS S3)
+django-storages==1.14.2
+boto3==1.35.0
+
+# Monitoreo y logging
+sentry-sdk==1.45.0
+
+# Servidor WSGI para producción
+gunicorn==21.2.0
+whitenoise==6.6.0
+
+# Herramientas de desarrollo y debug
+django-debug-toolbar==4.2.0
+
+# Compresión de archivos estáticos
+django-compressor==4.4
+
+# Herramientas de base de datos
+dj-database-url==2.1.0
+
+# Seguridad adicional
+django-csp==3.8
+django-ratelimit==4.1.0
+
+# Optimización de imágenes
+Pillow==10.0.1
+
+# Herramientas de testing
+coverage==7.3.2
+factory-boy==3.3.0
+
+# Documentación API
+drf-spectacular==0.27.0

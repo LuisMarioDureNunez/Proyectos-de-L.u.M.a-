@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}📦 Mis Pedidos - Mi Tienda Premium{% endblock %}
+
+{% block extra_css %}
+<style>
+.orders-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-radius: 15px;
+    padding: 2.5rem 2rem;
+}
+
+.order-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid;
+    border-radius: 10px;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.order-card.pendiente { border-left-color: #ffc107; }
+.order-card.confirmado { border-left-color: #17a2b8; }
+.order-card.preparando { border-left-color: #007bff; }
+.order-card.enviado { border-left-color: #28a745; }
+.order-card.entregado { border-left-color: #6f42c1; }
+.order-card.cancelado { border-left-color: #dc3545; }
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+}
+
+.empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.filter-buttons .btn {
+    border-radius: 20px;
+    margin: 0 5px 5px 0;
+}
+
+.order-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.product-count {
+    background: #e9ecef;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- HERO SECTION -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="orders-hero text-white shadow">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-5 fw-bold mb-3">
+                            <i class="fas fa-clipboard-list me-3"></i>Mis Pedidos
+                        </h1>
+                        <p class="lead mb-0">Revisa el historial y estado de todos tus pedidos</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="bg-white bg-opacity-25 rounded-3 p-3 d-inline-block">
+                            <h3 class="mb-0">{{ pedidos.count }}</h3>
+                            <small>Total de Pedidos</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTROS RÁPIDOS -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="mb-3">Filtrar por estado:</h6>
+                    <div class="filter-buttons">
+                        <a href="?estado=pendiente" class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-clock me-1"></i>Pendientes
+                        </a>
+                        <a href="?estado=confirmado" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-check-circle me-1"></i>Confirmados
+                        </a>
+                        <a href="?estado=preparando" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-cog me-1"></i>Preparando
+                        </a>
+                        <a href="?estado=enviado" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-shipping-fast me-1"></i>Enviados
+                        </a>
+                        <a href="?estado=entregado" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-home me-1"></i>Entregados
+                        </a>
+                        <a href="{% url 'lista_pedidos' %}" class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-sync me-1"></i>Ver Todos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LISTA DE PEDIDOS -->
+    <div class="row">
+        <div class="col-12">
+            {% if pedidos %}
+            <div class="row">
+                {% for pedido in pedidos %}
+                <div class="col-lg-6 col-xl-4 mb-4">
+                    <div class="card order-card shadow-sm h-100 {{ pedido.estado }}">
+                        <div class="card-body">
+                            <!-- Header del Pedido -->
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="card-title mb-1">
+                                        <i class="fas fa-receipt me-2 text-muted"></i>
+                                        {{ pedido.numero_pedido }}
+                                    </h5>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ pedido.fecha_pedido|date:"d/m/Y H:i" }}
+                                    </small>
+                                </div>
+                                <span class="status-badge badge bg-{{ pedido.get_estado_color }}">
+                                    {{ pedido.get_estado_display }}
+                                </span>
+                            </div>
+
+                            <!-- Productos del Pedido -->
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="product-count me-2">
+                                        {{ pedido.get_cantidad_productos }}
+                                    </span>
+                                    <small class="text-muted">productos</small>
+                                </div>
+                                
+                                <!-- Miniaturas de productos -->
+                                <div class="d-flex mb-2">
+                                    {% for item in pedido.items.all|slice:":3" %}
+                                    <div class="me-2 position-relative">
+                                        {% if item.producto.imagen %}
+                                        <img src="{{ item.producto.imagen.url }}" 
+                                             alt="{{ item.producto.nombre }}"
+                                             class="order-image shadow-sm">
+                                        {% else %}
+                                        <div class="order-image bg-light d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-box text-muted"></i>
+                                        </div>
+                                        {% endif %}
+                                        {% if forloop.last and pedido.items.count > 3 %}
+                                        <div class="position-absolute top-0 start-100 translate-middle">
+                                            <span class="badge bg-dark">+{{ pedido.items.count|add:"-3" }}</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Información de Envío -->
+                            <div class="mb-3">
+                                <small class="text-muted d-block">
+                                    <i class="fas fa-truck me-1"></i>
+                                    {{ pedido.ciudad }}, {{ pedido.pais }}
+                                </small>
+                                <small class="text-muted">
+                                    <i class="fas fa-credit-card me-1"></i>
+                                    {{ pedido.get_metodo_pago_display }}
+                                </small>
+                            </div>
+
+                            <!-- Total y Acciones -->
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="text-success mb-0">{{ pedido.total|floatformat:0 }} Gs.</h4>
+                                    <small class="text-muted">Total</small>
+                                </div>
+                                <div class="btn-group">
+                                    <a href="{% url 'detalle_pedido' pedido.id %}" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button class="btn btn-outline-info btn-sm" onclick="window.print()">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Progreso del Pedido -->
+                            <div class="mt-3">
+                                <div class="progress" style="height: 4px;">
+                                    {% if pedido.estado == 'pendiente' %}
+                                    <div class="progress-bar bg-warning" style="width: 25%"></div>
+                                    {% elif pedido.estado == 'confirmado' %}
+                                    <div class="progress-bar bg-info" style="width: 50%"></div>
+                                    {% elif pedido.estado == 'preparando' %}
+                                    <div class="progress-bar bg-primary" style="width: 75%"></div>
+                                    {% elif pedido.estado == 'enviado' %}
+                                    <div class="progress-bar bg-success" style="width: 90%"></div>
+                                    {% elif pedido.estado == 'entregado' %}
+                                    <div class="progress-bar bg-success" style="width: 100%"></div>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted d-block mt-1 text-center">
+                                    {% if pedido.estado == 'pendiente' %}Recibido
+                                    {% elif pedido.estado == 'confirmado' %}Confirmado
+                                    {% elif pedido.estado == 'preparando' %}Preparando
+                                    {% elif pedido.estado == 'enviado' %}En camino
+                                    {% elif pedido.estado == 'entregado' %}Entregado
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- Estado vacío -->
+            <div class="card shadow-lg">
+                <div class="card-body empty-state">
+                    <i class="fas fa-clipboard-list fa-5x text-muted mb-4"></i>
+                    <h3 class="text-muted mb-3">No tienes pedidos aún</h3>
+                    <p class="text-muted mb-4">¡Descubre nuestros productos y realiza tu primer pedido!</p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{% url 'lista_productos' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-shopping-bag me-2"></i>Explorar Productos
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-home me-2"></i>Volver al Inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ESTADÍSTICAS DE PEDIDOS -->
+    {% if pedidos %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-gradient-dark text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Resumen de Pedidos
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-primary bg-opacity-10">
+                                <h3 class="text-primary mb-1">{{ pedidos.count }}</h3>
+                                <small class="text-muted">Total Pedidos</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-success bg-opacity-10">
+                                <h3 class="text-success mb-1">{{ pedidos_entregados }}</h3>
+                                <small class="text-muted">Entregados</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-warning bg-opacity-10">
+                                <h3 class="text-warning mb-1">{{ pedidos_pendientes }}</h3>
+                                <small class="text-muted">Pendientes</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-info bg-opacity-10">
+                                <h3 class="text-info mb-1">{{ pedidos_en_proceso }}</h3>
+                                <small class="text-muted">En Proceso</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-danger bg-opacity-10">
+                                <h3 class="text-danger mb-1">{{ pedidos_cancelados }}</h3>
+                                <small class="text-muted">Cancelados</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="stat-card p-3 rounded-3 bg-dark bg-opacity-10">
+                                <h3 class="text-dark mb-1">{{ total_gastado|floatformat:0 }} Gs.</h3>
+                                <small class="text-muted">Total Gastado</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Filtro de estado desde URL
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const estado = urlParams.get('estado');
+    
+    if (estado) {
+        // Resaltar el botón del filtro activo
+        document.querySelectorAll('.filter-buttons .btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.href.includes(`estado=${estado}`)) {
+                btn.classList.add('active');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

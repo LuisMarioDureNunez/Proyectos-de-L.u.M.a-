@@ -1,0 +1,378 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}🏘️ Propiedades - Gestión Avanzada{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --azul-francia: #002395;
+    --naranja: #FF6600;
+    --negro: #1a1a1a;
+}
+
+.propiedades-hero {
+    background: linear-gradient(135deg, var(--naranja) 0%, var(--azul-francia) 50%, var(--negro) 100%);
+    border-radius: 25px;
+    padding: 3rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.propiedades-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="60" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+    animation: float-bg 10s ease-in-out infinite;
+}
+
+@keyframes float-bg {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.propiedad-card {
+    background: white;
+    border-radius: 20px;
+    padding: 0;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: all 0.4s ease;
+    position: relative;
+}
+
+.propiedad-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, var(--azul-francia), var(--naranja), var(--negro));
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+}
+
+.propiedad-card:hover::after {
+    transform: scaleX(1);
+}
+
+.propiedad-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+}
+
+.propiedad-header {
+    background: linear-gradient(135deg, var(--azul-francia), var(--naranja));
+    color: white;
+    padding: 20px;
+    position: relative;
+}
+
+.propiedad-body {
+    padding: 25px;
+}
+
+.tipo-propiedad {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.valor-propiedad {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--naranja);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.superficie-display {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    margin: 15px 0;
+    border: 2px solid rgba(0,35,149,0.1);
+}
+
+.estado-propiedad {
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.estado-disponible {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    color: white;
+    animation: available-glow 2s ease-in-out infinite alternate;
+}
+
+.estado-vendida {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    color: white;
+}
+
+.estado-alquilada {
+    background: linear-gradient(45deg, var(--naranja), #fd7e14);
+    color: white;
+}
+
+@keyframes available-glow {
+    from { box-shadow: 0 0 5px rgba(40,167,69,0.5); }
+    to { box-shadow: 0 0 15px rgba(40,167,69,0.8); }
+}
+
+.stats-propiedades {
+    background: linear-gradient(135deg, var(--negro) 0%, var(--azul-francia) 100%);
+    border-radius: 15px;
+    padding: 25px;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-propiedades::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(transparent, rgba(255,102,0,0.1), transparent);
+    animation: rotate-bg 6s linear infinite;
+}
+
+@keyframes rotate-bg {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.ubicacion-info {
+    background: linear-gradient(135deg, rgba(0,35,149,0.05), rgba(255,102,0,0.05));
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.caracteristicas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.caracteristica-item {
+    text-align: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.caracteristica-icon {
+    font-size: 1.2rem;
+    color: var(--azul-francia);
+    margin-bottom: 5px;
+}
+
+.propietario-badge {
+    background: linear-gradient(45deg, var(--negro), #495057);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="propiedades-hero">
+                <h1 class="display-4 fw-bold mb-3">🏘️ Gestión de Propiedades</h1>
+                <p class="lead">Catálogo completo de propiedades inmobiliarias</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-propiedades">
+                <i class="fas fa-home fa-3x mb-3"></i>
+                <h3>{{ propiedades.count|default:0 }}</h3>
+                <p>Total Propiedades</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-propiedades">
+                <i class="fas fa-check-circle fa-3x mb-3"></i>
+                <h3>0</h3>
+                <p>Disponibles</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-propiedades">
+                <i class="fas fa-key fa-3x mb-3"></i>
+                <h3>0</h3>
+                <p>Alquiladas</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-propiedades">
+                <i class="fas fa-handshake fa-3x mb-3"></i>
+                <h3>0</h3>
+                <p>Vendidas</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for propiedad in propiedades %}
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="propiedad-card">
+                <div class="propiedad-header">
+                    <div class="propietario-badge">
+                        <i class="fas fa-user me-1"></i>{{ propiedad.propietario.nombre_completo }}
+                    </div>
+                    
+                    <h5 class="fw-bold mb-2">{{ propiedad.nombre_propiedad }}</h5>
+                    <div class="tipo-propiedad">{{ propiedad.get_tipo_propiedad_display }}</div>
+                </div>
+                
+                <div class="propiedad-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="valor-propiedad">
+                            {% if propiedad.valor_estimado %}
+                            {{ propiedad.valor_estimado|floatformat:0 }} Gs.
+                            {% else %}
+                            No valorado
+                            {% endif %}
+                        </div>
+                        <div class="estado-propiedad estado-{{ propiedad.estado_propiedad }}">
+                            {{ propiedad.get_estado_propiedad_display }}
+                        </div>
+                    </div>
+                    
+                    <div class="superficie-display">
+                        <div class="row">
+                            <div class="col-6">
+                                <strong class="text-primary">{{ propiedad.superficie_total|default:0 }} m²</strong>
+                                <small class="d-block text-muted">Superficie Total</small>
+                            </div>
+                            <div class="col-6">
+                                <strong class="text-success">{{ propiedad.superficie_construida|default:0 }} m²</strong>
+                                <small class="d-block text-muted">Construida</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="caracteristicas-grid">
+                        <div class="caracteristica-item">
+                            <div class="caracteristica-icon">
+                                <i class="fas fa-bed"></i>
+                            </div>
+                            <small>{{ propiedad.dormitorios|default:0 }} Dorm.</small>
+                        </div>
+                        <div class="caracteristica-item">
+                            <div class="caracteristica-icon">
+                                <i class="fas fa-bath"></i>
+                            </div>
+                            <small>{{ propiedad.banos|default:0 }} Baños</small>
+                        </div>
+                        <div class="caracteristica-item">
+                            <div class="caracteristica-icon">
+                                <i class="fas fa-car"></i>
+                            </div>
+                            <small>{{ propiedad.cocheras|default:0 }} Coch.</small>
+                        </div>
+                        <div class="caracteristica-item">
+                            <div class="caracteristica-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <small>{{ propiedad.ano_construccion|default:"N/A" }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="ubicacion-info">
+                        <div class="row">
+                            <div class="col-8">
+                                <small class="text-muted d-block">Ubicación</small>
+                                <strong>{{ propiedad.direccion_completa }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    {{ propiedad.get_departamento_display }}, {{ propiedad.ciudad }}
+                                </small>
+                            </div>
+                            <div class="col-4 text-end">
+                                <small class="text-muted d-block">Registrada</small>
+                                <strong>{{ propiedad.fecha_registro|date:"d/m/Y" }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group w-100 mt-3">
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-eye me-1"></i>Ver
+                        </button>
+                        <button class="btn btn-outline-warning">
+                            <i class="fas fa-edit me-1"></i>Editar
+                        </button>
+                        <button class="btn btn-outline-info">
+                            <i class="fas fa-map me-1"></i>Mapa
+                        </button>
+                        <button class="btn btn-outline-success">
+                            <i class="fas fa-camera me-1"></i>Fotos
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-home fa-5x text-muted mb-3"></i>
+            <h4 class="text-muted">No hay propiedades registradas</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<button class="floating-action" onclick="window.location.href='{% url 'nueva_propiedad' %}'">
+    <i class="fas fa-plus"></i>
+</button>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animar entrada de tarjetas
+    const cards = document.querySelectorAll('.propiedad-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(50px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,358 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}💳 Checkout - Mi Tienda Premium{% endblock %}
+
+{% block extra_css %}
+<style>
+.checkout-steps .step {
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 4px solid #dee2e6;
+}
+
+.checkout-steps .step.active {
+    border-left-color: #28a745;
+    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+}
+
+.checkout-steps .step.completed {
+    border-left-color: #17a2b8;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e6f3ff 100%);
+}
+
+.payment-method {
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-method:hover {
+    border-color: #6c757d;
+    transform: translateY(-2px);
+}
+
+.payment-method.selected {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+}
+
+.summary-item {
+    border-bottom: 1px solid #e9ecef;
+    padding: 10px 0;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- HEADER -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="hero-section bg-gradient-primary text-white rounded-3 p-4 shadow">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-5 fw-bold">
+                            <i class="fas fa-lock me-3"></i>Checkout Seguro
+                        </h1>
+                        <p class="lead mb-0">Completa tu información para finalizar la compra</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="bg-white bg-opacity-25 rounded-3 p-3 d-inline-block">
+                            <h4 class="mb-0">Paso 3/3</h4>
+                            <small>Finalizar compra</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PASOS DEL CHECKOUT -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="checkout-steps">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="step completed">
+                            <i class="fas fa-shopping-cart fa-2x text-success mb-2"></i>
+                            <h5>Carrito</h5>
+                            <small class="text-muted">Productos seleccionados</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="step active">
+                            <i class="fas fa-user-check fa-2x text-success mb-2"></i>
+                            <h5>Información</h5>
+                            <small class="text-muted">Datos de envío y pago</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="step">
+                            <i class="fas fa-check-circle fa-2x text-muted mb-2"></i>
+                            <h5>Confirmación</h5>
+                            <small class="text-muted">Resumen del pedido</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- FORMULARIO DE CHECKOUT -->
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header bg-light py-3">
+                    <h4 class="mb-0 text-dark">
+                        <i class="fas fa-truck me-2"></i>Información de Envío
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="checkout-form">
+                        {% csrf_token %}
+                        
+                        <!-- Información Personal -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">👤 {{ form.nombre_completo.label }}</label>
+                                    {{ form.nombre_completo }}
+                                    {% if form.nombre_completo.errors %}
+                                    <div class="text-danger small">{{ form.nombre_completo.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">📧 {{ form.email.label }}</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                    <div class="text-danger small">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">📞 {{ form.telefono.label }}</label>
+                                    {{ form.telefono }}
+                                    {% if form.telefono.errors %}
+                                    <div class="text-danger small">{{ form.telefono.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">🏙️ {{ form.ciudad.label }}</label>
+                                    {{ form.ciudad }}
+                                    {% if form.ciudad.errors %}
+                                    <div class="text-danger small">{{ form.ciudad.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dirección -->
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">🏠 {{ form.direccion.label }}</label>
+                            {{ form.direccion }}
+                            {% if form.direccion.errors %}
+                            <div class="text-danger small">{{ form.direccion.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">📮 {{ form.codigo_postal.label }}</label>
+                                    {{ form.codigo_postal }}
+                                    {% if form.codigo_postal.errors %}
+                                    <div class="text-danger small">{{ form.codigo_postal.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">🌎 {{ form.pais.label }}</label>
+                                    {{ form.pais }}
+                                    {% if form.pais.errors %}
+                                    <div class="text-danger small">{{ form.pais.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Método de Pago -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">💳 Método de Pago</h5>
+                            {% for value, label in form.metodo_pago.field.choices %}
+                            <div class="payment-method" onclick="selectPaymentMethod('{{ value }}')">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="metodo_pago" 
+                                           id="metodo_pago_{{ value }}" value="{{ value }}"
+                                           {% if form.metodo_pago.value == value %}checked{% endif %}>
+                                    <label class="form-check-label fw-bold" for="metodo_pago_{{ value }}">
+                                        {{ label }}
+                                    </label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% if form.metodo_pago.errors %}
+                            <div class="text-danger small">{{ form.metodo_pago.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Notas Adicionales -->
+                        <div class="form-group mb-4">
+                            <label class="form-label fw-bold">📝 {{ form.notas.label }}</label>
+                            {{ form.notas }}
+                            {% if form.notas.errors %}
+                            <div class="text-danger small">{{ form.notas.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Términos y Condiciones -->
+                        <div class="form-check mb-4">
+                            {{ form.terminos_condiciones }}
+                            <label class="form-check-label" for="{{ form.terminos_condiciones.id_for_label }}">
+                                {{ form.terminos_condiciones.label }}
+                                <a href="#" class="text-primary">(Ver términos)</a>
+                            </label>
+                            {% if form.terminos_condiciones.errors %}
+                            <div class="text-danger small">{{ form.terminos_condiciones.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Guardar Dirección -->
+                        <div class="form-check mb-4">
+                            {{ form.guardar_direccion }}
+                            <label class="form-check-label" for="{{ form.guardar_direccion.id_for_label }}">
+                                {{ form.guardar_direccion.label }}
+                            </label>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'ver_carrito' %}" class="btn btn-outline-secondary btn-lg me-md-2">
+                                <i class="fas fa-arrow-left me-2"></i>Volver al Carrito
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-lock me-2"></i>Finalizar Compra - {{ total|floatformat:0 }} Gs.
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESUMEN DEL PEDIDO -->
+        <div class="col-lg-4">
+            <div class="card shadow-lg border-0 sticky-top" style="top: 20px;">
+                <div class="card-header bg-gradient-success text-white py-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-receipt me-2"></i>Resumen del Pedido
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Productos -->
+                    <h6 class="mb-3">Productos ({{ items_carrito.count }})</h6>
+                    {% for item in items_carrito %}
+                    <div class="summary-item">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <small class="fw-bold">{{ item.producto.nombre }}</small>
+                                <br>
+                                <small class="text-muted">{{ item.cantidad }} x {{ item.producto.precio|floatformat:0 }} Gs.</small>
+                            </div>
+                            <div class="col-4 text-end">
+                                <small class="fw-bold text-success">{{ item.subtotal|floatformat:0 }} Gs.</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Desglose de costos -->
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <strong>{{ subtotal|floatformat:0 }} Gs.</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Impuestos (16%):</span>
+                            <strong>{{ impuesto|floatformat:0 }} Gs.</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Envío:</span>
+                            <strong>{{ envio|floatformat:0 }} Gs.</strong>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="h5">Total:</span>
+                            <strong class="h4 text-success">{{ total|floatformat:0 }} Gs.</strong>
+                        </div>
+                    </div>
+
+                    <!-- Información de seguridad -->
+                    <div class="alert alert-success mt-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-shield-alt fa-2x me-3"></i>
+                            <div>
+                                <h6 class="mb-1">Compra 100% Segura</h6>
+                                <small class="mb-0">Tu información está protegida con encriptación SSL</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectPaymentMethod(value) {
+    document.querySelectorAll('.payment-method').forEach(method => {
+        method.classList.remove('selected');
+    });
+    
+    const selectedMethod = document.querySelector(`#metodo_pago_${value}`).closest('.payment-method');
+    selectedMethod.classList.add('selected');
+    document.querySelector(`#metodo_pago_${value}`).checked = true;
+}
+
+// Inicializar selección de método de pago
+document.addEventListener('DOMContentLoaded', function() {
+    const selectedMethod = document.querySelector('input[name="metodo_pago"]:checked');
+    if (selectedMethod) {
+        selectPaymentMethod(selectedMethod.value);
+    }
+});
+</script>
+
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.sticky-top {
+    position: sticky;
+    z-index: 100;
+}
+
+.form-control:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+</style>
+{% endblock %}

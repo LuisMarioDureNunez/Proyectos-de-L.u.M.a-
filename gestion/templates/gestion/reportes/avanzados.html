@@ -1,0 +1,286 @@
+<!-- gestion/templates/gestion/reportes/avanzados.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reportes Avanzados - Sistema de Gestión{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">
+                <i class="fas fa-chart-bar text-primary me-2"></i>
+                Reportes Avanzados
+            </h1>
+            <div class="btn-group">
+                <button class="btn btn-outline-primary" onclick="window.print()">
+                    <i class="fas fa-print me-1"></i>Imprimir
+                </button>
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-download me-1"></i>Exportar
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'exportar_reporte' 'obras' %}">
+                            <i class="fas fa-building me-2"></i>Reporte de Obras
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'exportar_reporte' 'presupuestos' %}">
+                            <i class="fas fa-file-invoice-dollar me-2"></i>Reporte de Presupuestos
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros de Fecha -->
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-filter me-2"></i>
+                    Filtros del Reporte
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
+                        <input type="date" name="fecha_inicio" class="form-control" 
+                               id="fecha_inicio" value="{{ fecha_inicio }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="fecha_fin" class="form-label">Fecha Fin</label>
+                        <input type="date" name="fecha_fin" class="form-control" 
+                               id="fecha_fin" value="{{ fecha_fin }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-sync me-1"></i>Actualizar Reporte
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Resumen Ejecutivo -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-building fa-2x mb-2"></i>
+                        <h3>{{ stats.obras.total }}</h3>
+                        <small>Obras en Período</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-file-invoice-dollar fa-2x mb-2"></i>
+                        <h3>${{ stats.presupuestos.total_monto|floatformat:0 }}</h3>
+                        <small>Total Presupuestado</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-2x mb-2"></i>
+                        <h3>{{ stats.usuarios.total }}</h3>
+                        <small>Total Usuarios</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-bricks fa-2x mb-2"></i>
+                        <h3>${{ stats.materiales.valor_total_inventario|floatformat:0 }}</h3>
+                        <small>Valor Inventario</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Gráfico de Obras -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>
+                            Distribución de Obras por Estado
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="chartObras" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico de Presupuestos -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Presupuestos por Estado
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="chartPresupuestos" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Obras Más Grandes -->
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-trophy me-2"></i>
+                    Obras con Mayor Presupuesto
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if obras_mas_grandes %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Obra</th>
+                                <th>Ubicación</th>
+                                <th>Estado</th>
+                                <th>Presupuesto</th>
+                                <th>Fecha Inicio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for obra in obras_mas_grandes %}
+                            <tr>
+                                <td>
+                                    <strong>{{ obra.nombre }}</strong>
+                                </td>
+                                <td>{{ obra.ubicacion }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if obra.estado == 'finalizada' %}bg-success
+                                        {% elif obra.estado == 'en_proceso' %}bg-warning
+                                        {% else %}bg-info{% endif %}">
+                                        {{ obra.get_estado_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success">${{ obra.presupuesto_asignado }}</span>
+                                </td>
+                                <td>{{ obra.fecha_inicio|date:"d/m/Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                    <p class="text-muted">No hay datos disponibles</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Clientes Más Activos -->
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    Clientes Más Activos
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if clientes_activos %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Total Obras</th>
+                                <th>Total Presupuestos</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cliente in clientes_activos %}
+                            <tr>
+                                <td>
+                                    <strong>{{ cliente.get_full_name|default:cliente.username }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ cliente.total_obras }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ cliente.total_presupuestos }}</span>
+                                </td>
+                                <td>
+                                    <small>{{ cliente.email }}</small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                    <p class="text-muted">No hay datos disponibles</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Cargar datos de reportes
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gráfico de obras
+        fetch('{% url "reporte_obras_json" %}')
+            .then(response => response.json())
+            .then(data => {
+                new Chart(document.getElementById('chartObras'), {
+                    type: 'doughnut',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            });
+
+        // Gráfico de presupuestos
+        fetch('{% url "reporte_presupuestos_json" %}')
+            .then(response => response.json())
+            .then(data => {
+                new Chart(document.getElementById('chartPresupuestos'), {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Super - LUMA Paraguay{% endblock %}
+
+{% block extra_css %}
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%);min-height:100vh;font-family:'Segoe UI',sans-serif;overflow-x:hidden;overflow-y:auto}
+.dashboard-super{padding:2rem;max-width:1600px;margin:0 auto}
+.hero-mega{text-align:center;margin-bottom:3rem;animation:fadeInDown 1s;position:relative}
+.hero-mega::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(102,126,234,.3),transparent);border-radius:50%;z-index:0;animation:pulse 3s infinite}
+@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.1)}}
+.hero-mega h1{font-size:5rem;font-weight:900;background:linear-gradient(135deg,#667eea,#764ba2,#f093fb,#4facfe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 30px rgba(102,126,234,.5);margin-bottom:1rem;position:relative;z-index:1;animation:glow 2s infinite}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 10px rgba(102,126,234,.5))}50%{filter:drop-shadow(0 0 20px rgba(102,126,234,.8))}}
+.hero-mega p{font-size:1.5rem;color:rgba(255,255,255,.9);font-weight:300;position:relative;z-index:1}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:translateY(0)}}
+.mega-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;margin-bottom:3rem}
+.mega-card{background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.05));backdrop-filter:blur(10px);border-radius:30px;padding:2.5rem;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5);transition:all .5s;animation:fadeInUp 1s;position:relative;overflow:hidden;border:2px solid rgba(255,255,255,.2)}
+.mega-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent,rgba(255,255,255,.1),transparent);transform:rotate(45deg);transition:all .5s}
+.mega-card:hover::before{left:100%}
+.mega-card:hover{transform:translateY(-20px) scale(1.1);box-shadow:0 40px 100px rgba(102,126,234,.6)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.mega-icon{font-size:6rem;margin-bottom:1.5rem;animation:float 3s infinite;filter:drop-shadow(0 10px 20px rgba(0,0,0,.3))}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.mega-value{font-size:4rem;font-weight:900;background:linear-gradient(135deg,#fff,#f093fb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem;text-shadow:0 5px 15px rgba(0,0,0,.2)}
+.mega-label{font-size:1.4rem;color:rgba(255,255,255,.9);font-weight:700;text-transform:uppercase;letter-spacing:2px}
+.section-mega{margin-bottom:3rem}
+.section-title-mega{font-size:3rem;font-weight:900;color:#fff;margin-bottom:2rem;text-align:center;text-shadow:0 10px 30px rgba(0,0,0,.5);position:relative;padding-bottom:1.5rem}
+.section-title-mega::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:150px;height:5px;background:linear-gradient(90deg,#667eea,#f093fb,#4facfe);border-radius:3px;box-shadow:0 5px 15px rgba(102,126,234,.5)}
+.charts-mega{display:grid;grid-template-columns:repeat(2,1fr);gap:2rem;margin-bottom:3rem}@media(max-width:1200px){.charts-mega{grid-template-columns:1fr}}
+.chart-mega{background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.05));backdrop-filter:blur(10px);border-radius:30px;padding:2rem;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:fadeIn 1.5s;height:400px;border:2px solid rgba(255,255,255,.2);position:relative;overflow:hidden}
+.chart-mega::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at top right,rgba(102,126,234,.2),transparent);pointer-events:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.chart-title-mega{font-size:2rem;font-weight:800;color:#fff;margin-bottom:2rem;text-align:center;text-transform:uppercase;letter-spacing:2px;text-shadow:0 5px 15px rgba(0,0,0,.3)}
+.data-mega{background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.05));backdrop-filter:blur(10px);border-radius:30px;padding:2rem;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:fadeIn 1s;margin-bottom:2rem;border:2px solid rgba(255,255,255,.2)}
+.table-mega{width:100%;border-collapse:separate;border-spacing:0 .5rem;font-size:.95rem}
+.table-mega thead th{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:1rem;text-align:left;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:1px;border:none;box-shadow:0 5px 15px rgba(0,0,0,.3)}
+.table-mega thead th:first-child{border-radius:15px 0 0 15px}
+.table-mega thead th:last-child{border-radius:0 15px 15px 0}
+.table-mega tbody tr{background:rgba(255,255,255,.05);transition:all .3s}
+.table-mega tbody tr:hover{background:rgba(102,126,234,.2);transform:scale(1.02);box-shadow:0 10px 30px rgba(102,126,234,.3)}
+.table-mega tbody td{padding:1rem;border:none;font-size:.95rem;color:#fff;font-weight:500}
+.table-mega tbody td:first-child{border-radius:15px 0 0 15px}
+.table-mega tbody td:last-child{border-radius:0 15px 15px 0}
+.badge-mega{padding:.7rem 1.5rem;border-radius:25px;font-weight:800;font-size:1rem;display:inline-block;box-shadow:0 5px 15px rgba(0,0,0,.3);text-transform:uppercase;letter-spacing:1px}
+.badge-success{background:linear-gradient(135deg,#28a745,#20c997);color:#fff}
+.badge-warning{background:linear-gradient(135deg,#ffc107,#ff9800);color:#fff}
+.badge-info{background:linear-gradient(135deg,#17a2b8,#00bcd4);color:#fff}
+.badge-danger{background:linear-gradient(135deg,#dc3545,#e91e63);color:#fff}
+.progress-mega{margin-bottom:2.5rem;padding:2rem;background:rgba(255,255,255,.05);border-radius:20px;transition:all .3s;border:1px solid rgba(255,255,255,.1)}
+.progress-mega:hover{background:rgba(102,126,234,.1);transform:translateX(15px);box-shadow:0 10px 30px rgba(102,126,234,.3)}
+.progress-label-mega{display:flex;justify-content:space-between;margin-bottom:1.5rem;font-weight:800;color:#fff;font-size:1.3rem;text-shadow:0 3px 10px rgba(0,0,0,.3)}
+.progress-bar-mega{height:40px;background:rgba(255,255,255,.1);border-radius:25px;overflow:hidden;position:relative;box-shadow:inset 0 3px 10px rgba(0,0,0,.3)}
+.progress-fill-mega{height:100%;background:linear-gradient(90deg,#667eea,#764ba2,#f093fb,#4facfe);border-radius:25px;transition:width 2s;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.2rem;box-shadow:0 5px 20px rgba(102,126,234,.5)}
+.progress-fill-mega::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:shimmer 2s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.activity-mega{padding:2rem;border-bottom:2px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:2rem;transition:all .3s}
+.activity-mega:hover{background:rgba(102,126,234,.1);transform:translateX(15px);box-shadow:0 10px 30px rgba(102,126,234,.3)}
+.activity-icon-mega{font-size:4rem;filter:drop-shadow(0 5px 15px rgba(0,0,0,.3))}
+.activity-content-mega{flex:1}
+.activity-title-mega{font-weight:800;font-size:1.4rem;color:#fff;margin-bottom:.5rem;text-shadow:0 3px 10px rgba(0,0,0,.3)}
+.activity-desc-mega{color:rgba(255,255,255,.8);font-size:1.1rem;margin-bottom:.5rem}
+.activity-time-mega{color:rgba(255,255,255,.6);font-size:1rem}
+.quick-mega{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;margin-top:2rem}
+.btn-mega{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:2rem;border-radius:20px;text-align:center;text-decoration:none;font-weight:800;font-size:1.3rem;transition:all .4s;box-shadow:0 15px 40px rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.2);display:block;text-transform:uppercase;letter-spacing:1px}
+.btn-mega:hover{transform:translateY(-10px) scale(1.05);box-shadow:0 25px 60px rgba(102,126,234,.6);background:linear-gradient(135deg,#764ba2,#667eea);color:#fff}
+.realtime-badge{position:fixed;top:80px;right:20px;background:linear-gradient(135deg,#28a745,#20c997);color:#fff;padding:.8rem 1.5rem;border-radius:25px;font-weight:700;font-size:.9rem;box-shadow:0 5px 20px rgba(40,167,69,.5);z-index:1000}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="realtime-badge">🔴 EN VIVO</div>
+
+<div class="dashboard-super">
+<div class="hero-mega">
+<h1>🚀 DASHBOARD SUPER</h1>
+<p>Sistema de Gestión en Tiempo Real - Paraguay</p>
+</div>
+
+<div class="mega-stats">
+<div class="mega-card" style="animation-delay:.1s">
+<div class="mega-icon">💰</div>
+<div class="mega-value" id="ingresos-mega">{{ stats.total_presupuestos_aceptados|default:0|floatformat:0 }}</div>
+<div class="mega-label">Ingresos ₲</div>
+</div>
+<div class="mega-card" style="animation-delay:.2s">
+<div class="mega-icon">🏗️</div>
+<div class="mega-value">{{ stats.total_obras|default:0 }}</div>
+<div class="mega-label">Obras</div>
+</div>
+<div class="mega-card" style="animation-delay:.3s">
+<div class="mega-icon">📋</div>
+<div class="mega-value">{{ stats.total_presupuestos|default:0 }}</div>
+<div class="mega-label">Presupuestos</div>
+</div>
+<div class="mega-card" style="animation-delay:.4s">
+<div class="mega-icon">🚧</div>
+<div class="mega-value">{{ stats.obras_en_proceso|default:0 }}</div>
+<div class="mega-label">En Proceso</div>
+</div>
+<div class="mega-card" style="animation-delay:.5s">
+<div class="mega-icon">📦</div>
+<div class="mega-value">{{ stats.total_materiales|default:0 }}</div>
+<div class="mega-label">Materiales</div>
+</div>
+<div class="mega-card" style="animation-delay:.6s">
+<div class="mega-icon">👥</div>
+<div class="mega-value">{{ stats.total_usuarios|default:0 }}</div>
+<div class="mega-label">Usuarios</div>
+</div>
+</div>
+
+<div class="section-mega">
+<h2 class="section-title-mega">📊 ANÁLISIS VISUAL AVANZADO</h2>
+<div class="charts-mega">
+<div class="chart-mega">
+<h3 class="chart-title-mega">📊 Estado de Obras</h3>
+<canvas id="obrasChart"></canvas>
+</div>
+<div class="chart-mega">
+<h3 class="chart-title-mega">💵 Presupuestos</h3>
+<canvas id="presupChart"></canvas>
+</div>
+</div>
+</div>
+
+<div class="section-mega">
+<h2 class="section-title-mega">🏗️ OBRAS ACTIVAS</h2>
+<div class="data-mega">
+{% if obras_recientes %}
+<table class="table-mega">
+<thead>
+<tr>
+<th>OBRA</th>
+<th>UBICACIÓN</th>
+<th>ESTADO</th>
+<th>PRESUPUESTO</th>
+<th>PROGRESO</th>
+</tr>
+</thead>
+<tbody>
+{% for obra in obras_recientes %}
+<tr>
+<td><strong>{{ obra.nombre }}</strong></td>
+<td>{{ obra.ubicacion|default:"Sin ubicación" }}</td>
+<td>
+{% if obra.estado == 'en_proceso' %}
+<span class="badge-mega badge-warning">🚧 EN PROCESO</span>
+{% elif obra.estado == 'finalizada' %}
+<span class="badge-mega badge-success">✅ FINALIZADA</span>
+{% elif obra.estado == 'planificada' %}
+<span class="badge-mega badge-info">📋 PLANIFICADA</span>
+{% endif %}
+</td>
+<td><strong>₲ {{ obra.presupuesto_asignado|floatformat:0 }}</strong></td>
+<td>
+<div class="progress-bar-mega" style="height:30px">
+<div class="progress-fill-mega" style="width:{{ obra.progreso_porcentaje }}%">{{ obra.progreso_porcentaje }}%</div>
+</div>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<p style="text-align:center;color:#fff;font-size:1.5rem;padding:3rem">📭 No hay obras registradas</p>
+{% endif %}
+</div>
+</div>
+
+<div class="section-mega">
+<h2 class="section-title-mega">💼 PRESUPUESTOS RECIENTES</h2>
+<div class="data-mega">
+{% if presupuestos_recientes %}
+<table class="table-mega">
+<thead>
+<tr>
+<th>CÓDIGO</th>
+<th>OBRA</th>
+<th>CLIENTE</th>
+<th>TOTAL</th>
+<th>ESTADO</th>
+</tr>
+</thead>
+<tbody>
+{% for presupuesto in presupuestos_recientes %}
+<tr>
+<td><strong>{{ presupuesto.codigo_presupuesto }}</strong></td>
+<td>{{ presupuesto.obra.nombre }}</td>
+<td>{{ presupuesto.cliente.get_full_name|default:presupuesto.cliente.username }}</td>
+<td><strong>₲ {{ presupuesto.total|floatformat:0 }}</strong></td>
+<td>
+{% if presupuesto.estado == 'aceptado' %}
+<span class="badge-mega badge-success">✅ ACEPTADO</span>
+{% elif presupuesto.estado == 'en_revision' %}
+<span class="badge-mega badge-warning">🔍 REVISIÓN</span>
+{% elif presupuesto.estado == 'solicitado' %}
+<span class="badge-mega badge-info">📨 SOLICITADO</span>
+{% else %}
+<span class="badge-mega badge-danger">❌ RECHAZADO</span>
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<p style="text-align:center;color:#fff;font-size:1.5rem;padding:3rem">📭 No hay presupuestos</p>
+{% endif %}
+</div>
+</div>
+
+<div class="section-mega">
+<h2 class="section-title-mega">🔔 ACTIVIDAD EN TIEMPO REAL</h2>
+<div class="data-mega">
+{% if actividades_recientes %}
+{% for actividad in actividades_recientes|slice:":6" %}
+<div class="activity-mega">
+<div class="activity-icon-mega">{{ actividad.icono }}</div>
+<div class="activity-content-mega">
+<div class="activity-title-mega">{{ actividad.objeto }}</div>
+<div class="activity-desc-mega">{{ actividad.accion }} por {{ actividad.usuario }}</div>
+<div class="activity-time-mega">{{ actividad.fecha|date:"d/m/Y H:i" }}</div>
+</div>
+</div>
+{% endfor %}
+{% else %}
+<p style="text-align:center;color:#fff;font-size:1.5rem;padding:3rem">📭 No hay actividad</p>
+{% endif %}
+</div>
+</div>
+
+<div class="section-mega">
+<h2 class="section-title-mega">⚡ ACCIONES RÁPIDAS</h2>
+<div class="data-mega">
+<div class="quick-mega">
+<a href="{% url 'nueva_obra' %}" class="btn-mega">🏗️ Nueva Obra</a>
+<a href="{% url 'nuevo_presupuesto' %}" class="btn-mega">📋 Presupuesto</a>
+<a href="{% url 'nuevo_material' %}" class="btn-mega">📦 Material</a>
+<a href="{% url 'lista_obras' %}" class="btn-mega">📊 Ver Obras</a>
+<a href="{% url 'lista_presupuestos' %}" class="btn-mega">💼 Presupuestos</a>
+<a href="{% url 'exportar_reporte_completo' %}" class="btn-mega" style="background:linear-gradient(135deg,#28a745,#20c997)">📥 Exportar</a>
+</div>
+</div>
+</div>
+
+<div class="section-mega">
+<h2 class="section-title-mega">🔗 TODOS LOS ENLACES DEL SISTEMA</h2>
+<div class="data-mega">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem">
+
+<div>
+<h3 style="color:#fff;font-size:1.5rem;margin-bottom:1rem;border-bottom:2px solid #667eea;padding-bottom:.5rem">📊 DASHBOARDS</h3>
+<div style="display:flex;flex-direction:column;gap:.5rem">
+<a href="{% url 'dashboard' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">🚀 Dashboard Principal</a>
+<a href="{% url 'dashboard_super' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">⚡ Dashboard Super</a>
+<a href="{% url 'dashboard_increible' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">✨ Dashboard Increíble</a>
+<a href="{% url 'dashboard_paraguay' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">🇵🇾 Dashboard Paraguay</a>
+</div>
+</div>
+
+<div>
+<h3 style="color:#fff;font-size:1.5rem;margin-bottom:1rem;border-bottom:2px solid #667eea;padding-bottom:.5rem">🏗️ OBRAS</h3>
+<div style="display:flex;flex-direction:column;gap:.5rem">
+<a href="{% url 'lista_obras' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">📋 Lista de Obras</a>
+<a href="{% url 'nueva_obra' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">➕ Nueva Obra</a>
+<a href="{% url 'obras_finalizadas' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">✅ Obras Finalizadas</a>
+</div>
+</div>
+
+<div>
+<h3 style="color:#fff;font-size:1.5rem;margin-bottom:1rem;border-bottom:2px solid #667eea;padding-bottom:.5rem">💼 PRESUPUESTOS</h3>
+<div style="display:flex;flex-direction:column;gap:.5rem">
+<a href="{% url 'lista_presupuestos' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">📋 Lista Presupuestos</a>
+<a href="{% url 'nuevo_presupuesto' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">➕ Nuevo Presupuesto</a>
+<a href="{% url 'solicitar_presupuesto' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">📨 Solicitar Presupuesto</a>
+<a href="{% url 'crear_presupuesto_avanzado' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">⚡ Presupuesto Avanzado</a>
+</div>
+</div>
+
+<div>
+<h3 style="color:#fff;font-size:1.5rem;margin-bottom:1rem;border-bottom:2px solid #667eea;padding-bottom:.5rem">📦 MATERIALES</h3>
+<div style="display:flex;flex-direction:column;gap:.5rem">
+<a href="{% url 'lista_materiales' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">📋 Lista Materiales</a>
+<a href="{% url 'nuevo_material' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">➕ Nuevo Material</a>
+</div>
+</div>
+
+<div>
+<h3 style="color:#fff;font-size:1.5rem;margin-bottom:1rem;border-bottom:2px solid #667eea;padding-bottom:.5rem">🚜 MAQUINARIAS</h3>
+<div style="display:flex;flex-direction:column;gap:.5rem">
+<a href="{% url 'lista_maquinarias' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">📋 Lista Maquinarias</a>
+<a href="{% url 'nueva_maquinaria' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">➕ Nueva Maquinaria</a>
+</div>
+</div>
+
+<div>
+<h3 style="color:#fff;font-size:1.5rem;margin-bottom:1rem;border-bottom:2px solid #667eea;padding-bottom:.5rem">🛠️ HERRAMIENTAS</h3>
+<div style="display:flex;flex-direction:column;gap:.5rem">
+<a href="{% url 'lista_herramientas' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">📋 Lista Herramientas</a>
+<a href="{% url 'nueva_herramienta' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">➕ Nueva Herramienta</a>
+</div>
+</div>
+
+<div>
+<h3 style="color:#fff;font-size:1.5rem;margin-bottom:1rem;border-bottom:2px solid #667eea;padding-bottom:.5rem">👥 USUARIOS</h3>
+<div style="display:flex;flex-direction:column;gap:.5rem">
+<a href="{% url 'admin_usuarios' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">👥 Gestión Usuarios</a>
+<a href="{% url 'gestionar_perfil' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">👤 Mi Perfil</a>
+</div>
+</div>
+
+<div>
+<h3 style="color:#fff;font-size:1.5rem;margin-bottom:1rem;border-bottom:2px solid #667eea;padding-bottom:.5rem">📊 REPORTES</h3>
+<div style="display:flex;flex-direction:column;gap:.5rem">
+<a href="{% url 'reportes_avanzados' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">📈 Reportes Avanzados</a>
+<a href="{% url 'reportes_estadisticas_avanzadas' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">📊 Estadísticas</a>
+<a href="{% url 'exportar_estadisticas_excel' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">📥 Exportar Excel</a>
+<a href="{% url 'exportar_reporte_completo' %}" style="color:#fff;text-decoration:none;padding:.5rem;background:rgba(255,255,255,.1);border-radius:10px;transition:all .3s" onmouseover="this.style.background='rgba(102,126,234,.3)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">📥 Reporte Completo</a>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+window.addEventListener('load',function(){
+const chartConfig={responsive:true,maintainAspectRatio:false,animation:{duration:800},plugins:{legend:{labels:{color:'#fff',font:{size:14,weight:'bold'},padding:15}}}};
+
+new Chart(document.getElementById('obrasChart'),{
+type:'doughnut',
+data:{
+labels:['Planificadas','En Proceso','Finalizadas'],
+datasets:[{
+data:[{{ stats.obras_planificadas|default:0 }},{{ stats.obras_en_proceso|default:0 }},{{ stats.obras_finalizadas|default:0 }}],
+backgroundColor:['#667eea','#ffc107','#28a745'],
+borderWidth:5,
+borderColor:'rgba(255,255,255,.2)'
+}]
+},
+options:chartConfig
+});
+
+new Chart(document.getElementById('presupChart'),{
+type:'bar',
+data:{
+labels:['Solicitados','Aceptados','Rechazados'],
+datasets:[{
+label:'Presupuestos',
+data:[{{ stats.presupuestos_solicitados|default:0 }},{{ stats.presupuestos_aceptados|default:0 }},{{ stats.presupuestos_rechazados|default:0 }}],
+backgroundColor:['#667eea','#28a745','#dc3545'],
+borderWidth:3,
+borderColor:'rgba(255,255,255,.2)'
+}]
+},
+options:{...chartConfig,scales:{y:{beginAtZero:true,ticks:{color:'#fff',precision:0}}}}
+});
+
+setInterval(()=>{
+const badge=document.querySelector('.realtime-badge');
+if(badge)badge.style.opacity=badge.style.opacity=='0.5'?'1':'0.5';
+},1000);
+});
+</script>
+{% endblock %}

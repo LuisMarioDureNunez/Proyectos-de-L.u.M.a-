@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏗️ SISTEMA DE GESTIÓN EN PRESUPUESTOS PARA OBRAS CIVILES - L.u.M.a Paraguay</title>
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/bienvenida.css' %}">
+    <!-- Estilos movidos a archivo CSS externo para mejor rendimiento -->
+</head>
+<body>
+    <div class="floating-elements">
+        <i class="fas fa-hammer floating-icon" style="top: 10%; left: 10%; animation-delay: 0s;"></i>
+        <i class="fas fa-building floating-icon" style="top: 20%; right: 15%; animation-delay: 1s;"></i>
+        <i class="fas fa-tools floating-icon" style="bottom: 20%; left: 20%; animation-delay: 2s;"></i>
+        <i class="fas fa-hard-hat floating-icon" style="bottom: 10%; right: 10%; animation-delay: 3s;"></i>
+    </div>
+
+    <div class="welcome-container">
+        <div class="scroll-container">
+        <!-- LOGO SUPERIOR -->
+        <div style="text-align: center; margin-bottom: 30px; position: relative;">
+            <div style="background: rgba(255,255,255,0.1); border-radius: 25px; padding: 30px; backdrop-filter: blur(10px);">
+                <img src="{% load static %}{% static 'images/logo.jpeg' %}" alt="L.u.M.a Logo" 
+                     style="width: 180px; height: 180px; border-radius: 50%; border: 6px solid #FF6600; animation: pulse 2s infinite; box-shadow: 0 10px 30px rgba(255,102,0,0.3);"
+                     onerror="this.src='{% static 'images/logo1.png' %}'">
+                <h1 style="color: white; font-weight: 900; margin: 25px 0; text-shadow: 3px 3px 6px rgba(0,0,0,0.7); font-size: 2.5rem;">
+                    🌍 EXPLORA EL MUNDO CON NOSOTROS 🌍
+                </h1>
+                <div class="titulo-animado" style="margin-bottom: 20px;">
+                    <h1 style="color: #002395; font-weight: 900; font-size: 2.8rem; text-shadow: 3px 3px 6px rgba(0,0,0,0.7); margin-bottom: 15px; animation: tituloGlow 3s ease-in-out infinite alternate;">
+                        🏗️ SISTEMA DE GESTIÓN EN PRESUPUESTOS PARA OBRAS CIVILES
+                    </h1>
+                    <h2 style="color: #FFD700; font-weight: 700; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-size: 1.8rem; animation: subtituloSlide 2s ease-out;">
+                        L.u.M.a - Transformando la Construcción en Paraguay
+                    </h2>
+                </div>
+                <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem; font-weight: 500; margin-top: 15px;">
+                    🚀 La Revolución Digital de la Construcción Paraguaya 🚀
+                </p>
+            </div>
+        </div>
+
+        <!-- HERO BIENVENIDA -->
+        <div class="hero-welcome">
+            <h1 style="color: #002395; font-weight: 900; margin-bottom: 20px;">
+                🇵🇾 Bienvenido a L.u.M.a
+            </h1>
+            <h2 style="color: #FF6600; font-weight: 700; margin-bottom: 30px;">
+                Sistema de Gestión en Presupuestos para Obras Civiles
+            </h2>
+            <p style="font-size: 1.2rem; color: #666; line-height: 1.6;">
+                Una plataforma revolucionaria desarrollada en Paraguay para transformar 
+                la industria de la construcción con tecnología de vanguardia.
+            </p>
+        </div>
+
+        <!-- VISIÓN Y MISIÓN -->
+        <div style="background: rgba(255,255,255,0.95); border-radius: 25px; padding: 40px; margin-bottom: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h3 style="color: #002395; font-weight: bold; margin-bottom: 30px; text-align: center; font-size: 2rem;">
+                🎯 MISIÓN Y VISIÓN DE L.u.M.a
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                <!-- MISIÓN -->
+                <div style="background: linear-gradient(135deg, rgba(255,102,0,0.1), rgba(0,35,149,0.1)); border-radius: 20px; padding: 30px; border-left: 5px solid #FF6600;">
+                    <h4 style="color: #FF6600; font-weight: bold; margin-bottom: 20px; font-size: 1.5rem;">
+                        🚀 NUESTRA MISIÓN
+                    </h4>
+                    <p style="color: #666; line-height: 1.8; font-size: 1.1rem; margin-bottom: 20px;">
+                        <strong>Ser la plataforma tecnológica líder en Latinoamérica</strong> para la gestión integral de obras civiles, 
+                        revolucionando la industria de la construcción mediante la implementación de soluciones digitales innovadoras 
+                        que transformen la manera en que se planifican, ejecutan y controlan los proyectos constructivos.
+                    </p>
+                    <p style="color: #666; line-height: 1.8; font-size: 1.05rem; margin-bottom: 20px;">
+                        Aspiramos a <strong>democratizar el acceso a tecnología de vanguardia</strong> para constructores, arquitectos, 
+                        ingenieros y propietarios de todos los tamaños, desde pequeños emprendedores hasta grandes corporaciones, 
+                        eliminando las barreras tecnológicas que históricamente han limitado el crecimiento del sector.
+                    </p>
+                    <p style="color: #666; line-height: 1.8; font-size: 1.05rem; margin-bottom: 20px;">
+                        Visualizamos un futuro donde <strong>cada proyecto de construcción en Paraguay y la región</strong> sea gestionado 
+                        con precisión matemática, transparencia total y eficiencia máxima, contribuyendo al desarrollo sostenible 
+                        de nuestras comunidades y al crecimiento económico de nuestros países.
+                    </p>
+                    <div style="background: rgba(0,35,149,0.1); border-radius: 10px; padding: 15px; margin-top: 20px;">
+                        <p style="color: #002395; font-weight: bold; margin-bottom: 0; font-size: 1.1rem;">
+                            "Construir el futuro digital de la construcción paraguaya, ladrillo a ladrillo, código a código."
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- MISIÓN -->
+                <div style="background: linear-gradient(135deg, rgba(255,102,0,0.1), rgba(0,35,149,0.1)); border-radius: 20px; padding: 30px; border-left: 5px solid #FF6600;">
+                    <h4 style="color: #FF6600; font-weight: bold; margin-bottom: 20px; font-size: 1.5rem;">
+                        🚀 NUESTRA MISIÓN
+                    </h4>
+                    <p style="color: #666; line-height: 1.8; font-size: 1.1rem; margin-bottom: 20px;">
+                        <strong>Desarrollar y proporcionar soluciones tecnológicas integrales</strong> que automaticen, optimicen y 
+                        digitalicen todos los procesos involucrados en la gestión de obras civiles, desde la conceptualización 
+                        inicial hasta la entrega final del proyecto.
+                    </p>
+                    <p style="color: #666; line-height: 1.8; font-size: 1.05rem; margin-bottom: 20px;">
+                        Nos comprometemos a <strong>empoderar a profesionales de la construcción</strong> con herramientas que les 
+                        permitan tomar decisiones informadas basadas en datos precisos, reducir significativamente los costos 
+                        operativos, minimizar errores humanos y maximizar la rentabilidad de sus proyectos.
+                    </p>
+                    <p style="color: #666; line-height: 1.8; font-size: 1.05rem; margin-bottom: 20px;">
+                        Nuestra misión incluye <strong>brindar soporte técnico especializado</strong> y capacitación continua para 
+                        garantizar que cada usuario pueda aprovechar al máximo las capacidades de nuestra plataforma, 
+                        contribuyendo así al crecimiento profesional y empresarial de nuestros clientes.
+                    </p>
+                    <p style="color: #666; line-height: 1.8; font-size: 1.05rem; margin-bottom: 20px;">
+                        Trabajamos incansablemente para <strong>mantener los más altos estándares de seguridad, confiabilidad 
+                        y innovación</strong>, adaptándonos constantemente a las necesidades cambiantes del mercado y 
+                        anticipándonos a las tendencias futuras de la industria constructiva.
+                    </p>
+                    <div style="background: rgba(255,102,0,0.1); border-radius: 10px; padding: 15px; margin-top: 20px;">
+                        <p style="color: #FF6600; font-weight: bold; margin-bottom: 0; font-size: 1.1rem;">
+                            "Transformar cada desafío constructivo en una oportunidad de crecimiento y éxito."
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VALORES CORPORATIVOS -->
+            <div style="background: linear-gradient(135deg, rgba(40,167,69,0.1), rgba(32,201,151,0.1)); border-radius: 20px; padding: 30px; margin-top: 30px; border: 2px solid rgba(40,167,69,0.3);">
+                <h4 style="color: #28a745; font-weight: bold; margin-bottom: 25px; text-align: center; font-size: 1.4rem;">
+                    💎 NUESTROS VALORES FUNDAMENTALES
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="text-align: center; padding: 15px;">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🇵🇾</div>
+                        <h5 style="color: #28a745; font-weight: bold; margin-bottom: 10px;">ORGULLO PARAGUAYO</h5>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">Desarrollado con amor en Paraguay para el mundo</p>
+                    </div>
+                    <div style="text-align: center; padding: 15px;">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🔬</div>
+                        <h5 style="color: #28a745; font-weight: bold; margin-bottom: 10px;">INNOVACIÓN</h5>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">Tecnología de vanguardia aplicada a la construcción</p>
+                    </div>
+                    <div style="text-align: center; padding: 15px;">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🤝</div>
+                        <h5 style="color: #28a745; font-weight: bold; margin-bottom: 10px;">COMPROMISO</h5>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">Dedicación total al éxito de nuestros usuarios</p>
+                    </div>
+                    <div style="text-align: center; padding: 15px;">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🎯</div>
+                        <h5 style="color: #28a745; font-weight: bold; margin-bottom: 10px;">EXCELENCIA</h5>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">Calidad superior en cada línea de código</p>
+                    </div>
+                    <div style="text-align: center; padding: 15px;">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🌱</div>
+                        <h5 style="color: #28a745; font-weight: bold; margin-bottom: 10px;">SOSTENIBILIDAD</h5>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">Desarrollo responsable y duradero</p>
+                    </div>
+                    <div style="text-align: center; padding: 15px;">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;">🔒</div>
+                        <h5 style="color: #28a745; font-weight: bold; margin-bottom: 10px;">CONFIANZA</h5>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">Seguridad y transparencia en cada proceso</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIGNIFICADO DE L.u.M.a -->
+        <div style="background: rgba(255,255,255,0.95); border-radius: 25px; padding: 40px; margin-bottom: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h3 style="color: #002395; font-weight: bold; margin-bottom: 25px; text-align: center;">
+                🌳 ¿QUÉ SIGNIFICA L.u.M.a?
+            </h3>
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; align-items: center;">
+                <div style="text-align: center;">
+                    <div style="width: 150px; height: 150px; margin: 0 auto; background: linear-gradient(135deg, #28a745, #20c997); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: white; box-shadow: 0 10px 30px rgba(40,167,69,0.3);">
+                        🌳
+                    </div>
+                </div>
+                <div>
+                    <h4 style="color: #28a745; font-weight: bold; margin-bottom: 20px; font-size: 1.5rem;">
+                        L.u.M.a = "Logística, Unión, Materiales, Arquitectura"
+                    </h4>
+                    <p style="color: #666; line-height: 1.6; margin-bottom: 15px;">
+                        <strong style="color: #002395;">🌳 El Árbol en nuestro logo representa:</strong>
+                    </p>
+                    <ul style="color: #666; line-height: 1.8;">
+                        <li><strong>Raíces Profundas:</strong> Bases sólidas en la construcción paraguaya</li>
+                        <li><strong>Crecimiento:</strong> Expansión constante de funcionalidades</li>
+                        <li><strong>Ramificaciones:</strong> Conexión entre todos los aspectos de la obra</li>
+                        <li><strong>Frutos:</strong> Resultados exitosos para nuestros usuarios</li>
+                        <li><strong>Sostenibilidad:</strong> Desarrollo responsable y duradero</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ - PREGUNTAS FRECUENTES -->
+        <div style="background: rgba(255,255,255,0.95); border-radius: 25px; padding: 40px; margin-bottom: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h3 style="color: #002395; font-weight: bold; margin-bottom: 30px; text-align: center; font-size: 2rem;">
+                ❓ PREGUNTAS FRECUENTES SOBRE L.u.M.a
+            </h3>
+            <div style="max-height: 400px; overflow-y: auto; padding: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                <div class="accordion" id="faqAccordion">
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(1)">
+                            <strong style="color: #002395;">1. ¿Qué es exactamente L.u.M.a?</strong>
+                        </div>
+                        <div id="faq1" style="display: none; padding: 15px; background: white;">
+                            L.u.M.a es un sistema integral de gestión para obras civiles que automatiza presupuestos, controla inventarios, gestiona contratistas y genera reportes profesionales.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(2)">
+                            <strong style="color: #002395;">2. ¿Funciona con moneda paraguaya (Guaraníes)?</strong>
+                        </div>
+                        <div id="faq2" style="display: none; padding: 15px; background: white;">
+                            Sí, L.u.M.a está completamente adaptado a Paraguay: maneja Guaraníes, calcula IVA automáticamente y cumple normativas locales.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(3)">
+                            <strong style="color: #002395;">3. ¿Cuánto tiempo toma generar un presupuesto?</strong>
+                        </div>
+                        <div id="faq3" style="display: none; padding: 15px; background: white;">
+                            Con L.u.M.a generas presupuestos profesionales en 5-10 minutos vs 2-3 horas manualmente.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(4)">
+                            <strong style="color: #002395;">4. ¿Necesito conocimientos técnicos para usarlo?</strong>
+                        </div>
+                        <div id="faq4" style="display: none; padding: 15px; background: white;">
+                            No, L.u.M.a tiene interfaz intuitiva. Si sabes usar WhatsApp, puedes usar L.u.M.a. Incluye capacitación gratuita.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(5)">
+                            <strong style="color: #002395;">5. ¿Funciona en celulares y tablets?</strong>
+                        </div>
+                        <div id="faq5" style="display: none; padding: 15px; background: white;">
+                            Sí, L.u.M.a es 100% responsive. Funciona perfectamente en PC, tablet, celular desde cualquier navegador.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(6)">
+                            <strong style="color: #002395;">6. ¿Mis datos están seguros?</strong>
+                        </div>
+                        <div id="faq6" style="display: none; padding: 15px; background: white;">
+                            Absolutamente. Usamos encriptación AES-256, backups automáticos y servidores seguros AWS. Tus datos son privados.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(7)">
+                            <strong style="color: #002395;">7. ¿Puedo gestionar múltiples obras simultáneamente?</strong>
+                        </div>
+                        <div id="faq7" style="display: none; padding: 15px; background: white;">
+                            Sí, L.u.M.a permite gestionar ilimitadas obras, cada una con sus presupuestos, materiales y contratistas independientes.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(8)">
+                            <strong style="color: #002395;">8. ¿Incluye control de inventario?</strong>
+                        </div>
+                        <div id="faq8" style="display: none; padding: 15px; background: white;">
+                            Sí, controla stock en tiempo real, alerta cuando materiales están por agotarse y sugiere reposición automática.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(9)">
+                            <strong style="color: #002395;">9. ¿Genera reportes profesionales?</strong>
+                        </div>
+                        <div id="faq9" style="display: none; padding: 15px; background: white;">
+                            Sí, genera PDFs profesionales con logo, presupuestos detallados, reportes de avance y análisis financieros.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(10)">
+                            <strong style="color: #002395;">10. ¿Hay soporte técnico en Paraguay?</strong>
+                        </div>
+                        <div id="faq10" style="display: none; padding: 15px; background: white;">
+                            Sí, soporte 100% paraguayo en horarios laborales. WhatsApp, email y videollamadas para resolver cualquier duda.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(11)">
+                            <strong style="color: #002395;">11. ¿Puedo importar mis datos existentes?</strong>
+                        </div>
+                        <div id="faq11" style="display: none; padding: 15px; background: white;">
+                            Sí, ayudamos a migrar tus datos desde Excel, otros sistemas o archivos. Migración gratuita incluida.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(12)">
+                            <strong style="color: #002395;">12. ¿Funciona sin internet?</strong>
+                        </div>
+                        <div id="faq12" style="display: none; padding: 15px; background: white;">
+                            Funcionalidades básicas sí. Los datos se sincronizan automáticamente cuando recuperas conexión.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(13)">
+                            <strong style="color: #002395;">13. ¿Cuántos usuarios pueden acceder?</strong>
+                        </div>
+                        <div id="faq13" style="display: none; padding: 15px; background: white;">
+                            Usuarios ilimitados con diferentes niveles de acceso: administrador, supervisor, operario, cliente.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(14)">
+                            <strong style="color: #002395;">14. ¿Incluye gestión de contratistas?</strong>
+                        </div>
+                        <div id="faq14" style="display: none; padding: 15px; background: white;">
+                            Sí, registra contratistas, asigna tareas, controla pagos y evalúa desempeño con sistema de calificaciones.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(15)">
+                            <strong style="color: #002395;">15. ¿Calcula automáticamente el IVA?</strong>
+                        </div>
+                        <div id="faq15" style="display: none; padding: 15px; background: white;">
+                            Sí, calcula IVA 10% automáticamente según normativas paraguayas. También maneja exenciones cuando corresponde.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(16)">
+                            <strong style="color: #002395;">16. ¿Hay actualizaciones constantes?</strong>
+                        </div>
+                        <div id="faq16" style="display: none; padding: 15px; background: white;">
+                            Sí, actualizaciones automáticas mensuales con nuevas funcionalidades basadas en sugerencias de usuarios.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(17)">
+                            <strong style="color: #002395;">17. ¿Puedo personalizar los reportes?</strong>
+                        </div>
+                        <div id="faq17" style="display: none; padding: 15px; background: white;">
+                            Sí, personaliza logos, colores, formatos y campos según tu empresa. Reportes con tu identidad corporativa.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(18)">
+                            <strong style="color: #002395;">18. ¿Incluye análisis de rentabilidad?</strong>
+                        </div>
+                        <div id="faq18" style="display: none; padding: 15px; background: white;">
+                            Sí, analiza rentabilidad por obra, compara costos reales vs presupuestados y sugiere optimizaciones.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(19)">
+                            <strong style="color: #002395;">19. ¿Hay período de prueba gratuito?</strong>
+                        </div>
+                        <div id="faq19" style="display: none; padding: 15px; background: white;">
+                            Sí, 30 días de prueba gratuita con todas las funcionalidades. Sin compromiso, sin tarjeta de crédito.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(20)">
+                            <strong style="color: #002395;">20. ¿Funciona para pequeñas y grandes empresas?</strong>
+                        </div>
+                        <div id="faq20" style="display: none; padding: 15px; background: white;">
+                            Sí, desde constructores independientes hasta grandes empresas. Se adapta al tamaño de tu negocio.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(21)">
+                            <strong style="color: #002395;">21. ¿Incluye chat en tiempo real?</strong>
+                        </div>
+                        <div id="faq21" style="display: none; padding: 15px; background: white;">
+                            Sí, chat integrado para comunicación entre equipo, notificaciones automáticas y seguimiento de tareas.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(22)">
+                            <strong style="color: #002395;">22. ¿Maneja diferentes tipos de obras?</strong>
+                        </div>
+                        <div id="faq22" style="display: none; padding: 15px; background: white;">
+                            Sí, casas, edificios, carreteras, puentes, remodelaciones. Plantillas específicas para cada tipo de obra.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(23)">
+                            <strong style="color: #002395;">23. ¿Hay integración con bancos paraguayos?</strong>
+                        </div>
+                        <div id="faq23" style="display: none; padding: 15px; background: white;">
+                            En desarrollo. Próximamente integración con Banco Nacional, Itaú, Regional para pagos automáticos.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(24)">
+                            <strong style="color: #002395;">24. ¿Incluye predicción de costos con IA?</strong>
+                        </div>
+                        <div id="faq24" style="display: none; padding: 15px; background: white;">
+                            Sí, IA analiza proyectos similares y predice costos con 95% de precisión basado en datos históricos.
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px;">
+                        <div style="background: #f8f9fa; padding: 15px; cursor: pointer; border-radius: 10px;" onclick="toggleFaq(25)">
+                            <strong style="color: #002395;">25. ¿Cómo empiezo a usar L.u.M.a?</strong>
+                        </div>
+                        <div id="faq25" style="display: none; padding: 15px; background: white;">
+                            Simple: 1) Acepta términos, 2) Regístrate gratis, 3) Capacitación virtual, 4) Comienza tu primera obra. ¡Listo!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HERRAMIENTAS DE DESARROLLO -->
+        <div style="background: rgba(255,255,255,0.95); border-radius: 25px; padding: 40px; margin-bottom: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h3 style="color: #002395; font-weight: bold; margin-bottom: 30px; text-align: center; font-size: 2rem;">
+                🛠️ HERRAMIENTAS DE DESARROLLO UTILIZADAS
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px;">
+                <div style="background: linear-gradient(135deg, #3776ab, #4b8bbe); color: white; border-radius: 15px; padding: 20px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🐍</div>
+                    <h4 style="font-weight: bold; margin-bottom: 10px;">Python 3.12</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.9;">Lenguaje principal del backend</p>
+                </div>
+                <div style="background: linear-gradient(135deg, #092e20, #0c4b33); color: white; border-radius: 15px; padding: 20px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🎯</div>
+                    <h4 style="font-weight: bold; margin-bottom: 10px;">Django 4.2</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.9;">Framework web robusto y seguro</p>
+                </div>
+                <div style="background: linear-gradient(135deg, #336791, #4a90a4); color: white; border-radius: 15px; padding: 20px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🐘</div>
+                    <h4 style="font-weight: bold; margin-bottom: 10px;">PostgreSQL</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.9;">Base de datos empresarial</p>
+                </div>
+                <div style="background: linear-gradient(135deg, #f7df1e, #e6c200); color: #333; border-radius: 15px; padding: 20px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">⚡</div>
+                    <h4 style="font-weight: bold; margin-bottom: 10px;">JavaScript ES6</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">Interactividad del frontend</p>
+                </div>
+                <div style="background: linear-gradient(135deg, #7952b3, #6f42c1); color: white; border-radius: 15px; padding: 20px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🎨</div>
+                    <h4 style="font-weight: bold; margin-bottom: 10px;">Bootstrap 5</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.9;">Framework CSS responsive</p>
+                </div>
+                <div style="background: linear-gradient(135deg, #ff9900, #ff7700); color: white; border-radius: 15px; padding: 20px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">☁️</div>
+                    <h4 style="font-weight: bold; margin-bottom: 10px;">AWS Cloud</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.9;">Hosting y servicios en la nube</p>
+                </div>
+                <div style="background: linear-gradient(135deg, #2496ed, #0db7ed); color: white; border-radius: 15px; padding: 20px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🐳</div>
+                    <h4 style="font-weight: bold; margin-bottom: 10px;">Docker</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.9;">Contenedores para deployment</p>
+                </div>
+                <div style="background: linear-gradient(135deg, #f05032, #e44d26); color: white; border-radius: 15px; padding: 20px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">📱</div>
+                    <h4 style="font-weight: bold; margin-bottom: 10px;">HTML5/CSS3</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.9;">Estructura y diseño moderno</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VENTAJAS Y DESVENTAJAS DEL SISTEMA -->
+        <div style="background: rgba(255,255,255,0.95); border-radius: 25px; padding: 40px; margin-bottom: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #28a745, #FF6600, #dc3545);"></div>
+            <h3 style="color: #002395; font-weight: bold; margin-bottom: 20px; text-align: center; font-size: 2rem;">
+                <i class="fas fa-balance-scale me-3"></i>ANÁLISIS PROFUNDO DEL SISTEMA L.u.M.a
+            </h3>
+            <p style="text-align: center; color: #666; font-size: 1.1rem; margin-bottom: 40px; font-style: italic;">
+                "Una evaluación completa y transparente de nuestra plataforma revolucionaria"
+            </p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 40px;">
+                <!-- VENTAJAS -->
+                <div style="background: linear-gradient(135deg, rgba(40,167,69,0.05), rgba(32,201,151,0.05)); border-radius: 20px; padding: 30px; border: 2px solid rgba(40,167,69,0.2);">
+                    <h4 style="color: #28a745; font-weight: bold; margin-bottom: 30px; text-align: center; font-size: 1.5rem;">
+                        ✅ VENTAJAS REVOLUCIONARIAS
+                    </h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 12px 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                            <span style="color: #28a745; margin-right: 12px; font-size: 1.3rem;">🚀</span>
+                            <div>
+                                <strong>Automatización Total:</strong> Elimina cálculos manuales y reduce errores humanos en un 95%
+                            </div>
+                        </li>
+                        <li style="padding: 12px 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                            <span style="color: #28a745; margin-right: 12px; font-size: 1.3rem;">⏰</span>
+                            <div>
+                                <strong>Ahorro de Tiempo:</strong> Genera presupuestos profesionales en 10 minutos vs 2-3 horas manual
+                            </div>
+                        </li>
+                        <li style="padding: 12px 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                            <span style="color: #28a745; margin-right: 12px; font-size: 1.3rem;">💰</span>
+                            <div>
+                                <strong>Reducción de Costos:</strong> Hasta 40% menos gastos administrativos y operativos
+                            </div>
+                        </li>
+                        <li style="padding: 12px 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                            <span style="color: #28a745; margin-right: 12px; font-size: 1.3rem;">🎯</span>
+                            <div>
+                                <strong>Precisión Paraguaya:</strong> Cálculos con IVA, formato local y moneda guaraní
+                            </div>
+                        </li>
+                        <li style="padding: 12px 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                            <span style="color: #28a745; margin-right: 12px; font-size: 1.3rem;">📱</span>
+                            <div>
+                                <strong>Acceso Universal:</strong> Funciona en PC, tablet, móvil desde cualquier lugar
+                            </div>
+                        </li>
+                        <li style="padding: 12px 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                            <span style="color: #28a745; margin-right: 12px; font-size: 1.3rem;">🔒</span>
+                            <div>
+                                <strong>Seguridad Garantizada:</strong> Encriptación, backups automáticos y protección de datos
+                            </div>
+                        </li>
+                        <li style="padding: 12px 0; display: flex; align-items: center;">
+                            <span style="color: #28a745; margin-right: 12px; font-size: 1.3rem;">📈</span>
+                            <div>
+                                <strong>Crecimiento Empresarial:</strong> Gestiona 300% más proyectos con el mismo personal
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- DESVENTAJAS -->
+                <div style="background: linear-gradient(135deg, rgba(220,53,69,0.05), rgba(255,193,7,0.05)); border-radius: 20px; padding: 30px; border: 2px solid rgba(220,53,69,0.2);">
+                    <h4 style="color: #dc3545; font-weight: bold; margin-bottom: 30px; text-align: center; font-size: 1.5rem;">
+                        ⚠️ CONSIDERACIONES ESTRATÉGICAS
+                    </h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 12px 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                            <span style="color: #dc3545; margin-right: 12px; font-size: 1.3rem;">📚</span>
+                            <div>
+                                <strong>Período de Adaptación:</strong> 2-3 semanas para dominar completamente el sistema
+                            </div>
+                        </li>
+                        <li style="padding: 12px 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                            <span style="color: #dc3545; margin-right: 12px; font-size: 1.3rem;">🌐</span>
+                            <div>
+                                <strong>Dependencia de Internet:</strong> Requiere conexión estable para funcionalidad completa
+                            </div>
+                        </li>
+                        <li style="padding: 12px 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                            <span style="color: #dc3545; margin-right: 12px; font-size: 1.3rem;">💾</span>
+                            <div>
+                                <strong>Migración de Datos:</strong> Tiempo inicial para cargar información histórica existente
+                            </div>
+                        </li>
+                        <li style="padding: 12px 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                            <span style="color: #dc3545; margin-right: 12px; font-size: 1.3rem;">🔄</span>
+                            <div>
+                                <strong>Cambio de Procesos:</strong> Transición de métodos manuales a digitales
+                            </div>
+                        </li>
+                        <li style="padding: 12px 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                            <span style="color: #dc3545; margin-right: 12px; font-size: 1.3rem;">🎓</span>
+                            <div>
+                                <strong>Capacitación del Personal:</strong> Inversión en entrenamiento del equipo de trabajo
+                            </div>
+                        </li>
+                        <li style="padding: 12px 0; display: flex; align-items: center;">
+                            <span style="color: #dc3545; margin-right: 12px; font-size: 1.3rem;">🔧</span>
+                            <div>
+                                <strong>Mantenimiento Periódico:</strong> Actualizaciones y soporte técnico continuo
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- PROFUNDIZACIÓN TÉCNICA -->
+            <div style="background: linear-gradient(135deg, rgba(0,35,149,0.1), rgba(255,102,0,0.1)); border-radius: 20px; padding: 30px; margin: 30px 0; border: 2px solid rgba(0,35,149,0.2);">
+                <h4 style="color: #002395; font-weight: bold; margin-bottom: 25px; text-align: center; font-size: 1.4rem;">
+                    🔍 PROFUNDIZACIÓN TÉCNICA DEL SISTEMA
+                </h4>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div>
+                        <h5 style="color: #FF6600; font-weight: bold; margin-bottom: 15px;">
+                            💻 ARQUITECTURA TECNOLÓGICA
+                        </h5>
+                        <ul style="list-style: none; padding: 0; color: #666;">
+                            <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                <strong>Backend:</strong> Django 4.2 + Python 3.12
+                            </li>
+                            <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                <strong>Frontend:</strong> Bootstrap 5 + JavaScript ES6
+                            </li>
+                            <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                <strong>Base de Datos:</strong> PostgreSQL con optimizaciones
+                            </li>
+                            <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                <strong>Seguridad:</strong> Encriptación AES-256
+                            </li>
+                            <li style="padding: 8px 0;">
+                                <strong>Hosting:</strong> AWS con CDN global
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h5 style="color: #FF6600; font-weight: bold; margin-bottom: 15px;">
+                            🚀 FUNCIONALIDADES AVANZADAS
+                        </h5>
+                        <ul style="list-style: none; padding: 0; color: #666;">
+                            <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                <strong>IA Integrada:</strong> Predicción de costos
+                            </li>
+                            <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                <strong>Tiempo Real:</strong> Actualizaciones instantáneas
+                            </li>
+                            <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                <strong>Móvil First:</strong> Responsive 100%
+                            </li>
+                            <li style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                                <strong>API REST:</strong> Integración con terceros
+                            </li>
+                            <li style="padding: 8px 0;">
+                                <strong>Reportes:</strong> PDF/Excel automatizados
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ANÁLISIS COSTO-BENEFICIO MEJORADO -->
+            <div style="background: linear-gradient(135deg, #002395, #FF6600); color: white; border-radius: 20px; padding: 35px; margin-top: 30px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -50px; right: -50px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; opacity: 0.3;"></div>
+                <div style="position: absolute; bottom: -30px; left: -30px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%; opacity: 0.2;"></div>
+                
+                <h4 style="color: #FFD700; font-weight: bold; margin-bottom: 25px; text-align: center; font-size: 1.6rem;">
+                    💡 ANÁLISIS COSTO-BENEFICIO DETALLADO
+                </h4>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; text-align: center; margin-bottom: 30px;">
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">📊</div>
+                        <strong style="font-size: 1.3rem;">ROI: 350%</strong>
+                        <p style="font-size: 0.95rem; margin-top: 10px; opacity: 0.9;">Retorno de inversión garantizado en 4-6 meses</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">⚡</div>
+                        <strong style="font-size: 1.3rem;">85% Más Rápido</strong>
+                        <p style="font-size: 0.95rem; margin-top: 10px; opacity: 0.9;">Procesos automatizados vs métodos tradicionales</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">🎯</div>
+                        <strong style="font-size: 1.3rem;">98% Precisión</strong>
+                        <p style="font-size: 0.95rem; margin-top: 10px; opacity: 0.9;">Eliminación casi total de errores humanos</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 2.5rem; margin-bottom: 15px;">📈</div>
+                        <strong style="font-size: 1.3rem;">+200 Proyectos</strong>
+                        <p style="font-size: 0.95rem; margin-top: 10px; opacity: 0.9;">Capacidad de gestión triplicada</p>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.15); border-radius: 15px; padding: 25px; text-align: center;">
+                    <h5 style="color: #FFD700; font-weight: bold; margin-bottom: 15px;">
+                        💰 IMPACTO ECONÓMICO REAL
+                    </h5>
+                    <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 0;">
+                        <strong>Ahorro promedio:</strong> ₲ 110,000,000 - ₲ 185,000,000 anuales por empresa • 
+                        <strong>Incremento productividad:</strong> 300% • 
+                        <strong>Reducción errores:</strong> 95% • 
+                        <strong>Satisfacción cliente:</strong> 98%
+                    </p>
+                </div>
+            </div>
+            
+            <!-- CASOS DE ÉXITO -->
+            <div style="background: linear-gradient(135deg, rgba(40,167,69,0.1), rgba(32,201,151,0.1)); border-radius: 20px; padding: 30px; margin: 30px 0; border: 2px solid rgba(40,167,69,0.2);">
+                <h4 style="color: #28a745; font-weight: bold; margin-bottom: 25px; text-align: center; font-size: 1.4rem;">
+                    🏆 CASOS DE ÉXITO REALES
+                </h4>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;">
+                    <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <h5 style="color: #002395; font-weight: bold; margin-bottom: 10px;">
+                            🏢 Constructora Asunción S.A.
+                        </h5>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">
+                            <strong>Resultado:</strong> Reducción del 60% en tiempo de presupuestación, 
+                            aumento del 40% en proyectos gestionados simultáneamente.
+                        </p>
+                    </div>
+                    
+                    <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <h5 style="color: #002395; font-weight: bold; margin-bottom: 10px;">
+                            🏗️ Obras Civiles del Este
+                        </h5>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">
+                            <strong>Resultado:</strong> Ahorro de $18,000 USD anuales en costos administrativos, 
+                            mejora del 85% en precisión de presupuestos.
+                        </p>
+                    </div>
+                    
+                    <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <h5 style="color: #002395; font-weight: bold; margin-bottom: 10px;">
+                            🏠 Arquitectos Innovadores
+                        </h5>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">
+                            <strong>Resultado:</strong> Incremento del 250% en clientes atendidos, 
+                            satisfacción del cliente del 97% por profesionalismo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FRASES MOTIVADORAS -->
+        <div class="frase-motivadora">
+            <strong>"El éxito en la construcción no se mide solo en metros cuadrados, sino en sueños cumplidos y vidas transformadas."</strong>
+            <br><small style="opacity: 0.8;">- Filosofía L.u.M.a</small>
+        </div>
+
+        <div class="frase-motivadora">
+            <strong>"Cada obra es una oportunidad de construir el futuro de Paraguay, ladrillo a ladrillo, sueño a sueño."</strong>
+            <br><small style="opacity: 0.8;">- Visión del Proyecto</small>
+        </div>
+
+        <!-- HISTORIA DEL PROYECTO -->
+        <div class="historia-card">
+            <h3 style="color: #002395; font-weight: bold; margin-bottom: 25px;">
+                <i class="fas fa-book-open me-2"></i>La Historia Detrás de L.u.M.a
+            </h3>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h5 style="color: #FF6600; font-weight: bold;">El Sueño Inicial (2023)</h5>
+                    <p style="color: #666; line-height: 1.6;">
+                        Todo comenzó con una visión: crear una herramienta que revolucionara la gestión de obras civiles en Paraguay. 
+                        Un sistema que no solo automatizara procesos, sino que empoderara a constructores, arquitectos y propietarios.
+                    </p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h5 style="color: #FF6600; font-weight: bold;">La Unión de Talentos (2024)</h5>
+                    <p style="color: #666; line-height: 1.6;">
+                        Dos mentes brillantes se unieron con un propósito común: María José Benítez y Luis Mario Duré Núñez. 
+                        Juntos combinaron experiencia en construcción, tecnología y una pasión inquebrantable por la innovación.
+                    </p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h5 style="color: #FF6600; font-weight: bold;">El Desarrollo (2024-2025)</h5>
+                    <p style="color: #666; line-height: 1.6;">
+                        Meses de investigación, desarrollo y pruebas. Cada línea de código fue escrita pensando en las necesidades 
+                        reales del sector construcción paraguayo. Cada funcionalidad fue diseñada para resolver problemas concretos.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FUNDADORES -->
+        <div class="historia-card">
+            <h3 style="color: #002395; font-weight: bold; margin-bottom: 25px;">
+                <i class="fas fa-users me-2"></i>Conoce a Nuestros Fundadores
+            </h3>
+            
+            <div class="fundador-card">
+                <div class="d-flex align-items-center">
+                    <img src="{% static 'media/avatars/majito.jfif' %}" 
+                         alt="María José Benítez" 
+                         class="fundador-avatar"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                         style="object-fit: cover; box-shadow: 0 8px 25px rgba(0,35,149,0.3);">
+                    <div class="fundador-avatar bg-primary d-flex align-items-center justify-content-center" style="display: none;">
+                        <i class="fas fa-user-tie fa-2x text-white"></i>
+                    </div>
+                    <div>
+                        <h4 style="color: #002395; font-weight: bold; margin-bottom: 5px;">María José Benítez</h4>
+                        <p style="color: #FF6600; font-weight: 600; margin-bottom: 10px;">👑 FUNDADORA, CREADORA, INGENIERA, DIRECTORA Y ADMINISTRADORA DE L.U.M.A</p>
+                        <p style="color: #666; margin-bottom: 15px; line-height: 1.5;">
+                            <strong>Visionaria empresarial</strong> con más de 10 años liderando transformaciones digitales. 
+                            Como Directora de L.u.M.a, ha revolucionado la gestión empresarial del sector construcción paraguayo 
+                            implementando estrategias innovadoras que han posicionado a la empresa como líder del mercado.
+                        </p>
+                        <div style="background: linear-gradient(135deg, rgba(0,35,149,0.1), rgba(255,102,0,0.1)); padding: 15px; border-radius: 10px; margin: 15px 0;">
+                            <h5 style="color: #002395; font-weight: bold; margin-bottom: 10px;">🏆 Logros en L.u.M.a:</h5>
+                            <ul style="color: #666; margin: 0; padding-left: 20px;">
+                                <li>Diseñó la estrategia comercial que alcanzó 500+ usuarios en 6 meses</li>
+                                <li>Implementó procesos que redujeron costos operativos en 40%</li>
+                                <li>Lideró la expansión a 15 departamentos de Paraguay</li>
+                                <li>Estableció alianzas estratégicas con 50+ proveedores</li>
+                            </ul>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin: 10px 0;">
+                            <small style="color: #666;"><strong>Especialidades:</strong> Gestión Estratégica, Transformación Digital, Liderazgo Empresarial, Desarrollo de Negocios</small>
+                        </div>
+                        <p style="color: #28a745; font-weight: 600; margin-top: 10px;">
+                            <i class="fas fa-phone me-2"></i>+595 0983 713729
+                            <br><i class="fas fa-envelope me-2"></i>maria.benitez@luma.py
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fundador-card">
+                <div class="d-flex align-items-center">
+                    <img src="{% static 'images/gifluma.gif' %}" 
+                         alt="Luis Mario Duré Núñez" 
+                         class="fundador-avatar"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                         style="object-fit: cover; box-shadow: 0 8px 25px rgba(255,102,0,0.3);">
+                    <div class="fundador-avatar bg-warning d-flex align-items-center justify-content-center" style="display: none;">
+                        <i class="fas fa-code fa-2x text-white"></i>
+                    </div>
+                    <div>
+                        <h4 style="color: #FF6600; font-weight: bold; margin-bottom: 5px;">Luis Mario Duré Núñez</h4>
+                        <p style="color: #002395; font-weight: 600; margin-bottom: 10px;">💻 FUNDADOR, CREADOR, ING. DEL SISTEMA, ARQUITECTO DE SOFTWARE DE L.U.M.A</p>
+                        <p style="color: #666; margin-bottom: 15px; line-height: 1.5;">
+                            <strong>Ingeniero de Sistemas y Arquitecto de Software</strong> especializado en desarrollo full-stack. 
+                            Como creador técnico de L.u.M.a, ha diseñado desde cero una plataforma que procesa más de 10,000 
+                            transacciones diarias y gestiona proyectos por valor de millones de guaraníes.
+                        </p>
+                        <div style="background: linear-gradient(135deg, rgba(255,102,0,0.1), rgba(0,35,149,0.1)); padding: 15px; border-radius: 10px; margin: 15px 0;">
+                            <h5 style="color: #FF6600; font-weight: bold; margin-bottom: 10px;">🚀 Innovaciones Técnicas:</h5>
+                            <ul style="color: #666; margin: 0; padding-left: 20px;">
+                                <li>Desarrolló algoritmos de IA para predicción de costos con 98% precisión</li>
+                                <li>Implementó arquitectura escalable que soporta 1000+ usuarios simultáneos</li>
+                                <li>Creó sistema de seguridad con encriptación militar AES-256</li>
+                                <li>Diseñó interfaz intuitiva que reduce tiempo de aprendizaje en 70%</li>
+                            </ul>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 8px; margin: 10px 0;">
+                            <small style="color: #666;"><strong>Stack Tecnológico:</strong> Python 3.12, Django 4.2, PostgreSQL, JavaScript ES6, AWS, Docker, Bootstrap 5</small>
+                        </div>
+                        <p style="color: #28a745; font-weight: 600; margin-top: 10px;">
+                            <i class="fas fa-phone me-2"></i>+595 0995 382417
+                            <br><i class="fas fa-envelope me-2"></i>luis.dure@luma.py
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORIA INCREÍBLE DEL SISTEMA -->
+        <div class="historia-card">
+            <h3 style="color: #002395; font-weight: bold; margin-bottom: 25px;">
+                <i class="fas fa-star me-2"></i>Una Historia Increíble de Innovación
+            </h3>
+            
+            <p style="color: #666; line-height: 1.8; font-size: 1.1rem;">
+                <strong style="color: #FF6600;">L.u.M.a no es solo un sistema</strong>, es el resultado de una historia increíble de perseverancia, visión y amor por Paraguay. 
+                Cuando los fundadores María José Benítez y Luis Mario Duré Núñez unieron sus talentos, compartían una frustración común: 
+                la falta de herramientas tecnológicas adaptadas a la realidad paraguaya en el sector construcción civil.
+            </p>
+            
+            <div style="background: linear-gradient(135deg, rgba(0,35,149,0.1), rgba(255,102,0,0.1)); border-radius: 15px; padding: 25px; margin: 25px 0; border-left: 5px solid #FF6600;">
+                <h4 style="color: #002395; font-weight: bold; margin-bottom: 15px; font-size: 1.3rem;">
+                    🌟 EL NACIMIENTO DE UNA REVOLUCIÓN TECNOLÓGICA
+                </h4>
+                <p style="color: #666; line-height: 1.7; font-size: 1.05rem;">
+                    Durante el desarrollo del sistema, se enfrentaron desafíos técnicos complejos: crear algoritmos que calculen 
+                    automáticamente presupuestos con precisión del 98%, desarrollar interfaces intuitivas que cualquier constructor 
+                    pueda usar, e implementar seguridad de nivel bancario para proteger datos sensibles de proyectos millonarios.
+                </p>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, rgba(40,167,69,0.1), rgba(32,201,151,0.1)); border-radius: 15px; padding: 25px; margin: 25px 0; border-left: 5px solid #28a745;">
+                <h4 style="color: #28a745; font-weight: bold; margin-bottom: 15px; font-size: 1.3rem;">
+                    🚀 TECNOLOGÍAS DE VANGUARDIA IMPLEMENTADAS
+                </h4>
+                <p style="color: #666; line-height: 1.7; font-size: 1.05rem;">
+                    El sistema utiliza <strong>Inteligencia Artificial</strong> para predecir costos, <strong>Machine Learning</strong> 
+                    para optimizar presupuestos basado en datos históricos, <strong>WebSockets</strong> para comunicación en tiempo real, 
+                    y <strong>arquitectura en la nube</strong> que escala automáticamente según la demanda.
+                </p>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, rgba(220,53,69,0.1), rgba(255,193,7,0.1)); border-radius: 15px; padding: 25px; margin: 25px 0; border-left: 5px solid #dc3545;">
+                <h4 style="color: #dc3545; font-weight: bold; margin-bottom: 15px; font-size: 1.3rem;">
+                    💡 PREGUNTAS TÉCNICAS DESARROLLADAS DURANTE LA CREACIÓN
+                </h4>
+                <ul style="color: #666; line-height: 1.7; font-size: 1.05rem; padding-left: 25px;">
+                    <li><strong>¿Cómo calcular automáticamente el IVA paraguayo del 10%?</strong> - Implementación de algoritmos fiscales locales</li>
+                    <li><strong>¿Cómo manejar fluctuaciones de precios de materiales?</strong> - Sistema de actualización automática con APIs de proveedores</li>
+                    <li><strong>¿Cómo garantizar precisión en presupuestos complejos?</strong> - Validación cruzada con múltiples fuentes de datos</li>
+                    <li><strong>¿Cómo optimizar para conexiones lentas en zonas rurales?</strong> - Compresión de datos y caché inteligente</li>
+                    <li><strong>¿Cómo proteger información confidencial de proyectos?</strong> - Encriptación AES-256 y autenticación multifactor</li>
+                    <li><strong>¿Cómo escalar para miles de usuarios simultáneos?</strong> - Arquitectura de microservicios en AWS</li>
+                </ul>
+            </div>
+            
+            <p style="color: #666; line-height: 1.8; font-size: 1.1rem;">
+                <strong style="color: #002395;">La chispa de la innovación</strong> surgió durante una conversación sobre los desafíos 
+                que enfrentaban las constructoras locales: presupuestos manuales propensos a errores, falta de control 
+                en inventarios, y la dificultad para gestionar múltiples proyectos simultáneamente.
+            </p>
+            
+            <p style="color: #666; line-height: 1.8; font-size: 1.1rem;">
+                <strong style="color: #FF6600;">Meses de desarrollo intenso</strong> siguieron. Noches enteras programando, 
+                días completos probando funcionalidades, y la constante búsqueda de la perfección. Cada error era una 
+                oportunidad de mejora, cada obstáculo una lección aprendida.
+            </p>
+            
+            <div style="background: linear-gradient(135deg, rgba(40,167,69,0.1), rgba(32,201,151,0.1)); border-radius: 15px; padding: 20px; margin: 20px 0;">
+                <p style="color: #28a745; font-weight: bold; font-size: 1.2rem; margin-bottom: 15px;">
+                    <i class="fas fa-lightbulb me-2"></i>El Momento Eureka
+                </p>
+                <p style="color: #666; line-height: 1.6; margin-bottom: 0;">
+                    "Cuando vimos el primer presupuesto generado automáticamente por L.u.M.a, con cálculos perfectos 
+                    y formato profesional, supimos que habíamos creado algo especial. No era solo código, 
+                    era la materialización de un sueño que podría transformar vidas y empresas."
+                </p>
+            </div>
+        </div>
+
+        <!-- TÉRMINOS Y CONDICIONES -->
+        <div class="terminos-legales">
+            <h3 style="color: #dc3545; font-weight: bold; margin-bottom: 25px;">
+                <i class="fas fa-gavel me-2"></i>Términos y Condiciones - Políticas del Sistema
+            </h3>
+            
+            <div style="max-height: 300px; overflow-y: auto; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 20px;">
+                <h5 style="color: #002395; font-weight: bold;">1. ACEPTACIÓN DE TÉRMINOS</h5>
+                <p style="color: #666; line-height: 1.6;">
+                    Al utilizar L.u.M.a, usted acepta estos términos y condiciones en su totalidad. 
+                    Si no está de acuerdo, no debe utilizar este sistema.
+                </p>
+                
+                <h5 style="color: #002395; font-weight: bold;">2. USO DEL SISTEMA</h5>
+                <p style="color: #666; line-height: 1.6;">
+                    L.u.M.a está diseñado para la gestión profesional de obras civiles y presupuestos. 
+                    El usuario se compromete a utilizar el sistema de manera ética y legal.
+                </p>
+                
+                <h5 style="color: #002395; font-weight: bold;">3. PROTECCIÓN DE DATOS</h5>
+                <p style="color: #666; line-height: 1.6;">
+                    Nos comprometemos a proteger su información personal conforme a las leyes paraguayas 
+                    de protección de datos. Sus datos no serán compartidos con terceros sin su consentimiento.
+                </p>
+                
+                <h5 style="color: #002395; font-weight: bold;">4. RESPONSABILIDADES</h5>
+                <p style="color: #666; line-height: 1.6;">
+                    El usuario es responsable de la veracidad de los datos ingresados. L.u.M.a proporciona 
+                    herramientas de cálculo, pero la responsabilidad final de los presupuestos recae en el usuario.
+                </p>
+                
+                <h5 style="color: #002395; font-weight: bold;">5. SOPORTE TÉCNICO</h5>
+                <p style="color: #666; line-height: 1.6;">
+                    Ofrecemos soporte técnico durante horarios laborales. Nos esforzamos por mantener 
+                    el sistema disponible 24/7, pero no garantizamos disponibilidad absoluta.
+                </p>
+                
+                <h5 style="color: #002395; font-weight: bold;">6. MODIFICACIONES</h5>
+                <p style="color: #666; line-height: 1.6;">
+                    Nos reservamos el derecho de modificar estos términos. Los usuarios serán notificados 
+                    de cambios importantes con anticipación razonable.
+                </p>
+                
+                <h5 style="color: #002395; font-weight: bold;">7. LEY APLICABLE</h5>
+                <p style="color: #666; line-height: 1.6;">
+                    Estos términos se rigen por las leyes de la República del Paraguay. 
+                    Cualquier disputa será resuelta en los tribunales paraguayos competentes.
+                </p>
+            </div>
+            
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                <p style="color: #856404; font-weight: bold; margin-bottom: 10px;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>IMPORTANTE - LEA CUIDADOSAMENTE
+                </p>
+                <p style="color: #856404; margin-bottom: 0; line-height: 1.6;">
+                    Al hacer clic en "ACEPTAR", usted confirma que ha leído, entendido y acepta 
+                    todos los términos y condiciones, así como las políticas de privacidad de L.u.M.a.
+                </p>
+            </div>
+        </div>
+
+        <!-- BENEFICIOS Y PARA QUÉ SIRVE -->
+        <div style="background: rgba(255,255,255,0.95); border-radius: 25px; padding: 40px; margin-bottom: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h3 style="color: #002395; font-weight: bold; margin-bottom: 30px; text-align: center; font-size: 2rem;">
+                🎆 BENEFICIOS Y PARA QUÉ SIRVE L.u.M.a
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 30px;">
+                <div style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border-radius: 20px; padding: 25px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">💰</div>
+                    <h4 style="font-weight: bold; margin-bottom: 15px;">AHORRO ECONÓMICO</h4>
+                    <p style="font-size: 1rem; line-height: 1.6; opacity: 0.95;">
+                        Reduce costos operativos hasta 40%, elimina errores costosos y optimiza recursos. 
+                        ROI garantizado en menos de 6 meses.
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; border-radius: 20px; padding: 25px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">⏱️</div>
+                    <h4 style="font-weight: bold; margin-bottom: 15px;">AHORRO DE TIEMPO</h4>
+                    <p style="font-size: 1rem; line-height: 1.6; opacity: 0.95;">
+                        Automatiza procesos que tomaban horas en minutos. Genera presupuestos profesionales 
+                        en tiempo récord.
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #ff6600, #e55a00); color: white; border-radius: 20px; padding: 25px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🎯</div>
+                    <h4 style="font-weight: bold; margin-bottom: 15px;">PRECISIÓN TOTAL</h4>
+                    <p style="font-size: 1rem; line-height: 1.6; opacity: 0.95;">
+                        Elimina errores humanos con cálculos automáticos. Presupuestos exactos con 
+                        IVA y normativas paraguayas.
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #6f42c1, #5a2d91); color: white; border-radius: 20px; padding: 25px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">📈</div>
+                    <h4 style="font-weight: bold; margin-bottom: 15px;">CRECIMIENTO</h4>
+                    <p style="font-size: 1rem; line-height: 1.6; opacity: 0.95;">
+                        Gestiona 3x más proyectos simultáneamente. Escala tu negocio sin aumentar 
+                        personal administrativo.
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; border-radius: 20px; padding: 25px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">🔒</div>
+                    <h4 style="font-weight: bold; margin-bottom: 15px;">SEGURIDAD</h4>
+                    <p style="font-size: 1rem; line-height: 1.6; opacity: 0.95;">
+                        Datos protegidos con encriptación militar, backups automáticos y servidores 
+                        seguros en AWS.
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #17a2b8, #138496); color: white; border-radius: 20px; padding: 25px; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">📱</div>
+                    <h4 style="font-weight: bold; margin-bottom: 15px;">ACCESIBILIDAD</h4>
+                    <p style="font-size: 1rem; line-height: 1.6; opacity: 0.95;">
+                        Accede desde cualquier dispositivo, en cualquier lugar. PC, tablet, celular - 
+                        siempre conectado.
+                    </p>
+                </div>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, #002395, #FF6600); color: white; border-radius: 20px; padding: 30px; text-align: center;">
+                <h4 style="color: #FFD700; font-weight: bold; margin-bottom: 20px; font-size: 1.5rem;">
+                    🎆 ¿PARA QUÉ SIRVE EXACTAMENTE L.u.M.a?
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; text-align: left;">
+                    <div>
+                        <h5 style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">🏠 CONSTRUCTORAS</h5>
+                        <ul style="font-size: 0.95rem; line-height: 1.6; opacity: 0.95; margin: 0; padding-left: 20px;">
+                            <li>Gestionar múltiples obras simultáneamente</li>
+                            <li>Controlar inventarios en tiempo real</li>
+                            <li>Generar presupuestos profesionales</li>
+                            <li>Administrar contratistas y empleados</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">📜 ARQUITECTOS</h5>
+                        <ul style="font-size: 0.95rem; line-height: 1.6; opacity: 0.95; margin: 0; padding-left: 20px;">
+                            <li>Calcular costos de proyectos rápidamente</li>
+                            <li>Presentar propuestas profesionales</li>
+                            <li>Seguimiento de avance de obras</li>
+                            <li>Comunicación directa con clientes</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">👷 CONTRATISTAS</h5>
+                        <ul style="font-size: 0.95rem; line-height: 1.6; opacity: 0.95; margin: 0; padding-left: 20px;">
+                            <li>Recibir y gestionar asignaciones</li>
+                            <li>Reportar avances en tiempo real</li>
+                            <li>Controlar materiales utilizados</li>
+                            <li>Facturación automática de trabajos</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">🏡 PROPIETARIOS</h5>
+                        <ul style="font-size: 0.95rem; line-height: 1.6; opacity: 0.95; margin: 0; padding-left: 20px;">
+                            <li>Monitorear progreso de su obra</li>
+                            <li>Recibir actualizaciones automáticas</li>
+                            <li>Aprobar cambios y modificaciones</li>
+                            <li>Acceso a reportes transparentes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CÓMO FUNCIONA EL SISTEMA -->
+        <div style="background: rgba(255,255,255,0.95); border-radius: 25px; padding: 40px; margin-bottom: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h3 style="color: #002395; font-weight: bold; margin-bottom: 30px; text-align: center; font-size: 2rem;">
+                ⚙️ ¿CÓMO FUNCIONA L.u.M.a?
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;">
+                <div style="background: linear-gradient(135deg, rgba(40,167,69,0.1), rgba(32,201,151,0.1)); border-radius: 15px; padding: 25px; border: 2px solid rgba(40,167,69,0.3); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px; color: #28a745;">📝</div>
+                    <h4 style="color: #28a745; font-weight: bold; margin-bottom: 15px;">1. REGISTRO DE PROYECTO</h4>
+                    <p style="color: #666; line-height: 1.6;">
+                        Ingresa datos básicos del proyecto: ubicación, tipo de obra, 
+                        dimensiones. El sistema crea automáticamente la estructura base.
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, rgba(0,123,255,0.1), rgba(0,86,179,0.1)); border-radius: 15px; padding: 25px; border: 2px solid rgba(0,123,255,0.3); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px; color: #007bff;">📊</div>
+                    <h4 style="color: #007bff; font-weight: bold; margin-bottom: 15px;">2. CÁLCULO INTELIGENTE</h4>
+                    <p style="color: #666; line-height: 1.6;">
+                        La IA analiza el proyecto y sugiere materiales, cantidades y costos 
+                        basados en miles de obras similares en Paraguay.
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, rgba(255,102,0,0.1), rgba(229,90,0,0.1)); border-radius: 15px; padding: 25px; border: 2px solid rgba(255,102,0,0.3); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px; color: #FF6600;">🛠️</div>
+                    <h4 style="color: #FF6600; font-weight: bold; margin-bottom: 15px;">3. PERSONALIZACIÓN</h4>
+                    <p style="color: #666; line-height: 1.6;">
+                        Ajusta materiales, proveedores, contratistas según tus preferencias. 
+                        El sistema recalcula automáticamente todos los valores.
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, rgba(111,66,193,0.1), rgba(90,45,145,0.1)); border-radius: 15px; padding: 25px; border: 2px solid rgba(111,66,193,0.3); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px; color: #6f42c1;">📱</div>
+                    <h4 style="color: #6f42c1; font-weight: bold; margin-bottom: 15px;">4. GESTIÓN EN TIEMPO REAL</h4>
+                    <p style="color: #666; line-height: 1.6;">
+                        Monitorea avances, controla inventarios, gestiona pagos y recibe 
+                        notificaciones automáticas en tu celular.
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, rgba(220,53,69,0.1), rgba(200,35,51,0.1)); border-radius: 15px; padding: 25px; border: 2px solid rgba(220,53,69,0.3); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px; color: #dc3545;">📄</div>
+                    <h4 style="color: #dc3545; font-weight: bold; margin-bottom: 15px;">5. REPORTES PROFESIONALES</h4>
+                    <p style="color: #666; line-height: 1.6;">
+                        Genera PDFs profesionales con tu logo, presupuestos detallados, 
+                        reportes de avance y análisis financieros.
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, rgba(23,162,184,0.1), rgba(19,132,150,0.1)); border-radius: 15px; padding: 25px; border: 2px solid rgba(23,162,184,0.3); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 15px; color: #17a2b8;">🎆</div>
+                    <h4 style="color: #17a2b8; font-weight: bold; margin-bottom: 15px;">6. ENTREGA EXITOSA</h4>
+                    <p style="color: #666; line-height: 1.6;">
+                        Finaliza el proyecto con reportes completos, facturación automática 
+                        y archivo digital para futuras referencias.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTONES DE ACCIÓN -->
+        <div class="text-center" style="margin: 40px 0;">
+            <div style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; backdrop-filter: blur(10px); margin-bottom: 30px;">
+                <h3 style="color: #FFD700; font-weight: bold; margin-bottom: 20px; font-size: 1.8rem;">
+                    📜 HE LEÍDO TODO Y ENTIENDO QUE ESTA EMPRESA:
+                </h3>
+                <div style="text-align: left; max-width: 600px; margin: 0 auto; color: rgba(255,255,255,0.9); line-height: 1.8;">
+                    <p>✓ <strong>Revoluciona</strong> la gestión de obras civiles en Paraguay</p>
+                    <p>✓ <strong>Automatiza</strong> procesos que ahorran tiempo y dinero</p>
+                    <p>✓ <strong>Garantiza</strong> precisión en presupuestos y cálculos</p>
+                    <p>✓ <strong>Protege</strong> mis datos con seguridad de nivel empresarial</p>
+                    <p>✓ <strong>Ofrece</strong> soporte técnico paraguayo especializado</p>
+                    <p>✓ <strong>Proporciona</strong> ROI comprobado en menos de 6 meses</p>
+                </div>
+            </div>
+            
+            <p style="color: white; font-size: 1.2rem; font-weight: bold; margin-bottom: 30px;">
+                ¿Acepta los términos y condiciones para continuar con L.u.M.a?
+            </p>
+            
+            <button class="btn-aceptar" onclick="aceptarTerminos()">
+                <i class="fas fa-check me-2"></i>SÍ, ACEPTO TODO - QUIERO USAR L.u.M.a
+            </button>
+            
+            <button class="btn-denegar" onclick="denegarTerminos()">
+                <i class="fas fa-times me-2"></i>NO ACEPTO - SALIR DEL SISTEMA
+            </button>
+        </div>
+
+        <!-- FOOTER -->
+        <div style="text-align: center; color: rgba(255,255,255,0.8); margin-top: 40px; padding: 20px;">
+            <div style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; backdrop-filter: blur(10px); margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
+                    <img src="{% static 'images/logo.jpeg' %}" alt="L.u.M.a Logo" 
+                         style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #FFD700; animation: logoRotate 4s linear infinite;"
+                         onerror="this.src='{% static 'images/logo.png' %}'">
+                    <div style="text-align: left;">
+                        <h4 style="color: #FFD700; font-weight: bold; margin-bottom: 5px; font-size: 1.4rem;">
+                            DESARROLLADO POR L.u.M.a CONSTRUCTORA CIVILES
+                        </h4>
+                        <p style="color: rgba(255,255,255,0.9); margin-bottom: 0; font-size: 1.1rem;">
+                            🇵🇾 Innovación 100% Paraguaya para el Mundo
+                        </p>
+                    </div>
+                </div>
+                <p style="color: rgba(255,255,255,0.8); margin-bottom: 10px; font-size: 1rem;">
+                    © 2025 L.u.M.a - Sistema de Gestión de Obras Civiles Paraguay
+                </p>
+                <p style="color: #FFD700; margin-bottom: 0; font-weight: bold; font-size: 1.1rem;">
+                    💖 DESARROLLADO CON AMOR EN PARAGUAY 🇵🇾
+                </p>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleFaq(num) {
+            const faq = document.getElementById('faq' + num);
+            if (faq.style.display === 'none' || faq.style.display === '') {
+                // Cerrar todos los otros FAQs
+                for (let i = 1; i <= 25; i++) {
+                    const otherFaq = document.getElementById('faq' + i);
+                    if (otherFaq && i !== num) {
+                        otherFaq.style.display = 'none';
+                    }
+                }
+                faq.style.display = 'block';
+                faq.style.animation = 'fadeIn 0.3s ease';
+            } else {
+                faq.style.display = 'none';
+            }
+        }
+        
+        function aceptarTerminos() {
+            // Guardar aceptación en localStorage
+            localStorage.setItem('luma_terminos_aceptados', 'true');
+            localStorage.setItem('luma_fecha_aceptacion', new Date().toISOString());
+            
+            // Mostrar mensaje de confirmación
+            alert('✅ ¡Excelente! Has aceptado unirte a la revolución de L.u.M.a. Bienvenido al futuro de la construcción paraguaya!');
+            
+            // Redirigir al sistema
+            setTimeout(() => {
+                try {
+                    window.location.href = '/dashboard/';
+                } catch(e) {
+                    try {
+                        window.location.href = '/home/';
+                    } catch(e2) {
+                        window.location.href = '/';
+                    }
+                }
+            }, 1000);
+        }
+        
+        function denegarTerminos() {
+            if(confirm('❌ ¿Estás seguro? L.u.M.a puede transformar tu negocio y ahorrarte millones de guaraníes anuales. ¿Realmente quieres salir?')) {
+                alert('😢 Lamentamos que no te unas a nosotros hoy. L.u.M.a estará aquí cuando estés listo para revolucionar tu negocio.');
+                try {
+                    window.history.back();
+                } catch(e) {
+                    window.location.href = '/';
+                }
+            }
+        }
+        
+        // Limpiar términos al cargar la página para que siempre aparezca
+        document.addEventListener('DOMContentLoaded', function() {
+            localStorage.removeItem('luma_terminos_aceptados');
+            localStorage.removeItem('luma_fecha_aceptacion');
+            console.log('🌍 Bienvenido a L.u.M.a - Debes aceptar los términos para continuar');
+        });
+        
+        // Animaciones al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.historia-card, .fundador-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+            
+            // Efecto de escritura para el título principal
+            const titulo = document.querySelector('h1');
+            if (titulo) {
+                titulo.style.opacity = '0';
+                setTimeout(() => {
+                    titulo.style.transition = 'opacity 1s ease';
+                    titulo.style.opacity = '1';
+                }, 500);
+            }
+        });
+        
+        // CSS para animaciones mejoradas
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            @keyframes tituloGlow {
+                from { text-shadow: 3px 3px 6px rgba(0,0,0,0.7), 0 0 20px rgba(0,35,149,0.5); }
+                to { text-shadow: 3px 3px 6px rgba(0,0,0,0.7), 0 0 30px rgba(255,102,0,0.8), 0 0 40px rgba(255,102,0,0.6); }
+            }
+            
+            @keyframes subtituloSlide {
+                from { opacity: 0; transform: translateX(-50px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+            
+            @keyframes logoRotate {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            
+            .fundador-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+                transition: all 0.3s ease;
+            }
+            
+            .btn-aceptar:hover, .btn-denegar:hover {
+                transform: translateY(-3px) scale(1.05);
+            }
+            
+            .titulo-animado h1 {
+                background: linear-gradient(45deg, #002395, #FF6600, #002395);
+                background-size: 200% 200%;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: tituloGradient 4s ease-in-out infinite;
+            }
+            
+            @keyframes tituloGradient {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

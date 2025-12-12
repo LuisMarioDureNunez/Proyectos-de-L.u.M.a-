@@ -1,0 +1,47 @@
+{% extends 'emails/base_email.html' %}
+
+{% block content %}
+<h2 style="color: #17a2b8; margin-top: 0;">✏️ Producto Actualizado</h2>
+
+<p>Hola <strong>{{ user.username }}</strong>,</p>
+<p>Tu producto ha sido actualizado exitosamente.</p>
+
+<div class="product-card">
+    <h3 style="margin-top: 0; color: #495057;">{{ producto.nombre }}</h3>
+    
+    {% if cambios %}
+    <div class="changes-list">
+        <h4 style="margin-top: 0; color: #856404;">Cambios realizados:</h4>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+            {% for campo, valores in cambios.items %}
+            <li>
+                <strong>{{ campo }}:</strong> 
+                {{ valores.0 }} → {{ valores.1 }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+        <div>
+            <strong>Precio actual:</strong><br>
+            <span style="font-size: 18px; color: #28a745; font-weight: bold;">{{ producto.precio|floatformat:0 }} Gs.</span>
+        </div>
+        <div>
+            <strong>Stock actual:</strong><br>
+            <span style="font-size: 16px; color: #17a2b8; font-weight: bold;">{{ producto.stock }} unidades</span>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="http://127.0.0.1:8000/productos/editar/{{ producto.id }}/" class="btn-primary">
+        🔍 Ver Producto
+    </a>
+</div>
+
+<p style="color: #6c757d; font-size: 14px;">
+    <strong>Última actualización:</strong> {{ producto.fecha_actualizacion|date:"d/m/Y H:i" }}
+</p>
+{% endblock %}

@@ -1,0 +1,369 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Calendario de Obras - Sistema de Gestión{% endblock %}
+
+{% block extra_css %}
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
+<style>
+    .calendar-container {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    .fc {
+        font-family: 'Inter', sans-serif;
+    }
+    .fc-event {
+        border-radius: 5px;
+        padding: 2px 5px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .fc-event:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .event-planificada {
+        background: #3b82f6;
+        border-color: #2563eb;
+    }
+    .event-en-proceso {
+        background: #f59e0b;
+        border-color: #d97706;
+    }
+    .event-finalizada {
+        background: #10b981;
+        border-color: #059669;
+    }
+    .legend {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+    }
+    
+    /* Modal de Evento */
+    .event-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+    .event-modal.active {
+        display: flex;
+    }
+    .event-modal-content {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    .event-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .event-modal-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .event-modal-close {
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6b7280;
+    }
+    .event-detail {
+        margin-bottom: 15px;
+    }
+    .event-detail-label {
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 5px;
+    }
+    .event-detail-value {
+        color: #1f2937;
+    }
+    
+    /* Vista de Lista */
+    .list-view {
+        display: none;
+    }
+    .list-view.active {
+        display: block;
+    }
+    .obra-list-item {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+    }
+    .obra-list-item:hover {
+        transform: translateX(10px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1 class="display-5">📅 Calendario de Obras</h1>
+            <p class="text-muted">Gestiona y visualiza todas tus obras programadas</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="btn-group" role="group">
+                <button class="btn btn-outline-primary active" onclick="cambiarVista('calendario')">
+                    <i class="fas fa-calendar"></i> Calendario
+                </button>
+                <button class="btn btn-outline-primary" onclick="cambiarVista('lista')">
+                    <i class="fas fa-list"></i> Lista
+                </button>
+            </div>
+            <a href="{% url 'nueva_obra' %}" class="btn btn-primary ms-2">
+                <i class="fas fa-plus"></i> Nueva Obra
+            </a>
+        </div>
+    </div>
+
+    <!-- Leyenda -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color event-planificada"></div>
+                    <span>Planificadas</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color event-en-proceso"></div>
+                    <span>En Proceso</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color event-finalizada"></div>
+                    <span>Finalizadas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista de Calendario -->
+    <div class="row calendar-view">
+        <div class="col-12">
+            <div class="calendar-container">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista de Lista -->
+    <div class="row list-view">
+        <div class="col-12">
+            {% for obra in obras %}
+            <div class="obra-list-item">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5>{{ obra.nombre }}</h5>
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-map-marker-alt"></i> {{ obra.ubicacion }}
+                        </p>
+                        <p class="mb-0">
+                            <span class="badge bg-{{ obra.estado }}">{{ obra.get_estado_display }}</span>
+                            <span class="ms-2">
+                                <i class="fas fa-calendar"></i> 
+                                {{ obra.fecha_inicio|date:"d/m/Y" }}
+                                {% if obra.fecha_fin_estimada %}
+                                - {{ obra.fecha_fin_estimada|date:"d/m/Y" }}
+                                {% endif %}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="mb-2">
+                            <strong>₲ {{ obra.presupuesto_asignado|floatformat:0 }}</strong>
+                        </div>
+                        <a href="{% url 'detalle_obra' obra.id %}" class="btn btn-sm btn-primary">
+                            Ver Detalles
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Evento -->
+<div class="event-modal" id="eventModal">
+    <div class="event-modal-content">
+        <div class="event-modal-header">
+            <h3 class="event-modal-title" id="modalTitle"></h3>
+            <span class="event-modal-close" onclick="closeModal()">×</span>
+        </div>
+        <div id="modalBody"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.global.min.js'></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    
+    // Datos de obras
+    const obras = [
+        {% for obra in obras %}
+        {
+            id: {{ obra.id }},
+            title: '{{ obra.nombre }}',
+            start: '{{ obra.fecha_inicio|date:"Y-m-d" }}',
+            {% if obra.fecha_fin_estimada %}
+            end: '{{ obra.fecha_fin_estimada|date:"Y-m-d" }}',
+            {% endif %}
+            className: 'event-{{ obra.estado }}',
+            extendedProps: {
+                ubicacion: '{{ obra.ubicacion }}',
+                estado: '{{ obra.get_estado_display }}',
+                presupuesto: '₲ {{ obra.presupuesto_asignado|floatformat:0 }}',
+                cliente: '{{ obra.cliente.get_full_name|default:obra.cliente.username }}',
+                progreso: {{ obra.progreso_porcentaje }}
+            }
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    // Inicializar calendario
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,listWeek'
+        },
+        buttonText: {
+            today: 'Hoy',
+            month: 'Mes',
+            week: 'Semana',
+            list: 'Lista'
+        },
+        events: obras,
+        eventClick: function(info) {
+            showEventModal(info.event);
+        },
+        eventDidMount: function(info) {
+            info.el.style.cursor = 'pointer';
+        },
+        height: 'auto',
+        aspectRatio: 1.8
+    });
+    
+    calendar.render();
+    
+    // Mostrar modal de evento
+    window.showEventModal = function(event) {
+        const modal = document.getElementById('eventModal');
+        const title = document.getElementById('modalTitle');
+        const body = document.getElementById('modalBody');
+        
+        title.textContent = event.title;
+        body.innerHTML = `
+            <div class="event-detail">
+                <div class="event-detail-label">📍 Ubicación</div>
+                <div class="event-detail-value">${event.extendedProps.ubicacion}</div>
+            </div>
+            <div class="event-detail">
+                <div class="event-detail-label">📊 Estado</div>
+                <div class="event-detail-value">
+                    <span class="badge bg-primary">${event.extendedProps.estado}</span>
+                </div>
+            </div>
+            <div class="event-detail">
+                <div class="event-detail-label">💰 Presupuesto</div>
+                <div class="event-detail-value">${event.extendedProps.presupuesto}</div>
+            </div>
+            <div class="event-detail">
+                <div class="event-detail-label">👤 Cliente</div>
+                <div class="event-detail-value">${event.extendedProps.cliente}</div>
+            </div>
+            <div class="event-detail">
+                <div class="event-detail-label">📈 Progreso</div>
+                <div class="event-detail-value">
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: ${event.extendedProps.progreso}%"
+                             aria-valuenow="${event.extendedProps.progreso}" 
+                             aria-valuemin="0" aria-valuemax="100">
+                            ${event.extendedProps.progreso}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="event-detail">
+                <div class="event-detail-label">📅 Fechas</div>
+                <div class="event-detail-value">
+                    ${event.start.toLocaleDateString('es-PY')}
+                    ${event.end ? ' - ' + event.end.toLocaleDateString('es-PY') : ''}
+                </div>
+            </div>
+            <div class="mt-4">
+                <a href="/obras/${event.id}/" class="btn btn-primary w-100">
+                    Ver Detalles Completos
+                </a>
+            </div>
+        `;
+        
+        modal.classList.add('active');
+    };
+    
+    window.closeModal = function() {
+        document.getElementById('eventModal').classList.remove('active');
+    };
+    
+    // Cambiar vista
+    window.cambiarVista = function(vista) {
+        const calendarView = document.querySelector('.calendar-view');
+        const listView = document.querySelector('.list-view');
+        const buttons = document.querySelectorAll('.btn-group button');
+        
+        buttons.forEach(btn => btn.classList.remove('active'));
+        
+        if (vista === 'calendario') {
+            calendarView.style.display = 'block';
+            listView.classList.remove('active');
+            buttons[0].classList.add('active');
+        } else {
+            calendarView.style.display = 'none';
+            listView.classList.add('active');
+            buttons[1].classList.add('active');
+        }
+    };
+});
+</script>
+{% endblock %}

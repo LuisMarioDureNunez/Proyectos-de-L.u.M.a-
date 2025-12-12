@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}👷 Empleados - Gestión Avanzada{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --azul-francia: #002395;
+    --naranja: #FF6600;
+    --negro: #1a1a1a;
+}
+
+.empleados-hero {
+    background: linear-gradient(135deg, var(--naranja) 0%, var(--negro) 100%);
+    border-radius: 25px;
+    padding: 3rem;
+    color: white;
+}
+
+.empleado-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-left: 5px solid var(--azul-francia);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.empleado-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(45deg, var(--azul-francia), var(--naranja));
+    opacity: 0.1;
+    border-radius: 50%;
+    transform: translate(50%, -50%);
+}
+
+.empleado-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.empleado-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid var(--azul-francia);
+    object-fit: cover;
+}
+
+.cargo-badge {
+    background: linear-gradient(45deg, var(--azul-francia), #0056b3);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.salario-display {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--naranja);
+}
+
+.estado-activo {
+    color: #28a745;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.stats-empleados {
+    background: linear-gradient(135deg, var(--naranja) 0%, var(--azul-francia) 100%);
+    border-radius: 15px;
+    padding: 20px;
+    color: white;
+    text-align: center;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.turno-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.turno-manana { background: #ffc107; }
+.turno-tarde { background: var(--naranja); }
+.turno-noche { background: var(--negro); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="empleados-hero">
+                <h1 class="display-4 fw-bold mb-3">👷 Gestión de Empleados</h1>
+                <p class="lead">Control completo del personal y recursos humanos</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-empleados">
+                <i class="fas fa-users fa-3x mb-3"></i>
+                <h3>{{ stats.total_empleados|default:0 }}</h3>
+                <p>Total Empleados</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-empleados">
+                <i class="fas fa-user-check fa-3x mb-3"></i>
+                <h3>{{ stats.activos|default:0 }}</h3>
+                <p>Activos</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-empleados">
+                <i class="fas fa-umbrella-beach fa-3x mb-3"></i>
+                <h3>{{ stats.en_vacaciones|default:0 }}</h3>
+                <p>En Vacaciones</p>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="stats-empleados">
+                <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+                <h3>{{ stats.salario_promedio|floatformat:0|default:0 }}</h3>
+                <p>Salario Promedio</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for empleado in empleados %}
+        <div class="col-xl-6 col-lg-12 mb-4">
+            <div class="empleado-card">
+                <div class="row align-items-center">
+                    <div class="col-md-3 text-center">
+                        {% if empleado.foto_perfil %}
+                        <img src="{{ empleado.foto_perfil.url }}" alt="{{ empleado.usuario.get_full_name }}" class="empleado-avatar">
+                        {% else %}
+                        <div class="empleado-avatar bg-light d-flex align-items-center justify-content-center">
+                            <i class="fas fa-user fa-2x text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5 class="fw-bold text-primary mb-1">{{ empleado.usuario.get_full_name }}</h5>
+                        <div class="cargo-badge mb-2">{{ empleado.get_cargo_display }}</div>
+                        
+                        <div class="mb-2">
+                            <span class="turno-indicator turno-{{ empleado.turno }}"></span>
+                            <small class="text-muted">{{ empleado.get_turno_display }}</small>
+                        </div>
+                        
+                        <div>
+                            <i class="fas fa-circle estado-activo me-1"></i>
+                            <small class="text-success fw-bold">{{ empleado.get_estado_display }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 text-end">
+                        <div class="salario-display mb-2">
+                            {{ empleado.salario_base|floatformat:0 }} Gs.
+                        </div>
+                        
+                        <small class="text-muted d-block">
+                            <i class="fas fa-calendar me-1"></i>
+                            Desde {{ empleado.fecha_ingreso|date:"M Y" }}
+                        </small>
+                        
+                        <div class="btn-group mt-2">
+                            <a href="{% url 'detalle_empleado' empleado.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-users fa-5x text-muted mb-3"></i>
+            <h4 class="text-muted">No hay empleados registrados</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<button class="floating-action" onclick="window.location.href='{% url 'nuevo_empleado' %}'">
+    <i class="fas fa-plus"></i>
+</button>
+{% endblock %}

@@ -1,0 +1,666 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }} - Sistema L.u.M.a{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-wizard {
+        background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        box-shadow: 0 15px 60px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.3);
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .form-wizard::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        animation: progressBar 3s ease-in-out infinite;
+    }
+    
+    @keyframes progressBar {
+        0%, 100% { transform: scaleX(0.3); }
+        50% { transform: scaleX(1); }
+    }
+    
+    .form-section {
+        background: rgba(255,255,255,0.7);
+        border-radius: 20px;
+        padding: 25px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .form-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    .form-section:hover::before {
+        left: 100%;
+    }
+    
+    .form-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        border-color: rgba(102, 126, 234, 0.4);
+    }
+    
+    .section-title {
+        color: #667eea;
+        font-weight: 800;
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .section-title i {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 10px;
+        border-radius: 50%;
+        font-size: 1rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        animation: iconPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes iconPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    
+    .form-control-premium {
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        border-radius: 15px;
+        padding: 12px 20px;
+        transition: all 0.3s ease;
+        background: rgba(255,255,255,0.9);
+        font-weight: 500;
+    }
+    
+    .form-control-premium:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        background: white;
+        transform: translateY(-2px);
+    }
+    
+    .form-label-premium {
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .form-label-premium i {
+        color: #667eea;
+        font-size: 1.1rem;
+    }
+    
+    .btn-submit-premium {
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 15px 40px;
+        color: white;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-submit-premium::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: left 0.7s ease;
+    }
+    
+    .btn-submit-premium:hover::before {
+        left: 100%;
+    }
+    
+    .btn-submit-premium:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 12px 35px rgba(0, 184, 148, 0.5);
+        color: white;
+    }
+    
+    .btn-cancel-premium {
+        background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 15px 40px;
+        color: white;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 8px 25px rgba(225, 112, 85, 0.3);
+        transition: all 0.4s ease;
+    }
+    
+    .btn-cancel-premium:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 12px 35px rgba(225, 112, 85, 0.5);
+        color: white;
+    }
+    
+    .tarifa-calculator {
+        background: linear-gradient(135deg, #40E0D0 0%, #00cec9 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 20px;
+        margin-top: 15px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(64, 224, 208, 0.3);
+    }
+    
+    .tarifa-calculator h6 {
+        margin-bottom: 15px;
+        font-weight: 800;
+    }
+    
+    .tarifa-display {
+        font-size: 1.5rem;
+        font-weight: 900;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .availability-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .availability-item {
+        background: rgba(255,255,255,0.8);
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        border-radius: 15px;
+        padding: 15px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .availability-item:hover {
+        border-color: #667eea;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+    }
+    
+    .availability-item.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+    }
+    
+    .animate-form {
+        animation: slideInUp 0.8s ease-out;
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .stagger-animation > * {
+        opacity: 0;
+        animation: slideInUp 0.6s ease-out forwards;
+    }
+    
+    .stagger-animation > *:nth-child(1) { animation-delay: 0.1s; }
+    .stagger-animation > *:nth-child(2) { animation-delay: 0.2s; }
+    .stagger-animation > *:nth-child(3) { animation-delay: 0.3s; }
+    .stagger-animation > *:nth-child(4) { animation-delay: 0.4s; }
+    .stagger-animation > *:nth-child(5) { animation-delay: 0.5s; }
+    
+    .help-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 5px;
+        font-style: italic;
+    }
+    
+    .required-field::after {
+        content: ' *';
+        color: #e17055;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-wizard animate-form">
+    <div class="p-4">
+        <!-- HEADER -->
+        <div class="text-center mb-4">
+            <h1 class="display-5 fw-bold text-primary mb-2">
+                🏗️ {{ titulo }}
+            </h1>
+            <p class="lead text-muted">
+                Complete la información del contratista especializado
+            </p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="stagger-animation">
+            {% csrf_token %}
+            
+            <!-- INFORMACIÓN BÁSICA -->
+            <div class="form-section">
+                <h4 class="section-title">
+                    <i class="fas fa-user-tie"></i>
+                    Información Básica
+                </h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-premium required-field">
+                            <i class="fas fa-building"></i>
+                            Nombre de la Empresa
+                        </label>
+                        {{ form.nombre_empresa }}
+                        <div class="help-text">Nombre comercial o razón social</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-premium required-field">
+                            <i class="fas fa-id-card"></i>
+                            RUC
+                        </label>
+                        {{ form.ruc }}
+                        <div class="help-text">Registro Único del Contribuyente</div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-premium required-field">
+                            <i class="fas fa-tools"></i>
+                            Especialidad
+                        </label>
+                        {{ form.especialidad }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-premium">
+                            <i class="fas fa-calendar-alt"></i>
+                            Años de Experiencia
+                        </label>
+                        {{ form.anos_experiencia }}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-premium">
+                            <i class="fas fa-certificate"></i>
+                            Licencia Profesional
+                        </label>
+                        {{ form.licencia_profesional }}
+                        <div class="help-text">Número de licencia o registro profesional</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UBICACIÓN Y CONTACTO -->
+            <div class="form-section">
+                <h4 class="section-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Ubicación y Contacto
+                </h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-premium required-field">
+                            <i class="fas fa-map"></i>
+                            Departamento
+                        </label>
+                        {{ form.departamento }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-premium required-field">
+                            <i class="fas fa-city"></i>
+                            Ciudad
+                        </label>
+                        {{ form.ciudad }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label-premium required-field">
+                        <i class="fas fa-home"></i>
+                        Dirección Completa
+                    </label>
+                    {{ form.direccion_completa }}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-premium required-field">
+                            <i class="fas fa-phone"></i>
+                            Teléfono Principal
+                        </label>
+                        {{ form.telefono_principal }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-premium">
+                            <i class="fas fa-phone-alt"></i>
+                            Teléfono Secundario
+                        </label>
+                        {{ form.telefono_secundario }}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-premium">
+                            <i class="fas fa-envelope"></i>
+                            Email Empresa
+                        </label>
+                        {{ form.email_empresa }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-premium">
+                            <i class="fas fa-globe"></i>
+                            Sitio Web
+                        </label>
+                        {{ form.sitio_web }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARIFAS Y PRECIOS -->
+            <div class="form-section">
+                <h4 class="section-title">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Tarifas y Precios (en Guaraníes)
+                </h4>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label-premium">
+                            <i class="fas fa-clock"></i>
+                            Tarifa por Hora
+                        </label>
+                        {{ form.tarifa_por_hora }}
+                        <div class="help-text">Precio por hora de trabajo</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label-premium">
+                            <i class="fas fa-calendar-day"></i>
+                            Tarifa por Día
+                        </label>
+                        {{ form.tarifa_por_dia }}
+                        <div class="help-text">Precio por día completo</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label-premium">
+                            <i class="fas fa-project-diagram"></i>
+                            Tarifa por Proyecto
+                        </label>
+                        {{ form.tarifa_por_proyecto }}
+                        <div class="help-text">Precio base por proyecto</div>
+                    </div>
+                </div>
+                
+                <div class="tarifa-calculator">
+                    <h6>💰 Calculadora de Tarifas</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="tarifa-display" id="tarifa-hora-display">Gs. 0</div>
+                            <small>Por Hora</small>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="tarifa-display" id="tarifa-dia-display">Gs. 0</div>
+                            <small>Por Día</small>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="tarifa-display" id="tarifa-proyecto-display">Gs. 0</div>
+                            <small>Por Proyecto</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DISPONIBILIDAD -->
+            <div class="form-section">
+                <h4 class="section-title">
+                    <i class="fas fa-calendar-check"></i>
+                    Disponibilidad
+                </h4>
+                
+                <div class="availability-grid">
+                    <div class="availability-item" data-field="disponible_lunes_viernes">
+                        <i class="fas fa-briefcase fa-2x mb-2"></i>
+                        <div class="fw-bold">Lunes a Viernes</div>
+                        {{ form.disponible_lunes_viernes }}
+                    </div>
+                    <div class="availability-item" data-field="disponible_sabados">
+                        <i class="fas fa-calendar-week fa-2x mb-2"></i>
+                        <div class="fw-bold">Sábados</div>
+                        {{ form.disponible_sabados }}
+                    </div>
+                    <div class="availability-item" data-field="disponible_domingos">
+                        <i class="fas fa-calendar-day fa-2x mb-2"></i>
+                        <div class="fw-bold">Domingos</div>
+                        {{ form.disponible_domingos }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTONES DE ACCIÓN -->
+            <div class="text-center mt-4">
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'lista_contratistas' %}" class="btn btn-cancel-premium">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-submit-premium">
+                        <i class="fas fa-save me-2"></i>{{ accion }} Contratista
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Aplicar clases CSS a los campos del formulario
+    $('.form-control, .form-select').addClass('form-control-premium');
+    $('.form-label').addClass('form-label-premium');
+    
+    // Calculadora de tarifas en tiempo real
+    function actualizarTarifas() {
+        const tarifaHora = parseFloat($('#id_tarifa_por_hora').val()) || 0;
+        const tarifaDia = parseFloat($('#id_tarifa_por_dia').val()) || 0;
+        const tarifaProyecto = parseFloat($('#id_tarifa_por_proyecto').val()) || 0;
+        
+        $('#tarifa-hora-display').text('Gs. ' + tarifaHora.toLocaleString('es-PY'));
+        $('#tarifa-dia-display').text('Gs. ' + tarifaDia.toLocaleString('es-PY'));
+        $('#tarifa-proyecto-display').text('Gs. ' + tarifaProyecto.toLocaleString('es-PY'));
+    }
+    
+    // Actualizar tarifas al cambiar valores
+    $('#id_tarifa_por_hora, #id_tarifa_por_dia, #id_tarifa_por_proyecto').on('input', actualizarTarifas);
+    
+    // Inicializar calculadora
+    actualizarTarifas();
+    
+    // Manejar disponibilidad visual
+    $('.availability-item').each(function() {
+        const field = $(this).data('field');
+        const checkbox = $(`#id_${field}`);
+        
+        // Ocultar checkbox original
+        checkbox.hide();
+        
+        // Establecer estado inicial
+        if (checkbox.is(':checked')) {
+            $(this).addClass('active');
+        }
+        
+        // Manejar clicks
+        $(this).on('click', function() {
+            checkbox.prop('checked', !checkbox.is(':checked'));
+            $(this).toggleClass('active', checkbox.is(':checked'));
+        });
+    });
+    
+    // Validación en tiempo real
+    $('.form-control-premium').on('blur', function() {
+        const field = $(this);
+        const value = field.val().trim();
+        
+        // Validar campos requeridos
+        if (field.prop('required') && !value) {
+            field.addClass('is-invalid');
+            if (!field.next('.invalid-feedback').length) {
+                field.after('<div class="invalid-feedback">Este campo es requerido</div>');
+            }
+        } else {
+            field.removeClass('is-invalid');
+            field.next('.invalid-feedback').remove();
+        }
+        
+        // Validar RUC (formato paraguayo)
+        if (field.attr('name') === 'ruc' && value) {
+            const rucPattern = /^\d{1,8}-\d{1}$/;
+            if (!rucPattern.test(value)) {
+                field.addClass('is-invalid');
+                if (!field.next('.invalid-feedback').length) {
+                    field.after('<div class="invalid-feedback">Formato de RUC inválido (ej: 12345678-9)</div>');
+                }
+            }
+        }
+        
+        // Validar teléfono paraguayo
+        if (field.attr('name').includes('telefono') && value) {
+            const phonePattern = /^(\+595|0)(9\d{8}|\d{8,9})$/;
+            if (!phonePattern.test(value.replace(/\s/g, ''))) {
+                field.addClass('is-invalid');
+                if (!field.next('.invalid-feedback').length) {
+                    field.after('<div class="invalid-feedback">Formato de teléfono inválido (ej: +595 981 123456)</div>');
+                }
+            }
+        }
+    });
+    
+    // Formatear números con separadores de miles
+    $('input[type="number"]').on('input', function() {
+        const value = $(this).val();
+        if (value && !isNaN(value)) {
+            // Solo formatear visualmente, no cambiar el valor real
+            const formatted = parseFloat(value).toLocaleString('es-PY');
+            $(this).attr('data-formatted', formatted);
+        }
+    });
+    
+    // Animaciones de entrada
+    $('.animate-form').addClass('animate__animated animate__fadeInUp');
+    
+    // Efecto de escritura en el título
+    const titulo = $('h1').text();
+    $('h1').text('').show();
+    let i = 0;
+    const typeWriter = setInterval(() => {
+        $('h1').text(titulo.substring(0, i));
+        i++;
+        if (i > titulo.length) {
+            clearInterval(typeWriter);
+        }
+    }, 50);
+    
+    // Confirmación antes de cancelar
+    $('.btn-cancel-premium').on('click', function(e) {
+        e.preventDefault();
+        const hasChanges = $('form').serialize() !== $('form').data('original-data');
+        
+        if (hasChanges) {
+            Swal.fire({
+                title: '⚠️ ¿Cancelar cambios?',
+                text: 'Se perderán todos los cambios no guardados',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e17055',
+                cancelButtonColor: '#667eea',
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'Continuar editando'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = $(this).attr('href');
+                }
+            });
+        } else {
+            window.location.href = $(this).attr('href');
+        }
+    });
+    
+    // Guardar estado inicial del formulario
+    $('form').data('original-data', $('form').serialize());
+    
+    // Validación final antes de enviar
+    $('form').on('submit', function(e) {
+        let isValid = true;
+        
+        // Validar campos requeridos
+        $('.form-control-premium[required]').each(function() {
+            if (!$(this).val().trim()) {
+                $(this).addClass('is-invalid');
+                isValid = false;
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            Swal.fire({
+                title: '❌ Formulario incompleto',
+                text: 'Por favor complete todos los campos requeridos',
+                icon: 'error',
+                confirmButtonColor: '#667eea'
+            });
+            
+            // Scroll al primer campo con error
+            $('html, body').animate({
+                scrollTop: $('.is-invalid').first().offset().top - 100
+            }, 500);
+        }
+    });
+});
+</script>
+{% endblock %}

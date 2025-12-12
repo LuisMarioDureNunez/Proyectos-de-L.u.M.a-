@@ -1,0 +1,159 @@
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from .models import Producto, UsuarioPersonalizado
+from django.utils.html import strip_tags
+from django.conf import settings
+import threading
+
+class EmailThread(threading.Thread):
+    """Clase para enviar emails en segundo plano"""
+    def __init__(self, email):
+        self.email = email
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self.email.send()
+
+class NotificationSystem:
+    """Sistema centralizado de notificaciones"""
+    
+    @staticmethod
+    def send_email(subject, to_emails, template, context, cc_emails=None):
+        """Envía email con template HTML"""
+        try:
+            # Renderizar template HTML
+            html_content = render_to_string(template, context)
+            text_content = strip_tags(html_content)
+            
+            # Crear email
+            email = EmailMultiAlternatives(
+                subject=subject,
+                body=text_content,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=to_emails,
+                cc=cc_emails or []
+            )
+            email.attach_alternative(html_content, "text/html")
+            
+            # Enviar en segundo plano
+            EmailThread(email).start()
+            return True
+            
+        except Exception as e:
+            print(f"Error enviando email: {e}")
+            return False
+    
+    @staticmethod
+    def notify_product_created(producto, user):
+        """Notificar creación de nuevo producto"""
+        subject = f"🎉 Nuevo Producto Creado: {producto.nombre}"
+        template = 'emails/producto_creado.html'
+        
+        context = {
+            'producto': producto,
+            'user': user,
+            'app_name': 'Mi Tienda Premium'
+        }
+        
+        # Enviar al usuario que creó el producto
+        NotificationSystem.send_email(
+            subject=subject,
+            to_emails=[user.email],
+            template=template,
+            context=context
+        )
+        
+        # También enviar a administradores
+        admin_emails = [admin[1] for admin in settings.ADMINS]
+        NotificationSystem.send_email(
+            subject=f"[ADMIN] {subject}",
+            to_emails=admin_emails,
+            template=template,
+            context=context
+        )
+    
+    @staticmethod
+    def notify_product_updated(producto, user, cambios):
+        """Notificar actualización de producto"""
+        subject = f"✏️ Producto Actualizado: {producto.nombre}"
+        template = 'emails/producto_actualizado.html'
+        
+        context = {
+            'producto': producto,
+            'user': user,
+            'cambios': cambios,
+            'app_name': 'Mi Tienda Premium'
+        }
+        
+        NotificationSystem.send_email(
+            subject=subject,
+            to_emails=[user.email],
+            template=template,
+            context=context
+        )
+    
+    @staticmethod
+    def notify_low_stock(producto):
+        """Notificar stock bajo"""
+        subject = f"⚠️ Stock Bajo: {producto.nombre}"
+        template = 'emails/stock_bajo.html'
+        
+        context = {
+            'producto': producto,
+            'app_name': 'Mi Tienda Premium'
+        }
+        
+        admin_emails = [admin[1] for admin in settings.ADMINS]
+        NotificationSystem.send_email(
+            subject=subject,
+            to_emails=admin_emails,
+            template=template,
+            context=context
+        )
+    
+    @staticmethod
+    def notify_new_user(user):
+        """Notificar nuevo usuario registrado"""
+        subject = f"👋 Bienvenido a Mi Tienda Premium"
+        template = 'emails/bienvenida.html'
+        
+        context = {
+            'user': user,
+            'app_name': 'Mi Tienda Premium'
+        }
+        
+        NotificationSystem.send_email(
+            subject=subject,
+            to_emails=[user.email],
+            template=template,
+            context=context
+        )
+    
+    @staticmethod
+    def notify_order_created(order, user):
+        """Notificar nuevo pedido (para futura implementación)"""
+        subject = f"🛒 Pedido Confirmado: #{order.id}"
+        template = 'emails/pedido_confirmado.html'
+        
+        context = {
+            'order': order,
+            'user': user,
+            'app_name': 'Mi Tienda Premium'
+        }
+        
+        NotificationSystem.send_email(
+            subject=subject,
+            to_emails=[user.email],
+            template=template,
+            context=context
+        )
+
+    @staticmethod
+    def check_low_stock_and_notify():
+        """Revisar productos con stock bajo y notificar"""
+        productos_bajo_stock = Producto.objects.filter(stock__lt=10, stock__gt=0)
+        
+        for producto in productos_bajo_stock:
+            NotificationSystem.notify_low_stock(producto)
+        
+        return len(productos_bajo_stock)

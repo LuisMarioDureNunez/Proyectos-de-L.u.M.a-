@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}📥 Importar Repositorios desde GitHub{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card-premium">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fab fa-github me-2"></i>
+                        Importar Repositorios desde GitHub
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">{{ form.username_github.label }}</label>
+                            {{ form.username_github }}
+                            <div class="form-text">Ingresa tu nombre de usuario de GitHub</div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    {{ form.incluir_forks }}
+                                    <label class="form-check-label" for="{{ form.incluir_forks.id_for_label }}">
+                                        {{ form.incluir_forks.label }}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    {{ form.solo_publicos }}
+                                    <label class="form-check-label" for="{{ form.solo_publicos.id_for_label }}">
+                                        {{ form.solo_publicos.label }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">{{ form.limite_repositorios.label }}</label>
+                            {{ form.limite_repositorios }}
+                            <div class="form-text">Máximo número de repositorios a importar</div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'lista_repositorios' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-download me-2"></i>Importar Repositorios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

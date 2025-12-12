@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load math_filters %}
+
+{% block title %}Panel Empleados - Tiempo Real{% endblock %}
+
+{% block extra_css %}
+<style>
+    .panel-empleados {
+        background: linear-gradient(135deg, #1a365d 0%, #28a745 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+    
+    .empleado-card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .empleado-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    
+    .empleado-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    
+    .status-trabajando { 
+        background: linear-gradient(135deg, #28a745, #20c997);
+        animation: working-pulse 2s infinite;
+    }
+    
+    .status-descanso { 
+        background: linear-gradient(135deg, #ffc107, #fd7e14);
+    }
+    
+    .status-ausente { 
+        background: linear-gradient(135deg, #6c757d, #495057);
+    }
+    
+    @keyframes working-pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    .horas-trabajadas {
+        background: linear-gradient(135deg, #17a2b8, #138496);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+    
+    .especialidad-badge {
+        background: linear-gradient(135deg, #FF6600, #ff8533);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+    }
+    
+    .productividad-bar {
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+    
+    .productividad-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #28a745, #20c997);
+        transition: width 0.5s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="panel-empleados">
+    <div class="update-timestamp">
+        <i class="fas fa-clock me-2"></i>
+        Actualizado: <span id="timestamp">{{ timestamp_actualizacion|date:"H:i:s" }}</span>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4 fw-bold text-white mb-3">
+                    <img src="{% static 'images/employees-icon.png' %}" alt="Empleados" style="width: 60px; height: 60px; margin-right: 15px;" onerror="this.style.display='none'">
+                    Panel de Empleados
+                </h1>
+                <div class="tiempo-real-badge">
+                    <i class="fas fa-users me-2"></i>TIEMPO REAL
+                </div>
+            </div>
+        </div>
+
+        <!-- Métricas de Empleados -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="empleado-card text-center">
+                    <div class="metric-circle eficiencia-alta">
+                        <span id="total-empleados">48</span>
+                    </div>
+                    <h6>Total Empleados</h6>
+                    <small class="text-muted">Registrados</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="empleado-card text-center">
+                    <div class="metric-circle eficiencia-media">
+                        <span id="empleados-trabajando">32</span>
+                    </div>
+                    <h6>Trabajando Ahora</h6>
+                    <small class="text-muted">En obras activas</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="empleado-card text-center">
+                    <div class="metric-circle eficiencia-alta">
+                        <span id="horas-promedio">7.5</span>
+                    </div>
+                    <h6>Horas Promedio</h6>
+                    <small class="text-muted">Por empleado hoy</small>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="empleado-card text-center">
+                    <div class="metric-circle eficiencia-alta">
+                        <span id="productividad-promedio">89%</span>
+                    </div>
+                    <h6>Productividad</h6>
+                    <small class="text-muted">Promedio general</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Empleados Activos -->
+        <div class="row">
+            <div class="col-12">
+                <div class="empleado-card">
+                    <h4 class="mb-4">
+                        <img src="{% static 'images/active-workers.png' %}" alt="Trabajadores" style="width: 30px; height: 30px; margin-right: 10px;" onerror="this.style.display='none'">
+                        Empleados en Tiempo Real
+                    </h4>
+                    
+                    <div class="row" id="empleados-grid">
+                        <!-- Empleado 1 -->
+                        <div class="col-lg-6 mb-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="empleado-avatar status-trabajando me-3">
+                                            JP
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="fw-bold mb-1">Juan Pérez</h6>
+                                            <div class="especialidad-badge mb-2">Maestro Mayor</div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">Obra: Casa Asunción</small>
+                                                <div class="horas-trabajadas">8.0h</div>
+                                            </div>
+                                            <div class="productividad-bar">
+                                                <div class="productividad-fill" style="width: 92%;"></div>
+                                            </div>
+                                            <small class="text-muted">Productividad: 92%</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Empleado 2 -->
+                        <div class="col-lg-6 mb-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="empleado-avatar status-trabajando me-3">
+                                            MG
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="fw-bold mb-1">María González</h6>
+                                            <div class="especialidad-badge mb-2">Electricista</div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">Obra: Galpón Luque</small>
+                                                <div class="horas-trabajadas">7.5h</div>
+                                            </div>
+                                            <div class="productividad-bar">
+                                                <div class="productividad-fill" style="width: 88%;"></div>
+                                            </div>
+                                            <small class="text-muted">Productividad: 88%</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Empleado 3 -->
+                        <div class="col-lg-6 mb-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="empleado-avatar status-descanso me-3">
+                                            CR
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="fw-bold mb-1">Carlos Rodríguez</h6>
+                                            <div class="especialidad-badge mb-2">Plomero</div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">Obra: Edificio CDE</small>
+                                                <div class="horas-trabajadas">6.0h</div>
+                                            </div>
+                                            <div class="productividad-bar">
+                                                <div class="productividad-fill" style="width: 85%;"></div>
+                                            </div>
+                                            <small class="text-muted">Productividad: 85% - En descanso</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Empleado 4 -->
+                        <div class="col-lg-6 mb-3">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="empleado-avatar status-trabajando me-3">
+                                            AM
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="fw-bold mb-1">Ana Martínez</h6>
+                                            <div class="especialidad-badge mb-2">Carpintera</div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">Obra: Casa Lambaré</small>
+                                                <div class="horas-trabajadas">7.0h</div>
+                                            </div>
+                                            <div class="productividad-bar">
+                                                <div class="productividad-fill" style="width: 95%;"></div>
+                                            </div>
+                                            <small class="text-muted">Productividad: 95%</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Actualizar datos cada 3 segundos
+    setInterval(actualizarDatosEmpleados, 3000);
+    
+    function actualizarDatosEmpleados() {
+        // Simular datos en tiempo real
+        const totalEmpleados = Math.floor(Math.random() * 5) + 45; // 45-49
+        const empleadosTrabajando = Math.floor(Math.random() * 8) + 28; // 28-35
+        const horasPromedio = (Math.random() * 1.5 + 6.5).toFixed(1); // 6.5-8.0
+        const productividadPromedio = Math.floor(Math.random() * 10) + 85; // 85-94%
+        
+        // Actualizar métricas principales
+        $('#total-empleados').text(totalEmpleados);
+        $('#empleados-trabajando').text(empleadosTrabajando);
+        $('#horas-promedio').text(horasPromedio);
+        $('#productividad-promedio').text(productividadPromedio + '%');
+        
+        // Actualizar timestamp
+        const now = new Date();
+        $('#timestamp').text(now.toLocaleTimeString());
+        
+        // Actualizar horas y productividad individual
+        $('.horas-trabajadas').each(function() {
+            const nuevasHoras = (Math.random() * 2 + 6).toFixed(1);
+            $(this).text(nuevasHoras + 'h');
+        });
+        
+        $('.productividad-fill').each(function() {
+            const nuevaProductividad = Math.floor(Math.random() * 15) + 80; // 80-94%
+            $(this).css('width', nuevaProductividad + '%');
+            $(this).parent().next('small').text(`Productividad: ${nuevaProductividad}%`);
+        });
+        
+        console.log('Datos de empleados actualizados:', now.toLocaleTimeString());
+    }
+    
+    // Animaciones de entrada
+    $('.empleado-card').each(function(index) {
+        $(this).css('opacity', '0').css('transform', 'translateY(20px)');
+        $(this).delay(index * 100).animate({
+            opacity: 1
+        }, 500, function() {
+            $(this).css('transform', 'translateY(0)');
+        });
+    });
+});
+</script>
+{% endblock %}

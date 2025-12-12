@@ -1,0 +1,935 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}🚀 Dashboard Súper Completo - Sistema L.u.M.a{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 30px;
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 15px 60px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+    
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .dashboard-title {
+        font-size: 3rem;
+        font-weight: 900;
+        text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .dashboard-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .stats-mega-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 30px;
+        box-shadow: 0 15px 60px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.3);
+        transition: all 0.5s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .stats-mega-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        transform: scaleX(0);
+        transition: transform 0.5s ease;
+    }
+    
+    .stats-mega-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .stats-mega-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 25px 80px rgba(0,0,0,0.15);
+    }
+    
+    .stat-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        animation: iconFloat 3s ease-in-out infinite;
+    }
+    
+    @keyframes iconFloat {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .stat-icon.obras { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .stat-icon.contratistas { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .stat-icon.empleados { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .stat-icon.proveedores { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .stat-icon.propietarios { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+    .stat-icon.contratos { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 900;
+        color: #2d3748;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        animation: countUp 2s ease-out;
+    }
+    
+    @keyframes countUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .stat-label {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4a5568;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .stat-change {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-top: 10px;
+        padding: 5px 10px;
+        border-radius: 15px;
+        display: inline-block;
+    }
+    
+    .stat-change.positive {
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        color: white;
+    }
+    
+    .stat-change.negative {
+        background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+        color: white;
+    }
+    
+    .chart-container {
+        background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 30px;
+        box-shadow: 0 15px 60px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.3);
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .chart-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        animation: progressBar 4s ease-in-out infinite;
+    }
+    
+    @keyframes progressBar {
+        0%, 100% { transform: scaleX(0.3); }
+        50% { transform: scaleX(1); }
+    }
+    
+    .chart-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #2d3748;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .chart-title i {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 10px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .activity-feed {
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    
+    .activity-item {
+        background: rgba(255,255,255,0.8);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .activity-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    .activity-item:hover::before {
+        left: 100%;
+    }
+    
+    .activity-item:hover {
+        transform: translateX(10px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .activity-icon.obra { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .activity-icon.contratista { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .activity-icon.contrato { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .activity-icon.empleado { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    
+    .activity-content h6 {
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 5px;
+    }
+    
+    .activity-content p {
+        color: #6c757d;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+    
+    .activity-time {
+        font-size: 0.8rem;
+        color: #9ca3af;
+        font-weight: 500;
+    }
+    
+    .top-performers {
+        background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 30px;
+        box-shadow: 0 15px 60px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.3);
+        margin-bottom: 30px;
+    }
+    
+    .performer-item {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-radius: 15px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        background: rgba(255,255,255,0.7);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+    }
+    
+    .performer-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        border-color: rgba(102, 126, 234, 0.3);
+    }
+    
+    .performer-rank {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        color: white;
+        margin-right: 15px;
+        font-size: 1.2rem;
+    }
+    
+    .performer-rank.first { background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: #2d3748; }
+    .performer-rank.second { background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%); color: #2d3748; }
+    .performer-rank.third { background: linear-gradient(135deg, #cd7f32 0%, #e39d5c 100%); }
+    .performer-rank.other { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    
+    .performer-info h6 {
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 5px;
+    }
+    
+    .performer-info p {
+        color: #6c757d;
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+    
+    .performer-rating {
+        margin-left: auto;
+        text-align: right;
+    }
+    
+    .rating-stars {
+        color: #ffd700;
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+    
+    .rating-number {
+        font-weight: 700;
+        color: #2d3748;
+    }
+    
+    .quick-actions {
+        background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 30px;
+        box-shadow: 0 15px 60px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    .quick-action-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 20px;
+        padding: 20px;
+        color: white;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .quick-action-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.7s ease;
+    }
+    
+    .quick-action-btn:hover::before {
+        left: 100%;
+    }
+    
+    .quick-action-btn:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .quick-action-btn i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    
+    .quick-action-btn span {
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+    }
+    
+    .animate-dashboard {
+        animation: slideInUp 0.8s ease-out;
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .stagger-animation > * {
+        opacity: 0;
+        animation: slideInUp 0.6s ease-out forwards;
+    }
+    
+    .stagger-animation > *:nth-child(1) { animation-delay: 0.1s; }
+    .stagger-animation > *:nth-child(2) { animation-delay: 0.2s; }
+    .stagger-animation > *:nth-child(3) { animation-delay: 0.3s; }
+    .stagger-animation > *:nth-child(4) { animation-delay: 0.4s; }
+    .stagger-animation > *:nth-child(5) { animation-delay: 0.5s; }
+    .stagger-animation > *:nth-child(6) { animation-delay: 0.6s; }
+    
+    .real-time-indicator {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        animation: pulse 2s infinite;
+        z-index: 10;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    
+    .real-time-indicator::before {
+        content: '🔴';
+        margin-right: 5px;
+        animation: blink 1s infinite;
+    }
+    
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="animate-dashboard">
+    <!-- INDICADOR TIEMPO REAL -->
+    <div class="real-time-indicator">
+        EN TIEMPO REAL
+    </div>
+
+    <!-- HEADER DEL DASHBOARD -->
+    <div class="dashboard-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="dashboard-title">
+                    🚀 Dashboard Súper Completo
+                </h1>
+                <p class="dashboard-subtitle">
+                    Sistema integral de gestión para obras civiles en Paraguay - Todas las funcionalidades avanzadas
+                </p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="text-white">
+                    <div class="fs-4 fw-bold">{{ hoy|date:"d/m/Y" }}</div>
+                    <div class="fs-6">{{ user.get_full_name|default:user.username }}</div>
+                    <div class="fs-6 opacity-75">{{ user.get_rol_display }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESTADÍSTICAS PRINCIPALES -->
+    <div class="row mb-4 stagger-animation">
+        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+            <div class="stats-mega-card">
+                <div class="stat-icon obras">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_obras }}</div>
+                <div class="stat-label">Obras Totales</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> +12%
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+            <div class="stats-mega-card">
+                <div class="stat-icon contratistas">
+                    <i class="fas fa-hard-hat"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_contratistas }}</div>
+                <div class="stat-label">Contratistas</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> +8%
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+            <div class="stats-mega-card">
+                <div class="stat-icon empleados">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_empleados }}</div>
+                <div class="stat-label">Empleados</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> +5%
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+            <div class="stats-mega-card">
+                <div class="stat-icon proveedores">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_proveedores }}</div>
+                <div class="stat-label">Proveedores</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> +15%
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+            <div class="stats-mega-card">
+                <div class="stat-icon propietarios">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_propietarios }}</div>
+                <div class="stat-label">Propietarios</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> +20%
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+            <div class="stats-mega-card">
+                <div class="stat-icon contratos">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <div class="stat-number">{{ stats.total_contratos }}</div>
+                <div class="stat-label">Contratos</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> +25%
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESTADÍSTICAS FINANCIERAS -->
+    <div class="row mb-4 stagger-animation">
+        <div class="col-md-6 mb-4">
+            <div class="stats-mega-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-number">Gs. {{ stats.total_presupuestos_aceptados|floatformat:0 }}</div>
+                <div class="stat-label">Presupuestos Aceptados</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> +18%
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="stats-mega-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <div class="stat-number">Gs. {{ stats.total_contratos_valor|floatformat:0 }}</div>
+                <div class="stat-label">Valor Total Contratos</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> +22%
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- ACTIVIDAD RECIENTE -->
+        <div class="col-lg-6 mb-4">
+            <div class="chart-container">
+                <h4 class="chart-title">
+                    <i class="fas fa-clock"></i>
+                    Actividad Reciente
+                </h4>
+                <div class="activity-feed">
+                    {% for actividad in actividades_recientes %}
+                    <div class="activity-item">
+                        <div class="d-flex align-items-start">
+                            <div class="activity-icon {{ actividad.tipo }}">
+                                {{ actividad.icono }}
+                            </div>
+                            <div class="activity-content flex-grow-1">
+                                <h6>{{ actividad.objeto }} {{ actividad.accion }}</h6>
+                                <p>Por {{ actividad.usuario }}</p>
+                                <div class="activity-time">
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{ actividad.fecha|timesince }} atrás
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No hay actividad reciente</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- TOP CONTRATISTAS -->
+        <div class="col-lg-6 mb-4">
+            <div class="top-performers">
+                <h4 class="chart-title">
+                    <i class="fas fa-trophy"></i>
+                    Top Contratistas
+                </h4>
+                {% for contratista in top_contratistas %}
+                <div class="performer-item">
+                    <div class="performer-rank {% if forloop.counter == 1 %}first{% elif forloop.counter == 2 %}second{% elif forloop.counter == 3 %}third{% else %}other{% endif %}">
+                        {{ forloop.counter }}
+                    </div>
+                    <div class="performer-info flex-grow-1">
+                        <h6>{{ contratista.nombre_empresa|default:contratista.usuario.get_full_name }}</h6>
+                        <p>{{ contratista.get_especialidad_display }} - {{ contratista.get_departamento_display }}</p>
+                    </div>
+                    <div class="performer-rating">
+                        <div class="rating-stars">{{ contratista.get_calificacion_estrellas }}</div>
+                        <div class="rating-number">{{ contratista.calificacion_promedio|floatformat:1 }}</div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-4">
+                    <i class="fas fa-hard-hat fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No hay contratistas registrados</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- TOP PROVEEDORES -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="top-performers">
+                <h4 class="chart-title">
+                    <i class="fas fa-star"></i>
+                    Top Proveedores
+                </h4>
+                <div class="row">
+                    {% for proveedor in top_proveedores %}
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="performer-item">
+                            <div class="performer-rank {% if forloop.counter == 1 %}first{% elif forloop.counter == 2 %}second{% elif forloop.counter == 3 %}third{% else %}other{% endif %}">
+                                {{ forloop.counter }}
+                            </div>
+                            <div class="performer-info flex-grow-1">
+                                <h6>{{ proveedor.nombre_empresa }}</h6>
+                                <p>{{ proveedor.get_tipo_proveedor_display }}</p>
+                            </div>
+                            <div class="performer-rating">
+                                <div class="rating-stars">{{ proveedor.get_calificacion_estrellas }}</div>
+                                <div class="rating-number">{{ proveedor.get_calificacion_promedio|floatformat:1 }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="text-center py-4">
+                            <i class="fas fa-truck fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No hay proveedores registrados</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DISTRIBUCIÓN POR DEPARTAMENTOS -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="chart-container">
+                <h4 class="chart-title">
+                    <i class="fas fa-map-marked-alt"></i>
+                    Distribución de Contratistas por Departamento
+                </h4>
+                <div class="row">
+                    {% for item in contratistas_por_departamento %}
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="text-center p-3 border rounded">
+                            <div class="fs-2 fw-bold text-primary">{{ item.total }}</div>
+                            <div class="text-muted">{{ item.departamento|title }}</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="text-center py-4">
+                            <i class="fas fa-map fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No hay datos de distribución</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCIONES RÁPIDAS -->
+    <div class="row">
+        <div class="col-12">
+            <div class="quick-actions">
+                <h4 class="chart-title">
+                    <i class="fas fa-bolt"></i>
+                    Acciones Rápidas
+                </h4>
+                <div class="row stagger-animation">
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-3">
+                        <a href="{% url 'nuevo_contratista' %}" class="quick-action-btn">
+                            <i class="fas fa-hard-hat"></i>
+                            <span>Nuevo Contratista</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-3">
+                        <a href="{% url 'nuevo_proveedor' %}" class="quick-action-btn">
+                            <i class="fas fa-truck"></i>
+                            <span>Nuevo Proveedor</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-3">
+                        <a href="{% url 'nuevo_empleado' %}" class="quick-action-btn">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Nuevo Empleado</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-3">
+                        <a href="{% url 'nueva_obra' %}" class="quick-action-btn">
+                            <i class="fas fa-building"></i>
+                            <span>Nueva Obra</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-3">
+                        <a href="{% url 'nuevo_contrato' %}" class="quick-action-btn">
+                            <i class="fas fa-file-contract"></i>
+                            <span>Nuevo Contrato</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-3">
+                        <a href="{% url 'reportes_estadisticas_avanzadas' %}" class="quick-action-btn">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Ver Reportes</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Animación de números contadores
+    $('.stat-number').each(function() {
+        const $this = $(this);
+        const countTo = parseInt($this.text().replace(/[^\d]/g, ''));
+        
+        $({ countNum: 0 }).animate({
+            countNum: countTo
+        }, {
+            duration: 2000,
+            easing: 'swing',
+            step: function() {
+                $this.text(Math.floor(this.countNum).toLocaleString('es-PY'));
+            },
+            complete: function() {
+                $this.text(countTo.toLocaleString('es-PY'));
+            }
+        });
+    });
+    
+    // Actualización en tiempo real cada 30 segundos
+    setInterval(function() {
+        actualizarEstadisticas();
+    }, 30000);
+    
+    function actualizarEstadisticas() {
+        $.ajax({
+            url: '{% url "estadisticas_dashboard_ajax" %}',
+            method: 'GET',
+            success: function(data) {
+                // Actualizar estadísticas con animación
+                Object.keys(data).forEach(key => {
+                    const elemento = $(`.stat-number:contains("${key}")`);
+                    if (elemento.length) {
+                        elemento.addClass('animate__animated animate__pulse');
+                        setTimeout(() => {
+                            elemento.text(data[key].toLocaleString('es-PY'));
+                            elemento.removeClass('animate__animated animate__pulse');
+                        }, 500);
+                    }
+                });
+                
+                // Mostrar notificación de actualización
+                mostrarNotificacionActualizacion();
+            },
+            error: function() {
+                console.log('Error al actualizar estadísticas');
+            }
+        });
+    }
+    
+    function mostrarNotificacionActualizacion() {
+        const notification = $('<div class="alert alert-success alert-dismissible fade show position-fixed" style="top: 20px; right: 20px; z-index: 9999;">' +
+            '<i class="fas fa-sync-alt me-2"></i>Datos actualizados en tiempo real' +
+            '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+            '</div>');
+        
+        $('body').append(notification);
+        
+        setTimeout(() => {
+            notification.alert('close');
+        }, 3000);
+    }
+    
+    // Efectos hover en las tarjetas
+    $('.stats-mega-card').hover(
+        function() {
+            $(this).find('.stat-icon').addClass('animate__animated animate__bounce');
+        },
+        function() {
+            $(this).find('.stat-icon').removeClass('animate__animated animate__bounce');
+        }
+    );
+    
+    // Animación de entrada para elementos
+    $('.animate-dashboard').addClass('animate__animated animate__fadeInUp');
+    
+    // Efecto parallax suave en el header
+    $(window).scroll(function() {
+        const scrolled = $(window).scrollTop();
+        $('.dashboard-header').css('transform', `translateY(${scrolled * 0.1}px)`);
+    });
+    
+    // Tooltip para elementos con información adicional
+    $('[data-bs-toggle="tooltip"]').tooltip();
+    
+    // Gráfico circular para distribución (si Chart.js está disponible)
+    if (typeof Chart !== 'undefined') {
+        const ctx = document.getElementById('departamentosChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [{% for item in contratistas_por_departamento %}'{{ item.departamento|title }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+                    datasets: [{
+                        data: [{% for item in contratistas_por_departamento %}{{ item.total }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                        backgroundColor: [
+                            '#667eea', '#764ba2', '#f093fb', '#f5576c',
+                            '#4facfe', '#00f2fe', '#43e97b', '#38f9d7'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    }
+    
+    // Búsqueda rápida global
+    $('#busquedaGlobal').on('input', function() {
+        const query = $(this).val().toLowerCase();
+        $('.quick-action-btn').each(function() {
+            const text = $(this).text().toLowerCase();
+            $(this).toggle(text.includes(query));
+        });
+    });
+    
+    // Notificaciones push simuladas
+    setTimeout(() => {
+        if (Notification.permission === 'granted') {
+            new Notification('Dashboard L.u.M.a', {
+                body: 'Sistema actualizado con nuevas funcionalidades',
+                icon: '{% static "images/logo.png" %}'
+            });
+        }
+    }, 5000);
+    
+    console.log('🚀 Dashboard Súper Completo cargado exitosamente!');
+});
+
+// Función para solicitar permisos de notificación
+function solicitarPermisoNotificaciones() {
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+}
+
+// Solicitar permisos al cargar
+solicitarPermisoNotificaciones();
+</script>
+{% endblock %}

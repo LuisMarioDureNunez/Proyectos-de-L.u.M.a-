@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Administración de Usuarios{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">👥 Administración de Usuarios</h1>
+                    <p class="text-muted mb-0">Gestión de usuarios del sistema</p>
+                </div>
+                <a href="{% url 'dashboard' %}" class="btn btn-premium">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                </a>
+            </div>
+
+            <!-- Tarjeta de Usuarios -->
+            <div class="card-premium fade-in-up">
+                <div class="card-body">
+                    <!-- Filtros -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="mb-3">Filtrar por Rol</h5>
+                            <div class="btn-group" role="group">
+                                <a href="?rol=" class="btn btn-outline-primary">Todos</a>
+                                {% for valor, nombre in roles %}
+                                <a href="?rol={{ valor }}" class="btn btn-outline-primary">{{ nombre }}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Usuarios -->
+                    {% if usuarios %}
+                    <div class="table-responsive">
+                        <table class="table table-premium">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Rol</th>
+                                    <th>Fecha Registro</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usuario in usuarios %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ usuario.get_avatar_url }}" 
+                                                 class="user-avatar-grande me-3" 
+                                                 style="width: 40px; height: 40px;" 
+                                                 alt="{{ usuario.username }}">
+                                            <strong>{{ usuario.username }}</strong>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if usuario.first_name or usuario.last_name %}
+                                            {{ usuario.first_name }} {{ usuario.last_name }}
+                                        {% else %}
+                                            <span class="text-muted">No especificado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ usuario.email }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if usuario.rol == 'admin' %}bg-danger
+                                            {% elif usuario.rol == 'vendedor' %}bg-warning
+                                            {% elif usuario.rol == 'constructor' %}bg-info
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ usuario.get_rol_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ usuario.date_joined|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if usuario.is_active %}
+                                        <span class="badge bg-success">Activo</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Inactivo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'editar_usuario' usuario.id %}" class="btn btn-outline-warning">Editar</a>
+                                            {% if usuario != request.user %}
+                                            <a href="#" class="btn btn-outline-danger">Desactivar</a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No hay usuarios registrados</h4>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

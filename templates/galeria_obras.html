@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}📸 Galería de Obras - LUMA Paraguay{% endblock %}
+
+{% block content %}
+<style>
+.galeria-container{padding:40px 0}
+.galeria-header{text-align:center;margin-bottom:50px}
+.galeria-header h1{font-size:3rem;font-weight:900;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+.galeria-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:30px;margin-bottom:50px}
+.galeria-item{position:relative;border-radius:25px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.2);transition:all .5s ease;cursor:pointer;height:350px}
+.galeria-item:hover{transform:translateY(-15px) scale(1.05);box-shadow:0 20px 60px rgba(102,126,234,.4)}
+.galeria-item img{width:100%;height:100%;object-fit:cover;transition:all .5s ease}
+.galeria-item:hover img{transform:scale(1.2) rotate(5deg)}
+.galeria-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);padding:30px 20px;color:white;transform:translateY(100%);transition:all .5s ease}
+.galeria-item:hover .galeria-overlay{transform:translateY(0)}
+.galeria-title{font-size:1.3rem;font-weight:700;margin-bottom:10px}
+.galeria-info{font-size:.9rem;opacity:.9}
+.upload-zone{border:3px dashed #667eea;border-radius:25px;padding:60px;text-align:center;background:rgba(102,126,234,.05);cursor:pointer;transition:all .4s ease;margin-bottom:40px}
+.upload-zone:hover{background:rgba(102,126,234,.1);transform:scale(1.02)}
+.upload-zone i{font-size:4rem;color:#667eea;margin-bottom:20px}
+.lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:10000;align-items:center;justify-content:center}
+.lightbox.active{display:flex}
+.lightbox-content{max-width:90%;max-height:90%;border-radius:20px;box-shadow:0 20px 80px rgba(0,0,0,.5)}
+.lightbox-close{position:absolute;top:30px;right:30px;color:white;font-size:3rem;cursor:pointer;transition:all .3s ease}
+.lightbox-close:hover{transform:rotate(90deg) scale(1.2)}
+</style>
+
+<div class="galeria-container">
+    <div class="galeria-header">
+        <h1>📸 Galería de Obras</h1>
+        <p class="lead">Explora nuestros proyectos completados</p>
+    </div>
+
+    {% if user.es_administrador or user.puede_gestionar_obras %}
+    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+        <i class="fas fa-cloud-upload-alt d-block"></i>
+        <h4>Subir Nuevas Fotos</h4>
+        <p>Arrastra archivos o haz clic para seleccionar</p>
+        <input type="file" id="fileInput" multiple accept="image/*" style="display:none">
+    </div>
+    {% endif %}
+
+    <div class="galeria-grid" id="galeriaGrid">
+        {% for foto in fotos %}
+        <div class="galeria-item" onclick="abrirLightbox('{{ foto.imagen.url }}')">
+            <img src="{{ foto.imagen.url }}" alt="{{ foto.titulo }}">
+            <div class="galeria-overlay">
+                <div class="galeria-title">{{ foto.titulo }}</div>
+                <div class="galeria-info">
+                    <i class="fas fa-building me-2"></i>{{ foto.obra.nombre }}<br>
+                    <i class="fas fa-calendar me-2"></i>{{ foto.fecha|date:"d/m/Y" }}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-images fa-5x text-muted mb-3"></i>
+            <h4>No hay fotos aún</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="cerrarLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img class="lightbox-content" id="lightboxImg">
+</div>
+
+<script>
+function abrirLightbox(url){document.getElementById('lightbox').classList.add('active');document.getElementById('lightboxImg').src=url}
+function cerrarLightbox(){document.getElementById('lightbox').classList.remove('active')}
+document.getElementById('fileInput').onchange=function(e){
+    const formData=new FormData();
+    for(let file of e.target.files){formData.append('fotos',file)}
+    fetch('/api/galeria/subir/',{method:'POST',body:formData,headers:{'X-CSRFToken':getCookie('csrftoken')}})
+    .then(r=>r.json()).then(d=>{if(d.success)location.reload()})
+}
+function getCookie(name){let v=null;if(document.cookie){const c=document.cookie.split(';');for(let i=0;i<c.length;i++){const ck=c[i].trim();if(ck.substring(0,name.length+1)===(name+'=')){v=decodeURIComponent(ck.substring(name.length+1));break}}}return v}
+</script>
+{% endblock %}

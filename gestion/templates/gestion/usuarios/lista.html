@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load paraguay_filters %}
+
+{% block title %}Gestión de Usuarios - Sistema de Gestión{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">👥 Gestión de Usuarios</h1>
+                    <p class="text-muted mb-0">Administrar usuarios del sistema</p>
+                </div>
+                <div>
+                    <a href="/admin/gestion/usuariopersonalizado/add/" class="btn btn-premium">
+                        <i class="fas fa-plus me-2"></i>Nuevo Usuario
+                    </a>
+                    <a href="/admin/gestion/usuariopersonalizado/" class="btn btn-outline-premium">
+                        <i class="fas fa-cog me-2"></i>Admin Avanzado
+                    </a>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card-premium mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Buscar Usuario</label>
+                            <input type="text" name="q" class="form-control" placeholder="Nombre, email o usuario..." value="{{ query }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Filtrar por Rol</label>
+                            <select name="rol" class="form-select">
+                                <option value="">Todos los roles</option>
+                                {% for rol_val, rol_name in roles %}
+                                <option value="{{ rol_val }}" {% if rol_filter == rol_val %}selected{% endif %}>
+                                    {{ rol_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Filtrar por Estado</label>
+                            <select name="estado" class="form-select">
+                                <option value="">Todos los estados</option>
+                                <option value="activo" {% if estado_filter == 'activo' %}selected{% endif %}>Activos</option>
+                                <option value="inactivo" {% if estado_filter == 'inactivo' %}selected{% endif %}>Inactivos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-premium w-100">
+                                <i class="fas fa-filter me-2"></i>Filtrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tarjetas de Estadísticas -->
+            <div class="row mb-4">
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="card-premium primary fade-in-up">
+                        <div class="card-body text-center">
+                            <h4 class="mb-0">{{ total_usuarios }}</h4>
+                            <p class="text-muted mb-0">Total Usuarios</p>
+                            <i class="fas fa-users fa-2x text-primary mt-2"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="card-premium success fade-in-up" style="animation-delay: 0.1s;">
+                        <div class="card-body text-center">
+                            <h4 class="mb-0">{{ administradores.count }}</h4>
+                            <p class="text-muted mb-0">Administradores</p>
+                            <i class="fas fa-user-shield fa-2x text-success mt-2"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="card-premium warning fade-in-up" style="animation-delay: 0.2s;">
+                        <div class="card-body text-center">
+                            <h4 class="mb-0">{{ constructores.count }}</h4>
+                            <p class="text-muted mb-0">Constructores</p>
+                            <i class="fas fa-hard-hat fa-2x text-warning mt-2"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="card-premium info fade-in-up" style="animation-delay: 0.3s;">
+                        <div class="card-body text-center">
+                            <h4 class="mb-0">{{ clientes.count }}</h4>
+                            <p class="text-muted mb-0">Clientes</p>
+                            <i class="fas fa-user fa-2x text-info mt-2"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="card-premium secondary fade-in-up" style="animation-delay: 0.4s;">
+                        <div class="card-body text-center">
+                            <h4 class="mb-0">{{ vendedores.count }}</h4>
+                            <p class="text-muted mb-0">Vendedores</p>
+                            <i class="fas fa-user-tie fa-2x text-secondary mt-2"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-4 col-sm-6">
+                    <div class="card-premium success fade-in-up" style="animation-delay: 0.5s;">
+                        <div class="card-body text-center">
+                            <h4 class="mb-0">{{ usuarios_activos.count }}</h4>
+                            <p class="text-muted mb-0">Usuarios Activos</p>
+                            <i class="fas fa-check-circle fa-2x text-success mt-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Usuarios -->
+            <div class="card-premium fade-in-up">
+                <div class="card-body">
+                    {% if usuarios %}
+                    <div class="table-responsive">
+                        <table class="table table-premium table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Rol</th>
+                                    <th>Fecha Registro</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usuario in usuarios %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm me-3">
+                                                <div class="avatar-title bg-premium text-white rounded-circle">
+                                                    {{ usuario.username|first|upper }}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <strong>{{ usuario.username }}</strong>
+                                                {% if usuario == request.user %}
+                                                <span class="badge bg-primary ms-1">Tú</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if usuario.get_full_name %}
+                                            {{ usuario.get_full_name }}
+                                        {% else %}
+                                            <span class="text-muted">No especificado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ usuario.email }}</td>
+                                    <td>
+                                        {% if usuario.telefono %}
+                                            {{ usuario.telefono }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if usuario.rol == 'admin' %}
+                                        <span class="badge badge-success-premium">
+                                            <i class="fas fa-crown me-1"></i>Administrador
+                                        </span>
+                                        {% elif usuario.rol == 'constructor' %}
+                                        <span class="badge badge-warning-premium">
+                                            <i class="fas fa-hard-hat me-1"></i>Constructor
+                                        </span>
+                                        {% elif usuario.rol == 'vendedor' %}
+                                        <span class="badge badge-info-premium">
+                                            <i class="fas fa-user-tie me-1"></i>Vendedor
+                                        </span>
+                                        {% else %}
+                                        <span class="badge badge-secondary">
+                                            <i class="fas fa-user me-1"></i>Cliente
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ usuario.date_joined|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if usuario.is_active %}
+                                        <span class="badge badge-success-premium">
+                                            <i class="fas fa-check-circle me-1"></i>Activo
+                                        </span>
+                                        {% else %}
+                                        <span class="badge badge-danger-premium">
+                                            <i class="fas fa-times-circle me-1"></i>Inactivo
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="/admin/gestion/usuariopersonalizado/{{ usuario.id }}/change/" 
+                                               class="btn btn-outline-warning" 
+                                               title="Editar Usuario"
+                                               data-bs-toggle="tooltip">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            {% if usuario != request.user %}
+                                            <a href="/admin/gestion/usuariopersonalizado/{{ usuario.id }}/delete/" 
+                                               class="btn btn-outline-danger" 
+                                               title="Eliminar Usuario"
+                                               data-bs-toggle="tooltip"
+                                               onclick="return confirm('¿Estás seguro de eliminar a {{ usuario.username }}?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                            {% else %}
+                                            <button class="btn btn-outline-secondary" disabled title="No puedes eliminarte a ti mismo">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Información de paginación -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <p class="text-muted mb-0">
+                            Mostrando <strong>{{ usuarios.count }}</strong> usuario{{ usuarios.count|pluralize }}
+                        </p>
+                        <div>
+                            <a href="/admin/gestion/usuariopersonalizado/" class="btn btn-outline-premium btn-sm">
+                                <i class="fas fa-external-link-alt me-1"></i>
+                                Ver en Admin Completo
+                            </a>
+                        </div>
+                    </div>
+
+                    {% else %}
+                    <!-- Estado vacío -->
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No hay usuarios registrados</h4>
+                        <p class="text-muted mb-4">Comienza agregando el primer usuario al sistema.</p>
+                        <a href="/admin/gestion/usuariopersonalizado/add/" class="btn btn-premium">
+                            <i class="fas fa-plus me-2"></i>Crear Primer Usuario
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Inicializar tooltips de Bootstrap
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+});
+</script>
+{% endblock %}

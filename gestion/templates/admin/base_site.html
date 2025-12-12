@@ -1,0 +1,507 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | 🇵🇾 L.u.M.aapp Admin{% endblock %}
+
+{% block branding %}
+<div class="admin-branding">
+    <img src="{% static 'images/gifluma.gif' %}" 
+         alt="Logo" 
+         class="admin-logo-gif"
+         onerror="this.src='https://media.giphy.com/media/l0HlBO7eyXzSZkJri/giphy.gif'">
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+            🇵🇾 L.u.M.aapp
+            <span class="admin-subtitle">Sistema Gestión Paraguay</span>
+        </a>
+    </h1>
+</div>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* ========================================
+       COLORES PROFESIONALES: NEGRO + AZUL FRANCIA
+       ======================================== */
+    :root {
+        --primary-dark: #0a0e27;
+        --secondary-dark: #1a1f3a;
+        --accent-blue: #0055A4;
+        --accent-blue-light: #1e88e5;
+        --accent-blue-dark: #003d7a;
+        --text-light: #ffffff;
+        --text-gray: #b0b8c1;
+        --border-color: #2d3548;
+        --hover-bg: #252b3f;
+        --success: #00c853;
+        --warning: #ffa726;
+        --danger: #ef5350;
+    }
+
+    /* ========================================
+       FONDO ANIMADO CON PATRÓN
+       ======================================== */
+    body {
+        background: var(--primary-dark) !important;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            linear-gradient(45deg, var(--secondary-dark) 25%, transparent 25%),
+            linear-gradient(-45deg, var(--secondary-dark) 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, var(--secondary-dark) 75%),
+            linear-gradient(-45deg, transparent 75%, var(--secondary-dark) 75%);
+        background-size: 60px 60px;
+        background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+        opacity: 0.3;
+        z-index: 0;
+        animation: movePattern 20s linear infinite;
+    }
+
+    @keyframes movePattern {
+        0% { background-position: 0 0, 0 30px, 30px -30px, -30px 0px; }
+        100% { background-position: 60px 60px, 60px 90px, 90px 30px, 30px 60px; }
+    }
+
+    /* ========================================
+       HEADER MEJORADO
+       ======================================== */
+    #header {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent-blue-dark) 100%) !important;
+        border-bottom: 3px solid var(--accent-blue) !important;
+        box-shadow: 0 4px 20px rgba(0, 85, 164, 0.3) !important;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* ========================================
+       BRANDING CON LOGO ANIMADO
+       ======================================== */
+    .admin-branding {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 10px 0;
+    }
+
+    .admin-logo-gif {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 3px solid var(--accent-blue);
+        box-shadow: 0 0 20px rgba(0, 85, 164, 0.6);
+        animation: pulse 2s ease-in-out infinite, rotate 10s linear infinite;
+        object-fit: cover;
+    }
+
+    @keyframes pulse {
+        0%, 100% { 
+            transform: scale(1);
+            box-shadow: 0 0 20px rgba(0, 85, 164, 0.6);
+        }
+        50% { 
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 85, 164, 0.9);
+        }
+    }
+
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    #site-name a {
+        color: var(--text-light) !important;
+        font-size: 28px !important;
+        font-weight: 700 !important;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .admin-subtitle {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--accent-blue-light);
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ========================================
+       CONTENEDOR PRINCIPAL
+       ======================================== */
+    #content {
+        background: transparent !important;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ========================================
+       MÓDULOS DEL DASHBOARD
+       ======================================== */
+    .module {
+        background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--primary-dark) 100%) !important;
+        border: 2px solid var(--accent-blue) !important;
+        border-radius: 15px !important;
+        box-shadow: 0 8px 25px rgba(0, 85, 164, 0.2) !important;
+        margin-bottom: 25px !important;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .module:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(0, 85, 164, 0.4) !important;
+        border-color: var(--accent-blue-light);
+    }
+
+    .module h2, .module caption {
+        background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-dark) 100%) !important;
+        color: var(--text-light) !important;
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        padding: 15px 20px !important;
+        border: none !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* ========================================
+       TABLAS
+       ======================================== */
+    table {
+        background: var(--secondary-dark) !important;
+        border: none !important;
+    }
+
+    thead th {
+        background: var(--accent-blue-dark) !important;
+        color: var(--text-light) !important;
+        border-bottom: 2px solid var(--accent-blue) !important;
+        font-weight: 600 !important;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+    }
+
+    tbody tr {
+        background: var(--secondary-dark) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        transition: all 0.2s ease;
+    }
+
+    tbody tr:hover {
+        background: var(--hover-bg) !important;
+        transform: translateX(5px);
+    }
+
+    tbody td {
+        color: var(--text-gray) !important;
+        border: none !important;
+        padding: 12px 15px !important;
+    }
+
+    tbody th {
+        background: var(--secondary-dark) !important;
+        color: var(--text-light) !important;
+    }
+
+    /* ========================================
+       ENLACES Y BOTONES
+       ======================================== */
+    a {
+        color: var(--accent-blue-light) !important;
+        transition: all 0.2s ease;
+    }
+
+    a:hover {
+        color: var(--text-light) !important;
+        text-decoration: none !important;
+    }
+
+    .addlink, .changelink, .deletelink, .viewlink {
+        padding: 8px 16px !important;
+        border-radius: 8px !important;
+        background: var(--accent-blue) !important;
+        color: var(--text-light) !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        display: inline-block;
+        margin: 5px;
+    }
+
+    .addlink:hover {
+        background: var(--success) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 200, 83, 0.4);
+    }
+
+    .changelink:hover {
+        background: var(--warning) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 167, 38, 0.4);
+    }
+
+    .deletelink:hover {
+        background: var(--danger) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(239, 83, 80, 0.4);
+    }
+
+    /* ========================================
+       SIDEBAR
+       ======================================== */
+    #nav-sidebar {
+        background: var(--secondary-dark) !important;
+        border-right: 2px solid var(--accent-blue) !important;
+        box-shadow: 4px 0 15px rgba(0, 85, 164, 0.2);
+    }
+
+    #nav-sidebar a {
+        color: var(--text-gray) !important;
+        padding: 12px 20px !important;
+        border-left: 3px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    #nav-sidebar a:hover,
+    #nav-sidebar a.current-app,
+    #nav-sidebar a.current-model {
+        background: var(--hover-bg) !important;
+        color: var(--text-light) !important;
+        border-left-color: var(--accent-blue) !important;
+        transform: translateX(5px);
+    }
+
+    /* ========================================
+       BREADCRUMBS
+       ======================================== */
+    .breadcrumbs {
+        background: var(--secondary-dark) !important;
+        border-bottom: 2px solid var(--accent-blue) !important;
+        padding: 15px 20px !important;
+        color: var(--text-gray) !important;
+    }
+
+    .breadcrumbs a {
+        color: var(--accent-blue-light) !important;
+        font-weight: 600;
+    }
+
+    /* ========================================
+       FORMULARIOS
+       ======================================== */
+    .form-row {
+        background: var(--secondary-dark) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="number"],
+    input[type="url"],
+    textarea,
+    select {
+        background: var(--primary-dark) !important;
+        border: 2px solid var(--border-color) !important;
+        color: var(--text-light) !important;
+        border-radius: 8px !important;
+        padding: 10px !important;
+        transition: all 0.3s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        border-color: var(--accent-blue) !important;
+        box-shadow: 0 0 0 3px rgba(0, 85, 164, 0.2) !important;
+        outline: none !important;
+    }
+
+    /* ========================================
+       BOTONES DE ACCIÓN
+       ======================================== */
+    .submit-row {
+        background: var(--secondary-dark) !important;
+        border-top: 2px solid var(--accent-blue) !important;
+        padding: 20px !important;
+    }
+
+    input[type="submit"],
+    button[type="submit"],
+    .button {
+        background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-dark) 100%) !important;
+        color: var(--text-light) !important;
+        border: none !important;
+        padding: 12px 30px !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 85, 164, 0.3);
+    }
+
+    input[type="submit"]:hover,
+    button[type="submit"]:hover,
+    .button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 85, 164, 0.5);
+    }
+
+    /* ========================================
+       MENSAJES
+       ======================================== */
+    .messagelist {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .messagelist li {
+        background: var(--secondary-dark) !important;
+        border-left: 5px solid var(--accent-blue) !important;
+        color: var(--text-light) !important;
+        padding: 15px 20px !important;
+        margin-bottom: 15px !important;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 85, 164, 0.2);
+    }
+
+    .messagelist .success {
+        border-left-color: var(--success) !important;
+        background: linear-gradient(135deg, var(--secondary-dark) 0%, rgba(0, 200, 83, 0.1) 100%) !important;
+    }
+
+    .messagelist .warning {
+        border-left-color: var(--warning) !important;
+        background: linear-gradient(135deg, var(--secondary-dark) 0%, rgba(255, 167, 38, 0.1) 100%) !important;
+    }
+
+    .messagelist .error {
+        border-left-color: var(--danger) !important;
+        background: linear-gradient(135deg, var(--secondary-dark) 0%, rgba(239, 83, 80, 0.1) 100%) !important;
+    }
+
+    /* ========================================
+       ACCIONES RECIENTES
+       ======================================== */
+    #recent-actions-module h2 {
+        background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-dark) 100%) !important;
+    }
+
+    #recent-actions-module ul {
+        background: var(--secondary-dark) !important;
+    }
+
+    #recent-actions-module li {
+        border-bottom: 1px solid var(--border-color) !important;
+        padding: 12px 15px !important;
+    }
+
+    #recent-actions-module li:hover {
+        background: var(--hover-bg) !important;
+    }
+
+    /* ========================================
+       PAGINACIÓN
+       ======================================== */
+    .paginator {
+        background: var(--secondary-dark) !important;
+        border: 2px solid var(--accent-blue) !important;
+        border-radius: 10px !important;
+        padding: 15px !important;
+        color: var(--text-light) !important;
+    }
+
+    .paginator a {
+        background: var(--accent-blue) !important;
+        color: var(--text-light) !important;
+        padding: 8px 15px !important;
+        border-radius: 6px !important;
+        margin: 0 5px !important;
+        transition: all 0.3s ease;
+    }
+
+    .paginator a:hover {
+        background: var(--accent-blue-light) !important;
+        transform: translateY(-2px);
+    }
+
+    /* ========================================
+       EFECTOS ADICIONALES
+       ======================================== */
+    .dashboard-module {
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ========================================
+       SCROLLBAR PERSONALIZADO
+       ======================================== */
+    ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--primary-dark);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--accent-blue);
+        border-radius: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--accent-blue-light);
+    }
+
+    /* ========================================
+       RESPONSIVE
+       ======================================== */
+    @media (max-width: 768px) {
+        .admin-logo-gif {
+            width: 45px;
+            height: 45px;
+        }
+
+        #site-name a {
+            font-size: 20px !important;
+        }
+
+        .admin-subtitle {
+            font-size: 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block userlinks %}
+<div style="display: flex; align-items: center; gap: 15px;">
+    <span style="color: var(--text-light); font-weight: 600;">
+        👤 {{ user.get_username }}
+    </span>
+    {{ block.super }}
+</div>
+{% endblock %}

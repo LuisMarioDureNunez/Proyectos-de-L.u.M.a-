@@ -1,0 +1,454 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load paraguay_filters %}
+
+{% block title %}Crear Presupuesto Avanzado - Sistema Paraguay{% endblock %}
+
+{% block extra_css %}
+<style>
+    .presupuesto-container {
+        background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        box-shadow: var(--shadow-large);
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    .item-row {
+        background: rgba(248, 249, 250, 0.7);
+        border-radius: 15px;
+        margin-bottom: 15px;
+        padding: 20px;
+        border: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .item-row:hover {
+        background: rgba(248, 249, 250, 0.9);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-soft);
+    }
+    
+    .calculos-sidebar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 25px;
+        position: sticky;
+        top: 20px;
+    }
+    
+    .total-display {
+        font-size: 2rem;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .btn-add-item {
+        background: var(--gradient-success);
+        border: none;
+        border-radius: 50px;
+        padding: 12px 25px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-add-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+    }
+    
+    .calculable {
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .calculable:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.2rem rgba(45, 116, 218, 0.25);
+    }
+    
+    .live-calculation {
+        background: rgba(0, 184, 148, 0.1);
+        border-radius: 10px;
+        padding: 10px;
+        border-left: 4px solid var(--accent-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h2 mb-1">💰 Crear Presupuesto Avanzado</h1>
+                    <p class="text-muted mb-0">Sistema de cálculos automáticos en Guaraníes</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'lista_presupuestos' %}" class="btn btn-outline-premium">
+                        <i class="fas fa-arrow-left me-2"></i>Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- FORMULARIO PRINCIPAL -->
+        <div class="col-lg-8">
+            <div class="presupuesto-container p-4 mb-4">
+                <form id="presupuestoForm" method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- INFORMACIÓN BÁSICA -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">🏗️ Obra *</label>
+                            {{ form.obra }}
+                            {% if form.obra.errors %}
+                            <div class="text-danger small mt-1">{{ form.obra.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">👷 Constructor</label>
+                            {{ form.constructor }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">📝 Descripción de Servicios</label>
+                            {{ form.descripcion_servicios }}
+                        </div>
+                    </div>
+                    
+                    <!-- CONFIGURACIÓN -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">📊 IVA (%)</label>
+                            {{ form.iva_porcentaje }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">📅 Días de Validez</label>
+                            {{ form.dias_validez }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">🏷️ Código Presupuesto</label>
+                            <input type="text" class="form-control" value="Generado automáticamente" disabled>
+                        </div>
+                    </div>
+                    
+                    <!-- ITEMS DEL PRESUPUESTO -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">📦 Items del Presupuesto</h5>
+                                <button type="button" class="btn btn-add-item" id="btnAddItem">
+                                    <i class="fas fa-plus me-2"></i>Agregar Item
+                                </button>
+                            </div>
+                            
+                            <div id="itemsContainer">
+                                <!-- Los items se agregarán dinámicamente aquí -->
+                                <div class="item-row" data-item-index="0">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label">Tipo</label>
+                                            <select name="items-0-tipo" class="form-control item-tipo">
+                                                <option value="material">📦 Material</option>
+                                                <option value="mano_obra">👷 Mano de Obra</option>
+                                                <option value="maquinaria">🚜 Maquinaria</option>
+                                                <option value="herramienta">🛠️ Herramienta</option>
+                                                <option value="servicio">🔧 Servicio</option>
+                                                <option value="gastos_generales">🏢 Gastos Generales</option>
+                                                <option value="utilidad">💰 Utilidad</option>
+                                                <option value="otros">📋 Otros</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Descripción</label>
+                                            <input type="text" name="items-0-descripcion" class="form-control" placeholder="Descripción del item...">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Cantidad</label>
+                                            <input type="number" name="items-0-cantidad" class="form-control calculable" step="0.01" min="0.01" value="1">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Precio Unit.</label>
+                                            <input type="number" name="items-0-precio_unitario" class="form-control calculable" step="0.01" min="0.01" value="0">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="form-label"> </label>
+                                            <button type="button" class="btn btn-danger w-100 btn-remove-item" disabled>
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-12">
+                                            <div class="live-calculation d-none">
+                                                <strong>Total Item: <span class="item-total">Gs. 0</span></strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- BOTONES DE ACCIÓN -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button type="button" class="btn btn-outline-premium" id="btnCalcular">
+                                    <i class="fas fa-calculator me-2"></i>Calcular
+                                </button>
+                                <button type="submit" class="btn btn-premium">
+                                    <i class="fas fa-save me-2"></i>Guardar Presupuesto
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- BARRA LATERAL DE CÁLCULOS -->
+        <div class="col-lg-4">
+            <div class="calculos-sidebar">
+                <h4 class="text-center mb-4">📊 Resumen de Cálculos</h4>
+                
+                <div class="text-center mb-4">
+                    <div class="total-display" id="totalDisplay">
+                        Gs. 0
+                    </div>
+                    <small class="opacity-75">Total General</small>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <strong id="subtotalDisplay">Gs. 0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>IVA (10%):</span>
+                        <strong id="ivaDisplay">Gs. 0</strong>
+                    </div>
+                    <hr style="border-color: rgba(255,255,255,0.3);">
+                    <div class="d-flex justify-content-between">
+                        <span><strong>TOTAL:</strong></span>
+                        <strong id="totalGeneralDisplay">Gs. 0</strong>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6 class="mb-3">📈 Distribución por Tipo</h6>
+                    <div id="distribucionTipos">
+                        <div class="text-center opacity-75">
+                            <i class="fas fa-chart-pie fa-2x mb-2"></i>
+                            <p>Agregue items para ver la distribución</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <div class="alert alert-warning bg-warning bg-opacity-25 border-0">
+                        <small>
+                            <i class="fas fa-info-circle me-1"></i>
+                            Los cálculos se actualizan automáticamente
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        let itemCount = 1;
+        
+        // Agregar nuevo item
+        $('#btnAddItem').click(function() {
+            const newItem = `
+                <div class="item-row" data-item-index="${itemCount}">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Tipo</label>
+                            <select name="items-${itemCount}-tipo" class="form-control item-tipo">
+                                <option value="material">📦 Material</option>
+                                <option value="mano_obra">👷 Mano de Obra</option>
+                                <option value="maquinaria">🚜 Maquinaria</option>
+                                <option value="herramienta">🛠️ Herramienta</option>
+                                <option value="servicio">🔧 Servicio</option>
+                                <option value="gastos_generales">🏢 Gastos Generales</option>
+                                <option value="utilidad">💰 Utilidad</option>
+                                <option value="otros">📋 Otros</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Descripción</label>
+                            <input type="text" name="items-${itemCount}-descripcion" class="form-control" placeholder="Descripción del item...">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Cantidad</label>
+                            <input type="number" name="items-${itemCount}-cantidad" class="form-control calculable" step="0.01" min="0.01" value="1">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Precio Unit.</label>
+                            <input type="number" name="items-${itemCount}-precio_unitario" class="form-control calculable" step="0.01" min="0.01" value="0">
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label"> </label>
+                            <button type="button" class="btn btn-danger w-100 btn-remove-item">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <div class="live-calculation d-none">
+                                <strong>Total Item: <span class="item-total">Gs. 0</span></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            $('#itemsContainer').append(newItem);
+            itemCount++;
+            
+            // Habilitar botones de eliminar si hay más de un item
+            if (itemCount > 1) {
+                $('.btn-remove-item').prop('disabled', false);
+            }
+        });
+        
+        // Eliminar item
+        $(document).on('click', '.btn-remove-item', function() {
+            if (itemCount > 1) {
+                $(this).closest('.item-row').remove();
+                itemCount--;
+                
+                // Recalcular después de eliminar
+                calcularTotales();
+                
+                // Deshabilitar botones de eliminar si solo queda un item
+                if (itemCount === 1) {
+                    $('.btn-remove-item').prop('disabled', true);
+                }
+            }
+        });
+        
+        // Calcular totales en tiempo real
+        $(document).on('input', '.calculable', function() {
+            calcularItem($(this).closest('.item-row'));
+            calcularTotales();
+        });
+        
+        // Calcular total de un item específico
+        function calcularItem(itemRow) {
+            const cantidad = parseFloat(itemRow.find('input[name*="cantidad"]').val()) || 0;
+            const precio = parseFloat(itemRow.find('input[name*="precio_unitario"]').val()) || 0;
+            const total = cantidad * precio;
+            
+            const totalFormateado = formatearMoneda(total);
+            itemRow.find('.item-total').text(totalFormateado);
+            itemRow.find('.live-calculation').removeClass('d-none');
+        }
+        
+        // Calcular totales generales
+        function calcularTotales() {
+            let subtotal = 0;
+            const itemsData = [];
+            
+            $('.item-row').each(function() {
+                const cantidad = parseFloat($(this).find('input[name*="cantidad"]').val()) || 0;
+                const precio = parseFloat($(this).find('input[name*="precio_unitario"]').val()) || 0;
+                const totalItem = cantidad * precio;
+                
+                subtotal += totalItem;
+                
+                itemsData.push({
+                    cantidad: cantidad,
+                    precio_unitario: precio,
+                    total_item: totalItem
+                });
+            });
+            
+            const ivaPorcentaje = parseFloat($('#id_iva_porcentaje').val()) || 10;
+            const ivaMonto = (subtotal * ivaPorcentaje) / 100;
+            const total = subtotal + ivaMonto;
+            
+            // Actualizar displays
+            $('#subtotalDisplay').text(formatearMoneda(subtotal));
+            $('#ivaDisplay').text(formatearMoneda(ivaMonto));
+            $('#totalGeneralDisplay').text(formatearMoneda(total));
+            $('#totalDisplay').text(formatearMoneda(total));
+            
+            // Enviar datos al servidor para validación
+            enviarCalculosAlServidor(itemsData, ivaPorcentaje);
+        }
+        
+        // Formatear moneda en Guaraníes
+        function formatearMoneda(monto) {
+            return 'Gs. ' + monto.toLocaleString('es-PY', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).replace(/,/g, 'X').replace(/\./g, ',').replace(/X/g, '.');
+        }
+        
+        // Enviar cálculos al servidor para validación
+        function enviarCalculosAlServidor(itemsData, ivaPorcentaje) {
+            $.ajax({
+                url: '{% url "calcular_presupuesto_ajax" %}',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    items: itemsData,
+                    iva_porcentaje: ivaPorcentaje
+                }),
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Actualizar con datos del servidor (más precisos)
+                        $('#subtotalDisplay').text(response.subtotal_formateado);
+                        $('#ivaDisplay').text(response.iva_formateado);
+                        $('#totalGeneralDisplay').text(response.total_formateado);
+                        $('#totalDisplay').text(response.total_formateado);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error en cálculo:', error);
+                }
+            });
+        }
+        
+        // Calcular al hacer clic en el botón
+        $('#btnCalcular').click(function() {
+            calcularTotales();
+            
+            // Efecto visual
+            gsap.to('#totalDisplay', {
+                duration: 0.3,
+                scale: 1.1,
+                yoyo: true,
+                repeat: 1
+            });
+        });
+        
+        // Calcular al cargar la página
+        calcularTotales();
+        
+        console.log('💰 Sistema de presupuestos avanzado cargado!');
+    });
+</script>
+{% endblock %}
