@@ -2,12 +2,24 @@ services:
   - type: web
     name: luma-sistema
     env: python
-    buildCommand: "./build.sh"
-    startCommand: "gunicorn mi_tienda.wsgi:application"
+    plan: free
+    region: ohio
+    buildCommand: chmod +x build.sh && ./build.sh
+    startCommand: gunicorn mi_tienda.wsgi:application
+    autoDeploy: true
     envVars:
       - key: DEBUG
-        value: False
+        value: "False"
       - key: SECRET_KEY
         generateValue: true
-      - key: WEB_CONCURRENCY
-        value: 4
+      - key: DJANGO_ALLOWED_HOSTS
+        value: ".onrender.com,localhost,127.0.0.1"
+      - key: DISABLE_COLLECTSTATIC
+        value: "0"
+      - key: PYTHON_VERSION
+        value: "3.10.0"
+
+  - type: pgsql
+    name: luma-database
+    plan: free
+    ipAllowList: []
