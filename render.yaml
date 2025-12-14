@@ -19,7 +19,7 @@ services:
       - key: PYTHON_VERSION
         value: "3.10.0"
 
-  - type: pgsql
+  - type: postgresql  # ¡CORREGIDO! era "pgsql" y debe ser "postgresql"
     name: luma-database
     plan: free
     ipAllowList: []
